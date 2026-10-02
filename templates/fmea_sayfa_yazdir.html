@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><title>{{ s.sayfa_no }} {{ tip_ad[s.tip] }}</title>
+<style>
+@page{size:A4 landscape;margin:8mm;}
+body{font-family:Arial,sans-serif;font-size:8px;color:#000;margin:0;}
+h1{font-size:13px;margin:0 0 3px;}.meta{font-size:9px;margin-bottom:5px;}
+table{border-collapse:collapse;width:100%;table-layout:fixed;}
+th,td{border:1px solid #777;padding:2px 3px;vertical-align:top;word-wrap:break-word;overflow-wrap:anywhere;}
+thead{display:table-header-group;}th{background:#d9d9d9;font-size:7.5px;}tr{page-break-inside:avoid;}
+.g{text-align:center;}.H{background:#f4b6b6 !important;}.M{background:#ffe699 !important;}.L{background:#c6e0b4 !important;}
+.ekran{margin-bottom:8px;}@media print{.ekran{display:none;}}
+.not{font-size:7.5px;margin-top:5px;}
+</style></head><body>
+<div class="ekran"><button onclick="window.print()">🖨️ Yazdır</button> A4 yatay; başlık satırı her sayfada tekrarlanır.</div>
+<h1>{{ s.sayfa_no }} — {{ tip_ad[s.tip] }} — {{ s.baslik }}</h1>
+<div class="meta">Parça / proses: <b>{{ s.parca_proses or '—' }}</b> · Müşteri: <b>{{ s.musteri or '—' }}</b> · Ekip: <b>{{ s.ekip or '—' }}</b> · Rev: <b>{{ s.revizyon or '00' }}</b> · Tarih: <b>{{ s.tarih.strftime('%d.%m.%Y') if s.tarih else '—' }}</b>
+ · İlk AP — Y:{{ ozet.ilk.H }} O:{{ ozet.ilk.M }} D:{{ ozet.ilk.L }} · Güncel AP — Y:{{ ozet.guncel.H }} O:{{ ozet.guncel.M }} D:{{ ozet.guncel.L }}</div>
+{% set T = tipbilgi if tipbilgi.item else {'item':'Eleman','fn':'Fonksiyon','prev':'Önleyici aksiyon','det':'Tespit aksiyonu','ol':'O','dl':'D','o':'O','d':'D'} %}
+<table>
+<colgroup><col style="width:2%"><col style="width:7%"><col style="width:8%"><col style="width:8%"><col style="width:2.5%"><col style="width:7%"><col style="width:7%"><col style="width:8%"><col style="width:2.5%"><col style="width:8%"><col style="width:2.5%"><col style="width:4.5%"><col style="width:3%"><col style="width:8%"><col style="width:5%"><col style="width:4%"><col style="width:5%"><col style="width:2.5%"><col style="width:2.5%"><col style="width:4.5%"></colgroup>
+<thead><tr><th>#</th><th>{{ T.item }}</th><th>{{ T.fn }}</th><th>Hata etkisi</th><th>S</th><th>Hata modu</th><th>Hata nedeni</th><th>{{ T.prev }}</th><th>{{ T.ol }}</th><th>{{ T.det }}</th><th>{{ T.dl }}</th><th>AP</th><th>RPN</th><th>Optimizasyon aksiyonu</th><th>Sorumlu</th><th>Hedef tarih</th><th>Durum</th><th>{{ T.o }}′</th><th>{{ T.d }}′</th><th>AP′</th></tr></thead>
+<tbody>
+{% for r in satirlar %}<tr><td class="g">{{ loop.index }}</td><td>{{ r.item }}</td><td>{{ r.fn }}</td><td>{{ r.eff }}</td><td class="g">{{ r.S }}</td><td>{{ r.mode }}</td><td>{{ r.cause }}</td><td>{{ r.prev }}</td><td class="g">{{ r.O }}</td><td>{{ r.det }}</td><td class="g">{{ r.D }}</td>
+<td class="g {{ r.ap }}">{{ r.ap_ad }}</td><td class="g">{{ r.rpn }}</td><td>{{ r.act }}</td><td>{{ r.resp }}</td><td>{{ r.date }}</td><td>{{ r.st }}</td><td class="g">{{ r.O2 }}</td><td class="g">{{ r.D2 }}</td><td class="g {{ r.ap2 }}">{{ r.ap2_ad }}</td></tr>{% endfor %}
+</tbody></table>
+<div class="not">Derecelendirmeler yönlendirme amaçlıdır; nihai karar FMEA ekibine aittir. AP kararı matristen verilir; RPN yalnız bilgidir. Kaynak: GSI-RD-370 Rev. C02. DYS çıktısı {{ simdi.strftime('%d.%m.%Y %H:%M') }} — kontrolsüz kopya, geçerli kayıt DYS'dedir.</div>
+</body></html>

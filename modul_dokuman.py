@@ -78,6 +78,7 @@ def _istek_modulu():
 def modul_alt(nav_id):
     """Sol menü: her modül başlığının altında her zaman 'Dokümanlar · N' alt başlığı (Dokümanlar sayfasındayken vurgulu).
     Modül başlığının kendisi kayıt ekranını açar."""
+    return ""   # 02.10.2026 (kullanıcı): sol menüde alt başlık yok — Dokümanlar, modülün kendi sayfasındaki 'Dokümanlar' sekmesinde görülür
     m = modul_bilgisi(nav_id=nav_id)
     if not m:
         return ""

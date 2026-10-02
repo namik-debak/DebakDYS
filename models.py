@@ -2774,6 +2774,49 @@ class BakimKaydi(Base):
     olusturma_tarihi = Column(DateTime, default=datetime.now)
 
 
+class FmeaSayfa(Base):
+    """2026 — FMEA çalışma sayfası (GSI-RD-370 Rev. C02): D-FMEA (D), P-FMEA (P) veya FMEA-MSR (M). Satırlar FmeaSatir."""
+    __tablename__ = "fmea_sayfalari"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    sayfa_no = Column(Unicode(30), nullable=False, unique=True)         # FS-2026-001
+    tip = Column(Unicode(1), nullable=False)                            # D / P / M
+    baslik = Column(Unicode(200), nullable=False)
+    parca_proses = Column(Unicode(200), nullable=True)
+    musteri = Column(Unicode(150), nullable=True)
+    ekip = Column(Unicode(300), nullable=True)
+    revizyon = Column(Unicode(10), nullable=True)
+    tarih = Column(Date, nullable=True)
+    aciklama = Column(Unicode(1000), nullable=True)
+    olusturan_id = Column(Integer, nullable=True)
+    olusturma_tarihi = Column(DateTime, default=datetime.now)
+    guncelleme_tarihi = Column(DateTime, default=datetime.now, onupdate=datetime.now)
+
+
+class FmeaSatir(Base):
+    """FMEA çalışma sayfası satırı. MSR'de F `O` alanında, M `D` alanında tutulur (referans uygulamayla aynı).
+    AP / RPN / AP′ saklanmaz, fmea_core ile her seferinde hesaplanır."""
+    __tablename__ = "fmea_satirlari"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    sayfa_id = Column(Integer, nullable=False, index=True)
+    sira = Column(Integer, nullable=False, default=0)
+    item = Column(Text, nullable=True)       # parça / proses adımı / sistem elemanı
+    fn = Column(Text, nullable=True)         # fonksiyon / gereksinim
+    eff = Column(Text, nullable=True)        # hata etkisi
+    S = Column(Integer, nullable=True)
+    mode = Column(Text, nullable=True)       # hata modu
+    cause = Column(Text, nullable=True)      # hata nedeni
+    prev = Column(Text, nullable=True)       # önleyici aksiyon (MSR: sıklık gerekçesi)
+    O = Column(Integer, nullable=True)       # oluşma (MSR: sıklık F)
+    det = Column(Text, nullable=True)        # tespit aksiyonu (MSR: mevcut izleme + sistem tepkisi)
+    D = Column(Integer, nullable=True)       # tespit (MSR: izleme M)
+    act = Column(Text, nullable=True)        # optimizasyon aksiyonu
+    resp = Column(Unicode(150), nullable=True)
+    date = Column(Unicode(60), nullable=True)
+    st = Column(Unicode(30), nullable=True)
+    O2 = Column(Integer, nullable=True)
+    D2 = Column(Integer, nullable=True)
+
+
 TR_DAGITIM = ("Yönetim", "Laboratuvar", "Kalite", "Üretim")              # D04.4 F02 dağıtım sütunları
 TR_ETKILER = ("Kontrol Planı", "PFMEA", "Kalıp / Takım", "Mastar / Aparat", "Ölçüm Programı (CMM)", "İş / Kontrol Talimatı",
               "Ambalaj / Etiket", "PPAP / Numune Onayı", "Tedarikçi / Hammadde", "Stok / Yarı Mamul")

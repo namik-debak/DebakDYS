@@ -53,7 +53,7 @@
       <div><label for="sec-form">2 · Bakım / kontrol formu</label>
         <select name="form" id="sec-form" class="form-control" onchange="this.form.submit()" {% if not e %}disabled{% endif %}>
           <option value="">{{ '— Önce makine seçin —' if not e else ('— Seçin (' ~ sablonlar|length ~ ' form) —' if sablonlar else '— Bu türe uygun form yok —') }}</option>
-          {% for kat, L in kategoriler.items() %}<optgroup label="{{ kat }}">{% for x in L %}<option value="{{ x.kod }}" {% if s and s.kod == x.kod %}selected{% endif %}>{{ x.ad }} · {{ x.periyot.ad }} ({{ x.kod }})</option>{% endfor %}</optgroup>{% endfor %}
+          {% for kat, L in kategoriler.items() %}<optgroup label="{{ kat }}">{% for x in L %}<option value="{{ x.kod }}" {% if s and s.kod == x.kod %}selected{% endif %}>{{ x.ad }} ({{ x.kod }})</option>{% endfor %}</optgroup>{% endfor %}
         </select></div>
       <noscript><button class="btn btn-primary" type="submit">Göster</button></noscript>
     </form>
@@ -64,9 +64,7 @@
       {% if e.bolum %}<span>Bölüm: <b>{{ e.bolum }}</b></span>{% endif %}
       {% if e.baski_omru %}<span>Baskı ömrü: <b>{{ '{:,}'.format(e.baski_omru).replace(',', '.') }}</b></span>{% endif %}
       {% if not e.marka and e.tur == 'Enjeksiyon Makinesi' %}<span class="bk-etiket gec">Marka girilmemiş — tüm markaların formları listeleniyor</span>{% endif %}
-      {% if s and plan %}<span>Periyot: <b>{{ s.periyot.ad }}</b></span>
-        <span>Son: <b>{{ son.tarih.strftime('%d.%m.%Y') if son else '—' }}</b>{% if son and son.calisma_saati %} · {{ '{:,}'.format(son.calisma_saati).replace(',', '.') }} saat{% endif %}</span>
-        <span class="bk-etiket {{ 'gec' if plan.gecikti }}">{{ plan.metin }}</span>{% endif %}
+      {% if s %}<span>Son kayıt: <b>{{ son.tarih.strftime('%d.%m.%Y') if son else '—' }}</b>{% if son and son.calisma_saati %} · {{ '{:,}'.format(son.calisma_saati).replace(',', '.') }} saat{% endif %}</span>{% endif %}
     </div>
     {% endif %}
   </div>
@@ -84,11 +82,11 @@
         <div class="form-group"><label class="form-label">Tarih *</label><input type="date" name="tarih" class="form-control" required value="{{ form.tarih or today.isoformat() }}"></div>
         <div class="form-group"><label class="form-label">{{ 'Sorumlu operatör' if s.kategori == 'Günlük kontrol' else 'Bakımcı / bakımcılar' }} *</label><input name="bakimci" class="form-control" required value="{{ form.bakimci or kullanici }}"></div>
         <div class="form-group"><label class="form-label">Bakım süresi (dk)</label><input name="sure_dk" inputmode="numeric" class="form-control" value="{{ form.sure_dk or '' }}"></div>
-        {% if s.periyot.tip == 'saat' or e.tur in ['Enjeksiyon Makinesi', 'Hidrolik Pres'] and s.kategori == 'Periyodik bakım' %}
-        <div class="form-group"><label class="form-label">Makine çalışma saati{{ ' *' if s.periyot.tip == 'saat' }}</label><input name="calisma_saati" inputmode="numeric" class="form-control" value="{{ form.calisma_saati or '' }}" {% if s.periyot.tip == 'saat' %}required{% endif %} placeholder="sayaç"></div>{% endif %}
+        {% if e.tur in ['Enjeksiyon Makinesi', 'Hidrolik Pres'] and s.kategori == 'Periyodik bakım' %}
+        <div class="form-group"><label class="form-label">Makine çalışma saati</label><input name="calisma_saati" inputmode="numeric" class="form-control" value="{{ form.calisma_saati or '' }}" placeholder="sayaç"></div>{% endif %}
         {% if s.kalip %}<div class="form-group"><label class="form-label">Baskı sayısı</label><input name="baski_sayisi" inputmode="numeric" class="form-control" value="{{ form.baski_sayisi or '' }}"></div>{% endif %}
+        <div class="form-group"><label class="form-label">CANIAS iş emri no</label><input name="is_emri" class="form-control" value="{{ form.is_emri or '' }}" placeholder="ör. 40-00025228"></div>
         {% if s.kod in ['D03 F02', 'D03 F48'] %}
-        <div class="form-group"><label class="form-label">İş emri</label><input name="is_emri" class="form-control" value="{{ form.is_emri or '' }}"></div>
         <div class="form-group"><label class="form-label">{{ 'Ürün adı' if s.kod == 'D03 F48' else 'Lot no' }}</label><input name="{{ 'urun' if s.kod == 'D03 F48' else 'lot_no' }}" class="form-control" value="{{ form.urun or form.lot_no or '' }}"></div>{% endif %}
       </div>
     </div>
@@ -142,7 +140,7 @@ document.querySelectorAll('#bakim-form input[type=radio]').forEach(function(r){r
   <p class="text-muted" style="margin-bottom:10px;">{{ e.kod }} için uygun formlar — birini seçin:</p>
   <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;">
     {% for x in sablonlar %}<a href="{{ url_for('bakim_form', ekipman=e.id, form=x.kod) }}" class="section-card" style="padding:12px;text-decoration:none;color:inherit;display:block;">
-      <div style="font-weight:700;">{{ x.ad }}</div><div class="text-muted" style="font-size:12px;">{{ x.kategori }} · {{ x.periyot.ad }} · {{ x.maddeler|length }} madde · {{ x.kod }}</div></a>{% endfor %}
+      <div style="font-weight:700;">{{ x.ad }}</div><div class="text-muted" style="font-size:12px;">{{ x.kategori }} · {{ x.maddeler|length }} madde · {{ x.kod }}</div></a>{% endfor %}
   </div>
 </div></div>
 {% elif e %}

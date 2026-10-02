@@ -15,14 +15,14 @@
 </div>
 
 <div class="section-card mb-16">
-  <div class="section-header"><span class="section-title">🗓️ Bakım planı</span><span class="text-muted" style="font-size:12px;">{{ plan|length }} uygun form</span></div>
+  <div class="section-header"><span class="section-title">📋 Uygun bakım formları</span><span class="text-muted" style="font-size:12px;">{{ plan|length }} uygun form</span></div>
   <div class="section-body" style="padding:0;overflow-x:auto;">
     {% if plan %}
-    <table class="data-table"><thead><tr><th>Form</th><th>Kategori</th><th>Periyot</th><th>Son bakım</th><th>Durum</th><th></th></tr></thead><tbody>
+    <table class="data-table"><thead><tr><th>Form</th><th>Kategori</th><th>Son kayıt</th><th></th></tr></thead><tbody>
     {% for s, p in plan %}
-      <tr><td><strong>{{ s.ad }}</strong> <span class="text-muted" style="font-size:11px;">{{ s.kod }}</span></td><td>{{ s.kategori }}</td><td>{{ s.periyot.ad }}</td>
-        <td>{% if p.son %}<a href="{{ url_for('bakim_kayit', kid=p.son.id) }}">{{ p.son.tarih.strftime('%d.%m.%Y') }}</a>{% if p.son.calisma_saati %} · {{ '{:,}'.format(p.son.calisma_saati).replace(',', '.') }} sa{% endif %}{% else %}—{% endif %}</td>
-        <td><span class="bk-etiket {{ 'gec' if p.gecikti }}">{{ p.metin }}</span></td>
+      <tr><td><strong>{{ s.ad }}</strong> <span class="text-muted" style="font-size:11px;">{{ s.kod }}</span></td><td>{{ s.kategori }}</td>
+        <td>{% if p %}<a href="{{ url_for('bakim_kayit', kid=p.id) }}">{{ p.tarih.strftime('%d.%m.%Y') }}</a>{% if p.calisma_saati %} · {{ '{:,}'.format(p.calisma_saati).replace(',', '.') }} sa{% endif %}{% else %}—{% endif %}</td>
+
         <td><a href="{{ url_for('bakim_form', ekipman=e.id, form=s.kod) }}" class="btn btn-outline" style="font-size:12px;padding:2px 10px;">Doldur</a></td></tr>
     {% endfor %}
     </tbody></table>

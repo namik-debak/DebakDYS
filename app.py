@@ -4384,6 +4384,7 @@ import toplanti_routes  # noqa: E402,F401  — Toplantı Tutanakları (Y01.4 İl
 import kalite_routes  # noqa: E402,F401  — Kalite: Tedarikçi Uygunsuzlukları (D02 F11) + Müşteri Şikayetleri / 8D (Y01.7 F03) (2026)
 import teknik_resim_routes  # noqa: E402,F401  2026 — teknik resim takip ve revizyon
 import bakim_routes  # noqa: E402,F401  2026 — D03 Bakım Formu (tek form: makine / kalıp + bakım türü)
+import fmea_sayfa_routes  # noqa: E402,F401  2026 — FMEA çalışma sayfaları (D / P / MSR, GSI-RD-370)
 
 
 if __name__ == "__main__":

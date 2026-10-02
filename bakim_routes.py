@@ -2,8 +2,8 @@
 DYS — D03 Bakım Formu (2026): D03 klasöründeki 50 bakım formu tek ekranda
   /bakim?ekipman=<id>&form=<kod>   üstte ekipman (makine / kalıp) ve bakım formu seçilir; alt kısım şablona göre değişir
                                    (periyodik bakım, günlük kontrol, bakım kartı, kalıp bakımı). Kaydedilince ekipmanın bakım geçmişine düşer.
-  /bakim/ekipman                   makine ve kalıp listesi: son bakım, geciken bakım sayısı; ekleme; başlangıç listesini yükleme
-  /bakim/ekipman/<id>              ekipman kartı: bakım planı (şablon başına son / sonraki bakım), bakım geçmişi (bakım kartı), bilgiler
+  /bakim/ekipman                   makine ve kalıp listesi: son bakım kaydı; ekleme; başlangıç listesini yükleme
+  /bakim/ekipman/<id>              ekipman kartı: uygun formlar ve son kayıtları, bakım geçmişi (bakım kartı), bilgiler
   /bakim/kayit/<id>                kayıt görünümü / A4 çıktı; Admin silebilir
   /bakim/kayitlar                  tüm kayıtlar (filtre) + Excel
 Şablonlar: data/bakim_formlari.json (_calisma/bakim_formlari_hazirla.py). Ekipman türü + marka → uygun şablonlar (marka boşsa türdeki tümü).
@@ -85,36 +85,10 @@ def _tarih(s):
         return None
 
 
-def plan_durumu(e, s, kayitlar, bugun=None):
-    """Şablon için son bakım ve sonraki bakım: {son, sonraki, sonraki_saat, gecikti, bugun_yapildi, metin}."""
-    bugun = bugun or date.today()
-    ks = sorted((k for k in kayitlar if k.form_kod == s["kod"]), key=lambda k: (k.tarih, k.id))
-    son = ks[-1] if ks else None
-    p = s["periyot"]
-    d = {"son": son, "sonraki": None, "sonraki_saat": None, "gecikti": False, "metin": ""}
-    if p["tip"] == "gun":
-        if p["deger"] == 1:
-            d["metin"] = "Bugün yapıldı" if son and son.tarih == bugun else "Bugün yapılmadı"
-            d["gecikti"] = bool(son) and son.tarih < bugun - timedelta(days=3)   # 3 günden uzun süredir girilmemiş
-        elif son:
-            d["sonraki"] = son.tarih + timedelta(days=p["deger"])
-            d["gecikti"] = d["sonraki"] < bugun
-            d["metin"] = ("Gecikti — " if d["gecikti"] else "Sonraki: ") + d["sonraki"].strftime("%d.%m.%Y")
-        else:
-            d["metin"] = "Kayıt yok"
-    elif p["tip"] == "saat":
-        sa = next((k.calisma_saati for k in reversed(ks) if k.calisma_saati), None)
-        if sa:
-            d["sonraki_saat"] = sa + p["deger"]
-            d["metin"] = f"Sonraki: {d['sonraki_saat']:,} saat".replace(",", ".")
-        else:
-            d["metin"] = "Kayıt yok" if not son else "Çalışma saati girilmemiş"
-    elif p["tip"] == "baski":
-        b = next((k.baski_sayisi for k in reversed(ks) if k.baski_sayisi), None)
-        d["metin"] = f"Son bakım baskısı: {b:,}".replace(",", ".") if b else ("Kayıt yok" if not son else "Baskı sayısı girilmemiş")
-    else:
-        d["metin"] = "Kayıt yok" if not son else "Son: " + son.tarih.strftime("%d.%m.%Y")
-    return d
+def son_kayit(kayitlar, form_kod):
+    """Şablonun ekipmandaki son bakım kaydı (planlama CANIAS DBKT01'de yapılır; DYS yalnız kontrol listesi kaydı tutar)."""
+    ks = sorted((k for k in kayitlar if k.form_kod == form_kod), key=lambda k: (k.tarih, k.id))
+    return ks[-1] if ks else None
 
 
 def _ekipman_ozet(db, ekipmanlar):
@@ -124,9 +98,9 @@ def _ekipman_ozet(db, ekipmanlar):
     out = []
     for e in ekipmanlar:
         kl = kayitlar.get(e.id, [])
-        pl = [plan_durumu(e, s, kl) for s in uygun_sablonlar(e)]
+        n_sablon = len(uygun_sablonlar(e))
         son = max(kl, key=lambda k: (k.tarih, k.id)) if kl else None
-        out.append({"e": e, "son": son, "geciken": sum(1 for x in pl if x["gecikti"]), "sablon": len(pl), "kayit": len(kl)})
+        out.append({"e": e, "son": son, "sablon": n_sablon, "kayit": len(kl)})
     return out
 
 
@@ -182,8 +156,7 @@ def bakim_form():
 
 def _form_goster(db, ekipmanlar, e, sablonlar, s, form, maddeler):
     kayitlar = db.query(BakimKaydi).filter_by(ekipman_id=e.id).all() if e else []
-    plan = plan_durumu(e, s, kayitlar) if (e and s) else None
-    son = plan["son"] if plan else None
+    son = son_kayit(kayitlar, s["kod"]) if (e and s) else None
     u = db.get(User, session.get("user_id")) if session.get("user_id") else None
     gruplar = {}
     for x in ekipmanlar:
@@ -192,7 +165,7 @@ def _form_goster(db, ekipmanlar, e, sablonlar, s, form, maddeler):
     for x in sablonlar:
         kategoriler.setdefault(x["kategori"], []).append(x)
     return render_template("bakim_form.html", ekipman_gruplari=gruplar, e=e, sablonlar=sablonlar, kategoriler=kategoriler, s=s, form=form,
-                           secili=maddeler, plan=plan, son=son, son_maddeler={m["no"]: m for m in json.loads(son.maddeler_json or "[]")} if son else {},
+                           secili=maddeler, son=son, son_maddeler={m["no"]: m for m in json.loads(son.maddeler_json or "[]")} if son else {},
                            durumlar=(DURUM_KALIP if s and s.get("kalip") else DURUM_MAKINE), sonuclar=SONUCLAR, yazabilir=_yazabilir(),
                            kullanici=u.ad_soyad if u else "", today=date.today(), ekipman_yok=not ekipmanlar)
 
@@ -243,7 +216,7 @@ def bakim_ekipman():
         V = veri()
         return render_template("bakim_ekipman.html", liste=oz, turler=V["ekipman_turleri"], markalar=V["markalar"], bolumler=BOLUMLER,
                                tur=tur, q=request.args.get("q", ""), pasif=pasif, yazabilir=_yazabilir(), yonetici=_yonetici(),
-                               toplam=db.query(BakimEkipman).count(), geciken=sum(1 for x in oz if x["geciken"]))
+                               toplam=db.query(BakimEkipman).count())
     finally:
         db.close()
 
@@ -275,7 +248,7 @@ def bakim_ekipman_detay(eid):
             flash("Ekipman bilgileri kaydedildi.", "success")
             return redirect(url_for("bakim_ekipman_detay", eid=e.id))
         kayitlar = sorted(db.query(BakimKaydi).filter_by(ekipman_id=e.id).all(), key=lambda k: (k.tarih, k.id), reverse=True)
-        plan = [(s, plan_durumu(e, s, kayitlar)) for s in uygun_sablonlar(e)]
+        plan = [(s, son_kayit(kayitlar, s["kod"])) for s in uygun_sablonlar(e)]
         V = veri()
         return render_template("bakim_ekipman_detay.html", e=e, plan=plan, kayitlar=kayitlar, turler=V["ekipman_turleri"], markalar=V["markalar"],
                                bolumler=BOLUMLER, yazabilir=_yazabilir())

@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block title %}{{ s.sayfa_no }} — {{ tip_ad[s.tip] }}{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><a href="{{ url_for('fmea_list') }}">FMEA</a><span class="separator">›</span><a href="{{ url_for('fmea_sayfalar') }}">Çalışma Sayfaları</a><span class="separator">›</span><span>{{ s.sayfa_no }}</span>{% endblock %}
+{% block content %}
+<style>
+.fm-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.fm-chip{display:inline-block;font-size:12px;font-weight:700;padding:3px 10px;border-radius:12px;}
+.fm-H{background:#fde2e2;color:#b91c1c;}.fm-M{background:#fff1c2;color:#92600a;}.fm-L{background:#d9f2e0;color:#166534;}
+.fm-wrap{overflow:auto;max-height:72vh;border:1px solid var(--border);border-radius:8px;background:var(--bg-primary);}
+.fm-t{border-collapse:separate;border-spacing:0;min-width:2300px;width:100%;}
+.fm-t th{position:sticky;top:0;z-index:3;background:var(--bg-secondary);font-size:11px;text-transform:uppercase;letter-spacing:.02em;text-align:left;padding:7px 6px;border-bottom:2px solid var(--border);}
+.fm-t tr.fm-hint th{top:33px;z-index:2;font-size:10px;font-weight:400;text-transform:none;color:var(--text-muted);background:var(--bg-primary);line-height:1.25;vertical-align:top;}
+.fm-t td{padding:4px;border-bottom:1px solid var(--border);vertical-align:top;}
+.fm-t textarea{width:100%;min-height:58px;font-size:12px;padding:5px;border:1px solid transparent;background:transparent;resize:vertical;border-radius:4px;color:inherit;}
+.fm-t textarea:hover,.fm-t textarea:focus{border-color:var(--border);background:var(--bg-primary);}
+.fm-t select{width:62px;font-size:13px;padding:3px;}
+.fm-t td.g{text-align:center;}
+.fm-t .why{font-size:10px;color:var(--text-muted);margin-top:3px;max-width:150px;line-height:1.25;}
+.fm-badge{display:inline-block;font-size:11px;font-weight:800;padding:3px 8px;border-radius:5px;}
+.fm-nt{font-size:10px;margin-top:4px;max-width:120px;line-height:1.25;}.fm-nt .u{color:#b91c1c;font-weight:700;}.fm-nt .b{color:var(--text-muted);}
+.fm-col1,.fm-col1h{position:sticky;left:0;z-index:1;background:var(--bg-primary);}
+.fm-t th.fm-col1h{z-index:4;background:var(--bg-secondary);}
+details.fm-k summary{cursor:pointer;font-weight:700;font-size:14px;}
+.fm-k table{width:100%;border-collapse:collapse;margin:8px 0 14px;}.fm-k th,.fm-k td{border:1px solid var(--border);padding:5px 8px;font-size:12px;text-align:left;vertical-align:top;}
+.fm-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;}
+.fm-sav{font-size:11px;color:var(--text-muted);}
+</style>
+
+<div class="mb-16 d-flex align-center justify-between" style="flex-wrap:wrap;gap:10px;">
+  <div>
+    <div class="text-muted" style="font-size:12px;">{{ s.sayfa_no }} · {{ tip_ad[s.tip] }} · GSI-RD-370 Rev. C02</div>
+    <h2 style="font-size:20px;font-weight:700;">{{ s.baslik }}</h2>
+    <p class="text-muted" style="font-size:13px;">{{ s.parca_proses or '' }}{% if s.musteri %} · {{ s.musteri }}{% endif %}{% if s.ekip %} · Ekip: {{ s.ekip }}{% endif %} · Rev {{ s.revizyon or '00' }}{% if s.tarih %} · {{ s.tarih.strftime('%d.%m.%Y') }}{% endif %}</p>
+  </div>
+  <div class="fm-bar">
+    <span id="sav" class="fm-sav"></span>
+    <a href="{{ url_for('fmea_sayfa_excel', sid=s.id) }}" class="btn btn-outline">📊 Excel</a>
+    <a href="{{ url_for('fmea_sayfa_yazdir', sid=s.id) }}" target="_blank" class="btn btn-outline">🖨️ Yazdır (A4 yatay)</a>
+    <a href="{{ url_for('fmea_sayfalar') }}" class="btn btn-outline">⬅️ Sayfalar</a>
+  </div>
+</div>
+
+<div class="section-card mb-16" style="padding:12px 16px;">
+  <div class="fm-bar" id="ozet"></div>
+</div>
+
+<div class="fm-bar mb-16">
+  {% if yazabilir %}<button class="btn btn-primary" type="button" id="satir-ekle">＋ Satır ekle</button>{% endif %}
+  <span class="text-muted" style="font-size:12px;">Değişiklikler alandan çıkınca otomatik kaydedilir. AP yalnız matristen; RPN yalnız bilgidir.</span>
+</div>
+
+<div class="fm-wrap"><div id="tablo"></div></div>
+<p class="text-muted" style="font-size:11px;margin:8px 2px 16px;" id="alt"></p>
+
+<div class="section-card mb-16">
+  <div class="section-body">
+    {% if kriter_var %}
+    <details class="fm-k"><summary>📖 Puanlar neye göre verilir?</summary>
+      {% set etiket = {'S': 'Şiddet (S)', 'O': 'Oluşma (O)', 'D': 'Tespit (D)', 'F': 'Sıklık (F)', 'M': 'İzleme (M)'} %}
+      {% for k, L in kriterler.items() %}<h4 style="margin-top:12px;">{{ etiket.get(k, k) }}</h4>
+      <table><thead><tr><th style="width:50px;">Puan</th><th style="width:200px;">Seviye</th><th>Neye istinaden verilir</th></tr></thead><tbody>
+      {% for a in L %}<tr><td><b>{{ a[0] }}</b></td><td>{{ a[1] }}</td><td>{{ a[2] }}</td></tr>{% endfor %}</tbody></table>{% endfor %}
+      <p class="text-muted" style="font-size:12px;">{{ kriter_notu }}</p>
+    </details>
+    {% else %}<p class="text-muted" style="font-size:12px;">Puan dayanakları (GSI-RD-370 kriter metinleri) bu kurulumda yok; AP hesabı etkilenmez.</p>{% endif %}
+    <p class="text-muted" style="font-size:12px;margin-top:8px;">Derecelendirmeler yönlendirme amaçlıdır; birden fazla kriter uyuyorsa en kötüsü seçilir; nihai karar FMEA ekibine aittir.</p>
+  </div>
+</div>
+
+{% if yazabilir %}
+<div class="section-card">
+  <div class="section-header"><span class="section-title">✏️ Sayfa bilgileri</span></div>
+  <div class="section-body">
+    <form method="POST"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="bilgi">
+      <div class="fm-g">
+        <div class="form-group" style="grid-column:span 2;"><label class="form-label">Başlık *</label><input name="baslik" class="form-control" required value="{{ s.baslik }}"></div>
+        <div class="form-group"><label class="form-label">Parça / proses</label><input name="parca_proses" class="form-control" value="{{ s.parca_proses or '' }}"></div>
+        <div class="form-group"><label class="form-label">Müşteri</label><input name="musteri" class="form-control" value="{{ s.musteri or '' }}"></div>
+        <div class="form-group"><label class="form-label">FMEA ekibi</label><input name="ekip" class="form-control" value="{{ s.ekip or '' }}"></div>
+        <div class="form-group"><label class="form-label">Revizyon</label><input name="revizyon" class="form-control" maxlength="10" value="{{ s.revizyon or '' }}"></div>
+        <div class="form-group"><label class="form-label">Tarih</label><input type="date" name="tarih" class="form-control" value="{{ s.tarih.isoformat() if s.tarih else '' }}"></div>
+      </div>
+      <button class="btn btn-outline" type="submit">Kaydet</button>
+    </form>
+    {% if yonetici %}<form method="POST" onsubmit="return confirm('Bu çalışma sayfası ve tüm satırları silinsin mi?');" style="margin-top:10px;"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="sil"><button class="btn btn-outline" type="submit" style="font-size:12px;">Sayfayı sil</button></form>{% endif %}
+  </div>
+</div>
+{% endif %}
+
+<script>
+const FM={tip:{{ s.tip|tojson }},rows:{{ satirlar|tojson }},kri:{{ kriterler|tojson }},puan:{{ puanlar|tojson }},st:{{ durumlar|tojson }},
+  ip:{{ ipuclari|tojson }},T:{{ tipbilgi|tojson }},yaz:{{ 'true' if yazabilir else 'false' }},
+  url:{ekle:{{ url_for('fmea_satir_ekle', sid=s.id)|tojson }},sat:{{ url_for('fmea_satir_guncelle', sid=s.id, rid=0)|tojson }},csrf:{{ csrf_token()|tojson }}}};
+const T=FM.T&&FM.T.item?FM.T:{n:'',o:'O',d:'D',ol:'Oluşma (O)',dl:'Tespit (D)',prev:'Önleyici aksiyon',det:'Tespit aksiyonu',item:'Eleman',fn:'Fonksiyon'};
+const KK={S:'S',O:FM.tip==='M'?'F':'O',D:FM.tip==='M'?'M':'D'};
+const AP_AD={H:'Yüksek',M:'Orta',L:'Düşük'};
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function why(alan,v){const kk=KK[alan[0]];const L=(FM.kri||{})[kk]||[];const a=L.find(x=>String(x[0])===String(v));return a?`<b>${esc(a[1])}</b> — ${esc(a[2])}`:'';}
+function sel(alan,r){const k=alan[0];const opts=FM.puan[k];const v=r[alan];
+  if(!FM.yaz)return `<b>${esc(v)}</b><div class="why">${why(alan,v)}</div>`;
+  return `<select data-id="${r.id}" data-a="${alan}"><option value=""></option>${opts.map(p=>`<option ${String(v)===String(p)?'selected':''}>${p}</option>`).join('')}</select><div class="why">${why(alan,v)}</div>`;}
+function ta(alan,r){return `<textarea data-id="${r.id}" data-a="${alan}" ${FM.yaz?'':'readonly'}>${esc(r[alan])}</textarea>`;}
+function badge(ap){return ap?`<span class="fm-badge fm-${ap}">${AP_AD[ap]}</span>`:'';}
+function notes(r){return (r.uyari||[]).map(u=>`<div class="${u[0]==='uyari'?'u':'b'}">${esc(u[1])}</div>`).join('');}
+function row(r,i){return `<tr data-r="${r.id}"><td class="fm-col1">${i+1}</td><td>${ta('item',r)}</td><td>${ta('fn',r)}</td><td>${ta('eff',r)}</td><td class="g">${sel('S',r)}</td><td>${ta('mode',r)}</td><td>${ta('cause',r)}</td><td>${ta('prev',r)}</td><td class="g">${sel('O',r)}</td><td>${ta('det',r)}</td><td class="g">${sel('D',r)}</td>
+ <td class="g ca">${badge(r.ap)}<div class="fm-nt">${notes(r)}</div></td><td class="g crpn">${esc(r.rpn)}</td><td>${ta('act',r)}</td>
+ <td><textarea data-id="${r.id}" data-a="resp" ${FM.yaz?'':'readonly'} style="min-height:36px">${esc(r.resp)}</textarea></td><td><textarea data-id="${r.id}" data-a="date" ${FM.yaz?'':'readonly'} style="min-height:36px">${esc(r.date)}</textarea></td>
+ <td>${FM.yaz?`<select data-id="${r.id}" data-a="st" style="width:120px"><option value=""></option>${FM.st.map(x=>`<option ${r.st===x?'selected':''}>${x}</option>`).join('')}</select>`:esc(r.st)}</td>
+ <td class="g">${sel('O2',r)}</td><td class="g">${sel('D2',r)}</td><td class="g ca2">${badge(r.ap2)}</td><td>${FM.yaz?`<button class="btn btn-outline" data-del="${r.id}" title="Satırı sil" style="padding:1px 7px">✕</button> <button class="btn btn-outline" data-kopya="${r.id}" title="Aynı hata moduna yeni neden satırı" style="padding:1px 7px">⧉</button>`:''}</td></tr>`;}
+function ozet(o){const ch=(x,l)=>['H','M','L'].map(k=>`<span class="fm-chip fm-${k}">${l} ${AP_AD[k]}: ${x[k]}</span>`).join(' ');
+  document.getElementById('ozet').innerHTML=ch(o.ilk,'İlk')+' &nbsp; '+ch(o.guncel,'Güncel');}
+function tablo(){const H=FM.ip;const hd=`<tr><th class="fm-col1h">#</th><th>${T.item}</th><th>${T.fn}</th><th>Hata etkisi</th><th class="g">S</th><th>Hata modu</th><th>Hata nedeni</th><th>${T.prev}</th><th class="g">${T.ol}</th><th>${T.det}</th><th class="g">${T.dl}</th><th class="g">AP</th><th>RPN (bilgi)</th><th>Optimizasyon aksiyonu</th><th>Sorumlu (rol)</th><th>Hedef tarih</th><th>Durum</th><th class="g">${T.o}′</th><th class="g">${T.d}′</th><th class="g">AP′</th><th></th></tr>`;
+  const hr=H&&H.length?'<tr class="fm-hint">'+H.map(h=>`<th>${esc(h)}</th>`).join('')+'</tr>':'';
+  const el=document.getElementById('tablo');
+  if(!FM.rows.length){el.innerHTML='<div style="padding:30px;text-align:center;color:var(--text-muted)">Henüz satır yok. “＋ Satır ekle” ile ilk hata zincirini girin.</div>';return;}
+  el.innerHTML=`<table class="fm-t"><thead>${hd}${hr}</thead><tbody>${FM.rows.map(row).join('')}</tbody></table>`;}
+function alt(){document.getElementById('alt').textContent=(FM.tip==='M'?'FMEA-MSR: F ve M için geçerli değerler 1, 2, 3, 4, 6, 8, 10’dur (5, 7, 9 kullanılmaz). M=1 ise sistem tepkisiyle düşen yeni etki için S′ ayrıca D-FMEA’ya yansıtılmalıdır (Bölüm 4.5.3.4). ':'Seçilebilen puanlar: S 1/3/6/7/8/9/10 · O 1/3/5/7/10 · D 1/4/6/8/10. ')+'Aksiyon durumu: '+FM.st.join(' / ')+'. Derecelendirmeler yönlendirme amaçlıdır; nihai karar FMEA ekibine aittir.';}
+async function post(url,data){const f=new URLSearchParams(data);f.append('csrf_token',FM.url.csrf);const r=await fetch(url,{method:'POST',body:f,headers:{'X-CSRFToken':FM.url.csrf}});return r.json().catch(()=>({ok:false,hata:'Sunucu hatası'}));}
+function sav(m,hata){const e=document.getElementById('sav');e.textContent=m;e.style.color=hata?'#b91c1c':'';}
+function guncelle(sat){const i=FM.rows.findIndex(x=>x.id===sat.id);if(i<0)return;FM.rows[i]=sat;const tr=document.querySelector(`tr[data-r="${sat.id}"]`);if(!tr)return;
+  tr.querySelector('.ca').innerHTML=badge(sat.ap)+`<div class="fm-nt">${notes(sat)}</div>`;tr.querySelector('.crpn').textContent=sat.rpn;tr.querySelector('.ca2').innerHTML=badge(sat.ap2);
+  tr.querySelectorAll('select[data-a]').forEach(s=>{const a=s.dataset.a;if(['S','O','D','O2','D2'].includes(a)){const w=s.nextElementSibling;if(w)w.innerHTML=why(a,sat[a]);}});}
+document.addEventListener('change',async e=>{const el=e.target;if(!el.dataset||!el.dataset.a)return;sav('Kaydediliyor…');
+  const j=await post(FM.url.sat.replace(/\/0$/,'/'+el.dataset.id),{alan:el.dataset.a,deger:el.value});
+  if(j.ok){guncelle(j.satir);ozet(j.ozet);sav('✔ Kaydedildi');}else{sav('⚠ '+(j.hata||'Kaydedilemedi'),true);}});
+document.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;
+  if(b.id==='satir-ekle'||b.dataset.kopya){const j=await post(FM.url.ekle,b.dataset.kopya?{kopya:b.dataset.kopya}:{});if(j.ok){FM.rows.push(j.satir);tablo();ozet(j.ozet);}return;}
+  if(b.dataset.del){if(!confirm('Satır silinsin mi?'))return;const j=await post(FM.url.sat.replace(/\/0$/,'/'+b.dataset.del),{action:'sil'});if(j.ok){FM.rows=FM.rows.filter(x=>x.id!==+b.dataset.del);tablo();ozet(j.ozet);}}});
+tablo();ozet({{ ozet|tojson }});alt();
+</script>
+{% endblock %}

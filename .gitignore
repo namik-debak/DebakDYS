@@ -29,3 +29,6 @@ _final_verify.txt
 *.pyc
 *.bak
 *.tmp
+
+# VALEO Restricted (GSI-RD-370) kriter metinleri - izin olmadan herkese acik depoya konmaz
+data/fmea_kriterleri.json

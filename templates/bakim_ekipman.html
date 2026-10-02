@@ -9,7 +9,7 @@
 </style>
 <div class="mb-16 d-flex align-center justify-between" style="flex-wrap:wrap;gap:10px;">
   <div><h2 style="font-size:20px;font-weight:700;">🏭 Makine & Kalıp Listesi</h2>
-    <p class="text-muted" style="font-size:13px;">{{ toplam }} ekipman · {{ geciken }} ekipmanda geciken bakım. Tür ve marka, Bakım Formu'nda hangi formların çıkacağını belirler.</p></div>
+    <p class="text-muted" style="font-size:13px;">{{ toplam }} ekipman. Bakım planı, iş emri ve arıza takibi CANIAS DBKT01'dedir; burada bakım kontrol listesi kayıtları tutulur. Tür ve marka, Bakım Formu'nda hangi formların çıkacağını belirler.</p></div>
   <div style="display:flex;gap:8px;"><a href="{{ url_for('bakim_form') }}" class="btn btn-primary">🔧 Bakım Formu</a><a href="{{ url_for('bakim_kayitlar') }}" class="btn btn-outline">📋 Kayıtlar</a></div>
 </div>
 
@@ -40,7 +40,7 @@
         <td>{{ e.marka or '—' }}{% if e.model %} <span class="text-muted">· {{ e.model }}</span>{% endif %}</td>
         <td>{{ e.bolum or '—' }}</td><td>{{ x.sablon }}</td>
         <td>{% if x.son %}{{ x.son.tarih.strftime('%d.%m.%Y') }} <span class="text-muted" style="font-size:11px;">{{ x.son.form_ad|truncate(28) }}</span>{% else %}—{% endif %}</td>
-        <td>{% if x.geciken %}<span class="bk-etiket gec">{{ x.geciken }} geciken</span>{% elif x.kayit %}<span class="bk-etiket">✔</span>{% else %}<span class="bk-etiket">kayıt yok</span>{% endif %}
+        <td>{% if x.kayit %}<span class="bk-etiket">✔</span>{% else %}<span class="bk-etiket">kayıt yok</span>{% endif %}
             {% if not e.marka and e.tur == 'Enjeksiyon Makinesi' %}<span class="bk-etiket gec">marka?</span>{% endif %}</td>
         <td><a href="{{ url_for('bakim_form', ekipman=e.id) }}" class="btn btn-outline" style="font-size:12px;padding:2px 10px;">🔧 Form</a></td>
       </tr>

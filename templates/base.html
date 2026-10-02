@@ -388,6 +388,38 @@
 
     <script>window.DYS_BASE = "{{ request.script_root }}";</script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<style>
+/* 02.10.2026: sol menü tek ekrana sığsın — bölümler katlanır, yalnız etkin bölüm açık */
+.nav-section-title{cursor:pointer;user-select:none;display:flex;justify-content:space-between;align-items:center;}
+.nav-section-title::after{content:"▾";font-size:10px;opacity:.6;transition:transform .15s;}
+.nav-section.kapali .nav-section-title::after{transform:rotate(-90deg);}
+.nav-section.kapali > :not(.nav-section-title){display:none !important;}
+.nav-section{margin-bottom:2px;}
+.nav-section-title:hover{opacity:.85;}
+</style>
+<script>
+(function(){
+  var secs=[].slice.call(document.querySelectorAll('.sidebar-nav .nav-section'));
+  if(!secs.length)return;
+  var key='dysNavAcik', kayit={};
+  try{kayit=JSON.parse(localStorage.getItem(key)||'{}');}catch(e){}
+  var yol=location.pathname.replace(/\/+$/,'')||'/';
+  function etkin(sec){
+    if(sec.querySelector('.nav-item.active'))return true;
+    var best=null,bl=-1;
+    sec.querySelectorAll('a.nav-item').forEach(function(a){var h=(a.getAttribute('href')||'').replace(/\/+$/,'');if(h&&h!=='/'&&(yol===h||yol.indexOf(h+'/')===0)&&h.length>bl){best=a;bl=h.length;}});
+    return !!best;
+  }
+  var aktifVar=false;
+  secs.forEach(function(s){var b=s.querySelector('.nav-section-title');if(!b)return;var ad=b.textContent.trim();s._ad=ad;s._etkin=etkin(s);aktifVar=aktifVar||s._etkin;});
+  secs.forEach(function(s,i){
+    var b=s.querySelector('.nav-section-title');if(!b)return;
+    var ac=s._etkin||(kayit[s._ad]===1)||(!aktifVar&&i===0);
+    s.classList.toggle('kapali',!ac);
+    b.addEventListener('click',function(){s.classList.toggle('kapali');kayit[s._ad]=s.classList.contains('kapali')?0:1;try{localStorage.setItem(key,JSON.stringify(kayit));}catch(e){}});
+  });
+})();
+</script>
     {% block scripts %}{% endblock %}
     {% block extra_scripts %}{% endblock %}
 </body>

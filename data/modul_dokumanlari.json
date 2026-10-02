@@ -3260,7 +3260,7 @@
    "madde": "8.5.1.5",
    "eski_baslik": "Makine & Kalıp Listesi",
    "baslik": "Makine & Kalıp Listesi",
-   "aciklama": "Bakım ekipmanları (enjeksiyon makineleri, kalıphane tezgahları, yardımcı ekipman, kalıplar): bakım planı, son / sonraki bakım, bakım geçmişi.",
+   "aciklama": "Bakım ekipmanları (enjeksiyon makineleri, kalıphane tezgahları, yardımcı ekipman, kalıplar): uygun bakım formları, son kayıt, bakım geçmişi. Planlama CANIAS DBKT01'de.",
    "dokumanlar": [
     {
      "no": "D03 P01",

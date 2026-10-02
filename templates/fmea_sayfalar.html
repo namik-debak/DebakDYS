@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}FMEA Çalışma Sayfaları{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><a href="{{ url_for('fmea_list') }}">FMEA</a><span class="separator">›</span><span>Çalışma Sayfaları</span>{% endblock %}
+{% block content %}
+<style>.fm-chip{display:inline-block;font-size:11px;font-weight:700;padding:1px 8px;border-radius:10px;margin-right:3px}.fm-H{background:#fde2e2;color:#b91c1c}.fm-M{background:#fff1c2;color:#92600a}.fm-L{background:#d9f2e0;color:#166534}.fm-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;}</style>
+<div class="mb-16 d-flex align-center justify-between" style="flex-wrap:wrap;gap:10px;">
+  <div><h2 style="font-size:20px;font-weight:700;">FMEA Çalışma Sayfaları <span class="text-muted" style="font-size:13px;font-weight:400;">D-FMEA · P-FMEA · FMEA-MSR — GSI-RD-370 Rev. C02</span></h2>
+    <p class="text-muted" style="font-size:13px;">Puan dayanaklı, otomatik AP (yalnız matristen), uyarılı çalışma sayfası; Excel ve A4 yatay çıktı.</p></div>
+  <a href="{{ url_for('fmea_list') }}" class="btn btn-outline">FMEA kayıtları (7 adım)</a>
+</div>
+<form method="GET" class="filters-bar mb-16" style="gap:8px;flex-wrap:wrap;">
+  <select name="tur" class="filter-select" onchange="this.form.submit()"><option value="">Tüm türler</option>{% for k, v in tip_ad.items() %}<option value="{{ k }}" {% if tur == k %}selected{% endif %}>{{ v }}</option>{% endfor %}</select>
+  <input name="q" value="{{ q }}" class="form-control" style="max-width:280px;" placeholder="Ara: no, başlık, parça, müşteri"><button class="btn btn-outline" type="submit">Ara</button>
+</form>
+<div class="section-card mb-16"><div class="section-body" style="padding:0;overflow-x:auto;">
+  {% if liste %}
+  <table class="data-table"><thead><tr><th>No</th><th>Tür</th><th>Başlık</th><th>Parça / proses</th><th>Müşteri</th><th>Rev.</th><th>Satır</th><th>İlk AP</th><th>Güncel AP</th></tr></thead><tbody>
+  {% for x in liste %}{% set s = x.s %}<tr style="cursor:pointer;" onclick="location.href='{{ url_for('fmea_sayfa', sid=s.id) }}'">
+    <td><code>{{ s.sayfa_no }}</code></td><td><strong>{{ tip_ad[s.tip] }}</strong></td><td><a href="{{ url_for('fmea_sayfa', sid=s.id) }}">{{ s.baslik }}</a></td><td>{{ s.parca_proses or '—' }}</td><td>{{ s.musteri or '—' }}</td><td>{{ s.revizyon or '00' }}</td><td>{{ x.n }}</td>
+    <td>{% for k in ['H','M','L'] %}{% if x.ozet.ilk[k] %}<span class="fm-chip fm-{{ k }}">{{ x.ozet.ilk[k] }}</span>{% endif %}{% endfor %}</td>
+    <td>{% for k in ['H','M','L'] %}{% if x.ozet.guncel[k] %}<span class="fm-chip fm-{{ k }}">{{ x.ozet.guncel[k] }}</span>{% endif %}{% endfor %}</td></tr>{% endfor %}
+  </tbody></table>
+  {% else %}<p class="text-muted" style="padding:16px;">Henüz çalışma sayfası yok.</p>{% endif %}
+</div></div>
+{% if yazabilir %}
+<div class="section-card"><div class="section-header"><span class="section-title">＋ Yeni çalışma sayfası</span></div><div class="section-body">
+  <form method="POST"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="fm-g">
+      <div class="form-group"><label class="form-label">Tür *</label><select name="tip" class="form-control" required>{% for k, v in tip_ad.items() %}<option value="{{ k }}">{{ v }}{% if k == 'M' %} (sistem izleme){% endif %}</option>{% endfor %}</select></div>
+      <div class="form-group" style="grid-column:span 2;"><label class="form-label">Başlık *</label><input name="baslik" class="form-control" required placeholder="ör. Switch Cover 222747 — enjeksiyon prosesi"></div>
+      <div class="form-group"><label class="form-label">Parça / proses</label><input name="parca_proses" class="form-control"></div>
+      <div class="form-group"><label class="form-label">Müşteri</label><input name="musteri" class="form-control"></div>
+      <div class="form-group"><label class="form-label">FMEA ekibi</label><input name="ekip" class="form-control"></div>
+      <div class="form-group"><label class="form-label">Revizyon</label><input name="revizyon" class="form-control" maxlength="10" value="00"></div>
+      <div class="form-group"><label class="form-label">Tarih</label><input type="date" name="tarih" class="form-control" value="{{ today }}"></div>
+    </div>
+    <button class="btn btn-primary" type="submit">Oluştur</button>
+  </form></div></div>
+{% endif %}
+{% endblock %}
