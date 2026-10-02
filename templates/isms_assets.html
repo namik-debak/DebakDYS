@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% block title %}Bilgi Varlıkları Envanteri{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><span>Bilgi Varlıkları</span>{% endblock %}
+
+{% block content %}
+<div class="d-flex align-center justify-between mb-24" style="flex-wrap:wrap;gap:12px;">
+  <div>
+    <h2 style="font-size:20px;font-weight:700;">Bilgi Varlıkları Envanteri</h2>
+    <p class="text-muted" style="font-size:13px;">ISO/IEC 27001 Bilgi Varlıkları, CIA Değerlemesi ve Veri Sınıflandırma listesi. Toplam <strong>{{ kayitlar|length }}</strong> kayıt.</p>
+  </div>
+</div>
+
+<!-- Varlık Listesi Tablosu -->
+<div class="section-card mb-24">
+{% if kayitlar %}
+<div class="data-table-wrapper">
+<table class="data-table">
+<thead>
+    <tr>
+        <th>No</th>
+        <th>Varlık Adı</th>
+        <th>Tür</th>
+        <th style="text-align:center;">Gizlilik (C)</th>
+        <th style="text-align:center;">Bütünlük (I)</th>
+        <th style="text-align:center;">Erişilebilirlik (A)</th>
+        <th style="text-align:center;">Kritiklik</th>
+        <th>Sınıflandırma</th>
+        <th>Varlık Sahibi</th>
+        <th>Konum</th>
+    </tr>
+</thead>
+<tbody>
+{% for r in kayitlar %}
+<tr>
+    <td><code style="color:var(--text-accent); font-weight:700;">{{ r.varlik_no or '—' }}</code></td>
+    <td><strong>{{ r.ad }}</strong></td>
+    <td><span class="text-muted" style="font-size:12px;">{{ r.tur or '—' }}</span></td>
+    <td class="text-center">
+        <span class="badge" style="font-size:10px; font-weight:700; background:{{ '#fee2e2' if r.gizlilik=='Yüksek' else ('#fef3c7' if r.gizlilik=='Orta' else '#d1fae5') }}; color:{{ '#991b1b' if r.gizlilik=='Yüksek' else ('#92400e' if r.gizlilik=='Orta' else '#065f46') }};">
+            {{ r.gizlilik }}
+        </span>
+    </td>
+    <td class="text-center">
+        <span class="badge" style="font-size:10px; font-weight:700; background:{{ '#fee2e2' if r.butunluk=='Yüksek' else ('#fef3c7' if r.butunluk=='Orta' else '#d1fae5') }}; color:{{ '#991b1b' if r.butunluk=='Yüksek' else ('#92400e' if r.butunluk=='Orta' else '#065f46') }};">
+            {{ r.butunluk }}
+        </span>
+    </td>
+    <td class="text-center">
+        <span class="badge" style="font-size:10px; font-weight:700; background:{{ '#fee2e2' if r.erisilebilirlik=='Yüksek' else ('#fef3c7' if r.erisilebilirlik=='Orta' else '#d1fae5') }}; color:{{ '#991b1b' if r.erisilebilirlik=='Yüksek' else ('#92400e' if r.erisilebilirlik=='Orta' else '#065f46') }};">
+            {{ r.erisilebilirlik }}
+        </span>
+    </td>
+    <td class="text-center" style="font-family:monospace; font-weight:700;">
+        {% set krit = r.kritiklik %}
+        <span style="color:{{ '#ef4444' if krit == 3 else ('#f59e0b' if krit == 2 else '#10b981') }};">
+            {{ 'Kritik (Yüksek)' if krit == 3 else ('Orta' if krit == 2 else 'Düşük') }}
+        </span>
+    </td>
+    <td>{{ r.veri_sinifi or '—' }}</td>
+    <td><span style="font-size:12px;">{{ r.sahip.ad_soyad if r.sahip else '—' }}</span></td>
+    <td style="font-size:12px;">{{ r.konum or '—' }}</td>
+</tr>
+{% endfor %}
+</tbody></table>
+</div>
+{% else %}
+<div class="empty-state"><div class="empty-icon">🗄️</div><h3>Kayıt yok</h3></div>
+{% endif %}
+</div>
+
+<!-- Yeni Varlık Ekleme Formu -->
+{% if can_edit %}
+<div class="section-card">
+    <div class="section-header" style="border-bottom:1px solid var(--border); padding:12px 20px;">
+        <span class="section-title">➕ Yeni Varlık Ekle</span>
+    </div>
+    <div class="section-body" style="padding:20px;">
+        <form method="POST" action="{{ url_for('isms_assets') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:16px; margin-bottom:16px;">
+                <div class="form-group">
+                    <label class="form-label">Varlık No</label>
+                    <input type="text" name="varlik_no" class="form-control" placeholder="Örn: ASSET-102">
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label">Varlık Adı *</label>
+                    <input type="text" name="ad" class="form-control" required placeholder="Örn: SQL Veritabanı Sunucusu">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tür / Kategori</label>
+                    <input type="text" name="tur" class="form-control" placeholder="Örn: Donanım, Yazılım, Veri">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Gizlilik (Confidentiality) *</label>
+                    <select name="gizlilik" class="form-control" required>
+                        {% for c in cia_seviyeleri %}
+                        <option value="{{ c }}" {{ 'selected' if c=='Orta' }}>{{ c }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Bütünlük (Integrity) *</label>
+                    <select name="butunluk" class="form-control" required>
+                        {% for c in cia_seviyeleri %}
+                        <option value="{{ c }}" {{ 'selected' if c=='Orta' }}>{{ c }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Erişilebilirlik (Availability) *</label>
+                    <select name="erisilebilirlik" class="form-control" required>
+                        {% for c in cia_seviyeleri %}
+                        <option value="{{ c }}" {{ 'selected' if c=='Orta' }}>{{ c }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Veri Sınıfı *</label>
+                    <select name="veri_sinifi" class="form-control" required>
+                        {% for v in veri_siniflari %}
+                        <option value="{{ v }}" {{ 'selected' if v=='İç Kullanım' }}>{{ v }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Varlık Sahibi</label>
+                    <select name="sahip_id" class="form-control">
+                        <option value="">— Seçiniz —</option>
+                        {% for u in users %}
+                        <option value="{{ u.id }}">{{ u.ad_soyad }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Fiziksel / Mantıksal Konum</label>
+                    <input type="text" name="konum" class="form-control" placeholder="Örn: Veri Merkezi Kabin 3">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tedarikçi / Üretici</label>
+                    <input type="text" name="tedarikci" class="form-control" placeholder="Örn: AWS, Oracle">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Saklama / Yedekleme Kuralı</label>
+                    <input type="text" name="saklama_kurali" class="form-control" placeholder="Örn: Günlük artımlı, 30 gün">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" style="padding:10px 24px;">💾 Varlığı Kaydet</button>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

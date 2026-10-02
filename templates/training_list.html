@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% block title %}Eğitimler{% endblock %}
+
+{% block breadcrumb %}
+<span class="separator">›</span>
+<span>Eğitim Kayıtları</span>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex align-center justify-between mb-24">
+    <div>
+        <h2 style="font-size: 20px; font-weight: 700;">Eğitim Kayıtları</h2>
+        <p class="text-muted" style="font-size: 13px;">
+            Toplam <strong style="color: var(--text-primary);">{{ kayitlar|length }}</strong> kayıt ·
+            60 gün içinde dolacak: <strong style="color: var(--color-warning);">{{ yaklasan|length }}</strong> ·
+            Süresi geçen: <strong style="color: var(--color-danger);">{{ suresi_gecen|length }}</strong>
+        </p>
+    </div>
+    {% if is_editor %}
+    <button class="btn btn-primary" onclick="openModal('training-modal')">➕ Eğitim Ekle</button>
+    {% endif %}
+</div>
+
+{% if yaklasan or suresi_gecen %}
+<div class="section-card mb-16" style="border-left: 3px solid var(--color-warning);">
+    <div class="section-body" style="padding: 12px 16px; font-size: 13px;">
+        ⚠️ Geçerliliği yaklaşan/dolmuş sertifikalar mevcut. Yenileme planlaması gereklidir.
+    </div>
+</div>
+{% endif %}
+
+<div class="section-card mb-16">
+    <div class="section-body" style="padding: 12px 16px;">
+        <form method="GET" action="{{ request.script_root }}/training" class="filters-bar">
+            <div class="filter-group">
+                <label class="filter-label">Personel:</label>
+                <select name="kullanici" class="filter-select" onchange="this.form.submit()">
+                    <option value="">Tümü</option>
+                    {% for u in users %}
+                    <option value="{{ u.id }}" {{ 'selected' if request.args.get('kullanici') == u.id|string }}>{{ u.ad_soyad }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Tip:</label>
+                <select name="tip" class="filter-select" onchange="this.form.submit()">
+                    <option value="">Tümü</option>
+                    {% for t in tipler %}
+                    <option value="{{ t }}" {{ 'selected' if request.args.get('tip') == t }}>{{ t|enum }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% if request.args.get('kullanici') or request.args.get('tip') %}
+            <a href="{{ request.script_root }}/training" class="btn btn-sm btn-outline">✕ Temizle</a>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+<div class="section-card">
+    {% if kayitlar %}
+    <div class="data-table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr><th>Personel</th><th>Eğitim</th><th>Tip</th><th>Tarih</th><th>Geçerlilik</th><th>Kurum</th><th></th></tr>
+            </thead>
+            <tbody>
+                {% for k in kayitlar %}
+                <tr>
+                    <td>{{ k.kullanici.ad_soyad if k.kullanici else '-' }}</td>
+                    <td>{{ k.egitim_adi }}</td>
+                    <td style="font-size:12px;">{{ k.egitim_tipi|enum }}</td>
+                    <td class="text-muted" style="font-size:12px;">{{ k.egitim_tarihi.strftime('%d.%m.%Y') if k.egitim_tarihi else '-' }}</td>
+                    <td style="font-size:12px;">
+                        {% if k.gecerlilik_tarihi %}
+                            {{ k.gecerlilik_tarihi.strftime('%d.%m.%Y') }}
+                            {% if k.gecerlilik_kalan_gun is not none and k.gecerlilik_kalan_gun < 0 %}
+                                <span class="risk-badge yuksek">Doldu</span>
+                            {% elif k.gecerlilik_kalan_gun is not none and k.gecerlilik_kalan_gun <= 60 %}
+                                <span class="risk-badge orta">{{ k.gecerlilik_kalan_gun }} gün</span>
+                            {% endif %}
+                        {% else %}-{% endif %}
+                    </td>
+                    <td style="font-size:12px;">{{ k.veren_kurum or '-' }}</td>
+                    <td>
+                        <div class="d-flex gap-8">
+                            {% if k.dosya_adi %}
+                            <span class="text-muted" style="font-size:11px;">📎</span>
+                            {% endif %}
+                            {% if is_editor %}
+                            <form method="POST" action="{{ request.script_root }}/training/{{ k.id }}/delete"
+                                  onsubmit="return confirm('Bu eğitim kaydı silinsin mi?');" style="display:inline;">
+                                <button type="submit" class="btn btn-sm btn-outline">Sil</button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">🎓</div>
+        <h3>Eğitim kaydı bulunamadı</h3>
+    </div>
+    {% endif %}
+</div>
+
+{% if is_editor %}
+<div class="modal-overlay" id="training-modal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Yeni Eğitim Kaydı</h3>
+            <button class="modal-close" onclick="closeModal('training-modal')" aria-label="Kapat">✕</button>
+        </div>
+        <form method="POST" action="{{ request.script_root }}/training/new" enctype="multipart/form-data">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Personel *</label>
+                    <select name="kullanici_id" class="form-control" required>
+                        <option value="">— Seçiniz —</option>
+                        {% for u in users %}<option value="{{ u.id }}">{{ u.ad_soyad }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Eğitim Adı *</label>
+                    <input type="text" name="egitim_adi" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Eğitim Tipi</label>
+                    <select name="egitim_tipi" class="form-control">
+                        {% for t in tipler %}<option value="{{ t }}">{{ t|enum }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                    <div class="form-group">
+                        <label class="form-label">Eğitim Tarihi</label>
+                        <input type="date" name="egitim_tarihi" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Geçerlilik Tarihi</label>
+                        <input type="date" name="gecerlilik_tarihi" class="form-control">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Veren Kurum</label>
+                    <input type="text" name="veren_kurum" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Sertifika / Belge</label>
+                    <input type="file" name="dosya" class="form-control">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal('training-modal')">İptal</button>
+                <button type="submit" class="btn btn-primary">Kaydet</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

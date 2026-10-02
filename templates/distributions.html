@@ -1,0 +1,64 @@
+﻿{% extends "base.html" %}
+{% block title %}Dağıtım{% endblock %}
+
+{% block breadcrumb %}
+<span class="separator">›</span>
+<span>Dağıtım</span>
+{% endblock %}
+
+{% block content %}
+<div class="mb-24">
+    <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 4px;">Doküman Dağıtımı</h2>
+    <p class="text-muted" style="font-size: 13px;">Size dağıtılan dokümanlar ve okunma durumları</p>
+</div>
+
+<div class="section-card">
+    {% if distributions %}
+    <div class="data-table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Doküman No</th>
+                    <th>Başlık</th>
+                    <th>Süreç</th>
+                    <th>Dağıtım Tarihi</th>
+                    <th>Durum</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for dist in distributions %}
+                <tr>
+                    <td><code style="color: var(--text-accent);">{{ dist.document.dokuman_no }}</code></td>
+                    <td><a href="{{ request.script_root }}/documents/{{ dist.document.id }}">{{ dist.document.baslik }}</a></td>
+                    <td>{{ dist.document.surec.kod }}</td>
+                    <td class="text-muted">{{ dist.dagitim_tarihi.strftime('%d.%m.%Y') if dist.dagitim_tarihi else '-' }}</td>
+                    <td>
+                        {% if dist.okundu_mu %}
+                        <span class="status-badge onayli">Okundu</span>
+                        {% else %}
+                        <span class="status-badge incelemede">Okunmadı</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if not dist.okundu_mu %}
+                        <form method="POST" action="{{ request.script_root }}/distributions/{{ dist.id }}/mark-read" style="display:inline;">
+                            <button type="submit" class="btn btn-sm btn-success">✓ Okudum</button>
+                        </form>
+                        {% endif %}
+                        <a href="{{ request.script_root }}/documents/{{ dist.document.id }}" class="btn btn-sm btn-outline">Görüntüle</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">📨</div>
+        <h3>Dağıtım bulunamadı</h3>
+        <p>Size henüz doküman dağıtılmamış.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

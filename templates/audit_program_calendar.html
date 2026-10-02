@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}{{ prog.baslik }}{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><a href="{{ request.script_root }}/audits">İç Tetkik</a><span class="separator">›</span><a href="{{ request.script_root }}/audits/program">Program</a><span class="separator">›</span><span>{{ prog.yil }} takvim</span>{% endblock %}
+{% block content %}
+<style>
+.takvim{border-collapse:collapse;width:100%;font-size:12px;}
+.takvim th,.takvim td{border:1px solid var(--border);padding:4px;vertical-align:top;}
+.takvim th{background:var(--bg-secondary);font-size:11px;}
+.takvim td.ad{min-width:220px;font-weight:600;}
+.hc{display:block;border-radius:4px;padding:3px 4px;font-size:11px;line-height:1.25;text-decoration:none;color:inherit;}
+.hc-plan{background:rgba(59,130,246,.12);}
+.hc-acik{background:rgba(245,158,11,.18);}
+.hc-tamam{background:rgba(16,185,129,.18);}
+.hc-gecik{background:rgba(239,68,68,.18);}
+.hc-dis{background:rgba(139,92,246,.14);}
+.takvim .ay-simdi{outline:2px solid var(--color-primary);}
+.grp{background:var(--bg-secondary);font-weight:700;text-transform:uppercase;font-size:11px;}
+</style>
+<div class="d-flex align-center justify-between mb-16" style="flex-wrap:wrap;gap:12px;">
+  <div><h2 style="font-size:20px;font-weight:700;">📅 {{ prog.baslik }}</h2>
+  <p class="text-muted" style="font-size:12px;">
+    <span class="hc hc-plan" style="display:inline">planlı</span> <span class="hc hc-acik" style="display:inline">açıldı / sürüyor</span>
+    <span class="hc hc-tamam" style="display:inline">tamamlandı</span> <span class="hc hc-gecik" style="display:inline">gecikti</span>
+    <span class="hc hc-dis" style="display:inline">dış (tedarikçi / sertifikasyon)</span></p></div>
+  <div style="display:flex;gap:8px;"><a class="btn btn-outline" href="{{ request.script_root }}/audits/program">Liste</a><a class="btn btn-outline" href="{{ request.script_root }}/audits/automation">🔔 Otomasyon</a></div>
+</div>
+<div class="section-card"><div class="section-body" style="overflow-x:auto;">
+<table class="takvim">
+<thead><tr><th>Denetim</th>{% for a in aylar %}<th class="{{ 'ay-simdi' if prog.yil == bugun.year and loop.index == bugun.month else '' }}">{{ a[:3] }}</th>{% endfor %}</tr></thead>
+<tbody>
+{% for kat, satirlar in gruplar %}
+<tr><td class="grp" colspan="13">{{ kat }} denetimleri</td></tr>
+{% for ad, aylik in satirlar.items() %}
+<tr><td class="ad">{{ ad }}</td>
+{% for ay in range(1, 13) %}{% set it = aylik.get(ay) %}
+<td>{% if it %}
+  {% set ekip = ekip_oku(it) %}
+  {% if it.audit %}{% set a = it.audit %}
+    {% set cls = 'hc-tamam' if a.durum in ['Tamamlandı', 'Kapatıldı'] else ('hc-gecik' if a.planlanan_tarih and a.planlanan_tarih < bugun else 'hc-acik') %}
+    <a class="hc {{ cls }}" href="{{ request.script_root }}/audits/{{ a.id }}" title="{{ a.baslik }}">{{ it.plan_gunu or '' }} · {{ a.tetkik_no }}<br>{{ a.durum }}</a>
+  {% else %}
+    {% set dis = kat in ['Tedarikçi', 'Sertifikasyon'] %}
+    <span class="hc {{ 'hc-dis' if dis else 'hc-plan' }}" title="{{ it.notlar or '' }}">{{ it.plan_gunu or '•' }}{% if ekip %}<br>{{ ekip|map(attribute='ad')|join(', ') }}{% elif it.denetci_metin %}<br>{{ it.denetci_metin }}{% endif %}</span>
+    {% if can_edit and not dis %}<form method="POST" action="{{ request.script_root }}/audits/program/item/{{ it.id }}/ac" style="margin-top:2px;">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-outline" style="padding:1px 6px;font-size:10px;" type="submit" title="Denetimi şimdi aç">aç</button></form>{% endif %}
+  {% endif %}
+{% endif %}</td>
+{% endfor %}</tr>
+{% endfor %}
+{% endfor %}
+</tbody></table>
+</div></div>
+{% endblock %}

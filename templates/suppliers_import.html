@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Tedarikçi Excel İçe Aktarım{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><a href="{{ url_for('iatf_suppliers') }}">Tedarikçiler</a><span class="separator">›</span><span>Excel İçe Aktarım</span>{% endblock %}
+
+{% block content %}
+<div class="d-flex align-center justify-between mb-24" style="flex-wrap:wrap;gap:12px;">
+  <div>
+    <h2 style="font-size:20px;font-weight:700;">Tedarikçi Excel İçe Aktarım</h2>
+    <p class="text-muted" style="font-size:13px;">Şablonu indirip doldurun, ardından geri yükleyerek birden fazla tedarikçiyi tek seferde sisteme kaydedin.</p>
+  </div>
+  <a href="{{ url_for('iatf_suppliers') }}" class="btn btn-outline">← Tedarikçi Listesine Dön</a>
+</div>
+
+<!-- Adımlar -->
+<div class="section-card mb-24">
+  <div class="section-header" style="border-bottom:1px solid var(--border); padding:12px 20px;">
+    <span class="section-title">📋 Nasıl Çalışır?</span>
+  </div>
+  <div class="section-body" style="padding:20px;">
+    <ol style="margin:0; padding-left:20px; font-size:13px; line-height:1.9; color:var(--text-muted);">
+      <li><strong>Şablonu indirin:</strong> "Veri" sayfasına doldurun, "Örnek" sayfasındaki dolu satırları yalnızca referans olarak kullanın (o sayfaya veri girmeyin, kilitlidir).</li>
+      <li>Zorunlu sütunlar başlıkta <strong>*</strong> işareti ve farklı arkaplan rengiyle belirtilmiştir.</li>
+      <li>Dosyayı doldurduktan sonra aşağıdan yükleyin. Sistem tüm satırları önce doğrular.</li>
+      <li><strong>Tek satırda bile hata varsa hiçbir kayıt eklenmez</strong> — hata listesini düzeltip tekrar yükleyin.</li>
+    </ol>
+  </div>
+</div>
+
+<div style="display:grid; grid-template-columns: 1fr 1fr; gap:24px; align-items:start;" class="mb-24">
+  <!-- Şablon indir -->
+  <div class="section-card">
+    <div class="section-header" style="border-bottom:1px solid var(--border); padding:12px 20px;">
+      <span class="section-title">1️⃣ Şablonu İndir</span>
+    </div>
+    <div class="section-body" style="padding:20px;">
+      <p class="text-muted" style="font-size:13px; margin-bottom:16px;">"Veri" ve "Örnek" sayfalarını içeren boş Excel şablonunu indirin.</p>
+      <a href="{{ url_for('suppliers_import_template') }}" class="btn btn-outline">📥 Şablon İndir (.xlsx)</a>
+    </div>
+  </div>
+
+  <!-- Dosya yükle -->
+  <div class="section-card">
+    <div class="section-header" style="border-bottom:1px solid var(--border); padding:12px 20px;">
+      <span class="section-title">2️⃣ Doldurulmuş Dosyayı Yükle</span>
+    </div>
+    <div class="section-body" style="padding:20px;">
+      <form method="POST" action="{{ url_for('suppliers_import') }}" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="form-group mb-16">
+          <label class="form-label">Excel Dosyası (.xlsx)</label>
+          <input type="file" name="file" accept=".xlsx" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">📤 Doğrula ve İçe Aktar</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% if hatalar %}
+<!-- Hata Listesi -->
+<div class="section-card">
+  <div class="section-header" style="border-bottom:1px solid var(--border); padding:12px 20px; background:#fef2f2;">
+    <span class="section-title" style="color:#991b1b;">⛔ Doğrulama Hataları — {{ hatalar|length }} sorun bulundu, HİÇBİR kayıt eklenmedi</span>
+  </div>
+  <div class="section-body" style="padding:0;">
+    <div class="data-table-wrapper">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th style="width:100px;">Satır</th>
+          <th>Hata Açıklaması</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for satir_no, mesaj in hatalar %}
+        <tr>
+          <td><code>{{ satir_no if satir_no else 'Genel' }}</code></td>
+          <td style="color:#991b1b;">{{ mesaj }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}Kalibrasyon & MSA Ekipman Yönetimi{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><span>Kalibrasyon</span>{% endblock %}
+
+{% block content %}
+{% set RENK = {'Geçerli': ('#d1fae5', '#065f46'), 'Süresi Doldu': ('#fee2e2', '#991b1b'), 'Kalibrasyonda': ('#fef3c7', '#92400e'),
+               'Kullanım Dışı': ('#e5e7eb', '#374151'), 'Arızalı': ('#fee2e2', '#991b1b'), 'Pasif': ('#e5e7eb', '#374151')} %}
+<div class="d-flex align-center justify-between mb-16" style="flex-wrap:wrap;gap:12px;">
+  <div>
+    <h2 style="font-size:20px;font-weight:700;">Kalibrasyon & MSA Takibi</h2>
+    <p class="text-muted" style="font-size:13px;">IATF 16949 § 7.1.5.2 Kalibrasyon ve § 7.1.5.1.1 MSA · D04 F06 İzleme & Ölçme Cihazları ve Kalibrasyon Listesi ·
+      Toplam <strong>{{ toplam }}</strong> cihaz{% if kayitlar|length != toplam %}, filtrede <strong>{{ kayitlar|length }}</strong>{% endif %}.</p>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+    {% if geciken > 0 %}<a href="?durum=Süresi Doldu" class="badge" style="background:#fee2e2;color:#991b1b;padding:8px 14px;border-radius:6px;font-weight:700;font-size:13px;text-decoration:none;">⚠️ {{ geciken }} cihazın kalibrasyonu gecikmiş</a>{% endif %}
+    {% if yaklasan_sayi %}<a href="?yaklasan=1" class="badge" style="background:#fef3c7;color:#92400e;padding:8px 14px;border-radius:6px;font-weight:700;font-size:13px;text-decoration:none;">⏳ 30 gün içinde {{ yaklasan_sayi }} cihaz</a>{% endif %}
+  </div>
+</div>
+
+<div class="section-card mb-16"><div class="section-body">
+  <form method="GET" class="filters-bar" style="flex-wrap:wrap;gap:8px;">
+    <input name="q" value="{{ q }}" class="filter-select" placeholder="Kod, ad, seri no, sertifika no…" style="min-width:240px;">
+    <select name="durum" class="filter-select"><option value="">Tüm durumlar</option>{% for d in durumlar %}<option {% if d == f_durum %}selected{% endif %}>{{ d }}</option>{% endfor %}</select>
+    <select name="tur" class="filter-select"><option value="">Tüm cihaz türleri</option>{% for t in turler %}<option {% if t == f_tur %}selected{% endif %}>{{ t }}</option>{% endfor %}</select>
+    <select name="yer" class="filter-select"><option value="">Tüm kullanım yerleri</option>{% for y in yerler %}<option {% if y == f_yer %}selected{% endif %}>{{ y }}</option>{% endfor %}</select>
+    <label style="font-size:13px;"><input type="checkbox" name="yaklasan" value="1" {% if yaklasan %}checked{% endif %}> 30 gün içinde / gecikmiş</label>
+    <button class="btn btn-outline" type="submit">Filtrele</button>
+    {% if q or f_durum or f_tur or f_yer or yaklasan %}<a class="btn btn-outline" href="{{ url_for('iatf_calibration') }}">Temizle</a>{% endif %}
+  </form>
+</div></div>
+
+<div class="section-card mb-24">
+{% if kayitlar %}
+<div class="data-table-wrapper">
+<table class="data-table">
+<thead><tr>
+  <th>Ekipman No</th><th>Cihaz</th><th>Tür / Tanım</th><th>Seri No</th><th>Kullanım Yeri</th><th>Per. (ay)</th>
+  <th>Son Kalib.</th><th>Sonraki Kalib.</th><th>Kalan</th><th>Sertifika</th><th>İzin Ver. Hata / Sapma</th><th style="text-align:center;">Durum</th>
+</tr></thead>
+<tbody>
+{% for r in kayitlar %}{% set gs = r.gecerli_sertifika %}
+<tr>
+  <td><a href="{{ url_for('calibration_detail', eid=r.id) }}"><code style="color:var(--text-accent);font-weight:700;">{{ r.ekipman_no }}</code></a></td>
+  <td><a href="{{ url_for('calibration_detail', eid=r.id) }}"><strong>{{ r.ad }}</strong></a>{% if r.ozel_karakteristik %} <span title="Özel karakteristik" style="color:#f59e0b;">◆</span>{% endif %}</td>
+  <td style="font-size:12px;">{{ r.cihaz_turu or '' }}{% if r.tip %}<div class="text-muted">{{ r.tip }}</div>{% endif %}</td>
+  <td style="font-size:12px;font-family:monospace;">{{ r.seri_no or '—' }}</td>
+  <td style="font-size:12px;">{{ r.konum or '—' }}</td>
+  <td class="text-center" style="font-family:monospace;">{{ r.kalibrasyon_araligi_ay or '—' }}</td>
+  <td style="font-size:12px;font-family:monospace;">{{ r.son_kalibrasyon.strftime('%d.%m.%Y') if r.son_kalibrasyon else '—' }}</td>
+  <td style="font-size:12px;font-family:monospace;font-weight:700;">{{ r.sonraki_kalibrasyon.strftime('%d.%m.%Y') if r.sonraki_kalibrasyon else '—' }}</td>
+  <td class="text-center" style="font-weight:700;">{% set kalan = r.kalan_gun %}{% if kalan is not none and r.durum not in ['Pasif', 'Kullanım Dışı'] %}
+    <span style="color:{{ '#ef4444' if kalan <= 0 else ('#f59e0b' if kalan <= 30 else '#10b981') }};font-family:monospace;">{{ kalan }}</span>{% else %}—{% endif %}</td>
+  <td style="font-size:12px;">{% if gs %}<a href="{{ url_for('calibration_cert_download', cid=gs.id) }}" target="_blank" title="{{ gs.dosya_adi }}">📄 {{ r.sertifika_no or 'sertifika' }}</a>
+      {% elif r.sertifika_no %}<span class="text-muted" title="Dosya yüklenmemiş">{{ r.sertifika_no }} ⚠</span>{% else %}—{% endif %}
+      {% if r.sertifikalar|length > 1 %}<span class="text-muted"> (+{{ r.sertifikalar|length - 1 }})</span>{% endif %}</td>
+  <td style="font-size:12px;font-family:monospace;">{{ r.izin_verilen_hata or '—' }} / {{ r.kalibrasyon_sapma or '—' }}</td>
+  <td class="text-center">{% set c = RENK.get(r.durum, ('#e5e7eb', '#374151')) %}
+    <span class="badge" style="font-size:10px;font-weight:700;background:{{ c[0] }};color:{{ c[1] }};">{{ r.durum }}</span></td>
+</tr>
+{% endfor %}
+</tbody></table>
+</div>
+{% else %}
+<div class="empty-state"><div class="empty-icon">📋</div><h3>{{ 'Filtreye uyan cihaz yok' if toplam else 'Kayıt yok' }}</h3>
+  {% if not toplam %}<p class="text-muted">D04 F06 listesini aşağıdan içe aktarın.</p>{% endif %}</div>
+{% endif %}
+</div>
+
+{% if can_edit %}
+<div class="section-card mb-16">
+  <div class="section-header"><span class="section-title">📥 D04 F06 listesini içe aktar</span></div>
+  <div class="section-body">
+    <form method="POST" action="{{ url_for('calibration_import') }}" enctype="multipart/form-data" class="filters-bar" style="flex-wrap:wrap;gap:10px;">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="file" name="dosya" accept=".xlsx,.xlsm" required>
+      <button class="btn btn-primary" type="submit">İçe aktar / güncelle</button>
+    </form>
+    <p class="text-muted" style="font-size:12px;margin-top:8px;">"İzl. Ölç. Cih. & Kalib. Listesi" (.xlsx / .xlsm). Aynı cihaz (kod + seri no + ad) güncellenir, yeni cihaz eklenir; listede olmayan cihaz silinmez.
+      Aynı kodu taşıyan cihazlar (GO / NO GO vb.) "kod · seri no" olarak ayrı numaralanır. Sertifikalar cihaz kartından yüklenir.</p>
+  </div>
+</div>
+
+<details class="section-card">
+  <summary class="section-header" style="cursor:pointer;"><span class="section-title">➕ Yeni kalibrasyon / MSA ekipmanı ekle</span></summary>
+  <div class="section-body" style="padding:20px;">
+    <form method="POST" action="{{ url_for('iatf_calibration') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:16px;">
+        <div class="form-group"><label class="form-label">Ekipman Kodu / No *</label><input type="text" name="ekipman_no" class="form-control" required placeholder="Örn: KU-12"></div>
+        <div class="form-group"><label class="form-label">Ekipman Adı *</label><input type="text" name="ad" class="form-control" required placeholder="Örn: Dijital Kumpas 0-150mm"></div>
+        <div class="form-group"><label class="form-label">Tanımı / Tipi</label><input type="text" name="tip" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Kalibrasyon Aralığı (Ay)</label><input type="number" name="kalibrasyon_araligi_ay" class="form-control" value="12" min="1"></div>
+        <div class="form-group"><label class="form-label">Son Kalibrasyon</label><input type="date" name="son_kalibrasyon" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Sonraki Kalibrasyon</label><input type="date" name="sonraki_kalibrasyon" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Kullanım Yeri</label><input type="text" name="konum" class="form-control"></div>
+        <div class="form-group"><label class="form-label">İzin Verilen Toplam Ölçüm Hatası</label><input type="text" name="izin_verilen_hata" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Kalibrasyon Sonucu (sapma)</label><input type="text" name="kalibrasyon_sapma" class="form-control"></div>
+        <div class="form-group"><label class="form-label">MSA Sonucu</label><input type="text" name="msa_sonucu" class="form-control" placeholder="Örn: GRR %8.5"></div>
+        <div class="form-group"><label class="form-label">Durum</label><select name="durum" class="form-control">{% for d in durumlar %}<option>{{ d }}</option>{% endfor %}</select></div>
+        <div class="form-group"><label class="form-label">Sorumlu</label><select name="sorumlu_id" class="form-control"><option value="">— Seçiniz —</option>{% for u in users %}<option value="{{ u.id }}">{{ u.ad_soyad }}</option>{% endfor %}</select></div>
+      </div>
+      <button type="submit" class="btn btn-primary">💾 Ekipmanı Kaydet</button>
+    </form>
+  </div>
+</details>
+{% endif %}
+{% endblock %}

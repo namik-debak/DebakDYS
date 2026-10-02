@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}Gözden Geçirme Takvimi{% endblock %}
+
+{% block breadcrumb %}
+<span class="separator">›</span>
+<a href="{{ request.script_root }}/reports">Raporlar</a>
+<span class="separator">›</span>
+<span>Gözden Geçirme Takvimi</span>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex align-center justify-between mb-24">
+    <div>
+        <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 4px;">📅 Gözden Geçirme Takvimi</h2>
+        <p class="text-muted" style="font-size: 13px;">Dokümanların periyodik gözden geçirme planı ({{ bugun.strftime('%d.%m.%Y') }})</p>
+    </div>
+    <span class="d-flex gap-8">
+        <a href="{{ request.script_root }}/reports/review-calendar/export.xlsx" class="btn btn-outline">⬇ Excel</a>
+        <a href="{{ request.script_root }}/reports/review-calendar/export.pdf" class="btn btn-outline">⬇ PDF</a>
+        <a href="{{ request.script_root }}/reports" class="btn btn-secondary">← Raporlar</a>
+    </span>
+</div>
+
+<div class="stats-grid mb-24">
+    <div class="stat-card">
+        <div class="stat-icon red">⚠️</div>
+        <div class="stat-value">{{ gruplar.gecikmis|length }}</div>
+        <div class="stat-label">Gecikmiş</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon yellow">📆</div>
+        <div class="stat-value">{{ gruplar.bu_ay|length }}</div>
+        <div class="stat-label">30 Gün İçinde</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon blue">🗓️</div>
+        <div class="stat-value">{{ gruplar.yaklasan|length }}</div>
+        <div class="stat-label">90 Gün İçinde</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon green">✅</div>
+        <div class="stat-value">{{ gruplar.ileride|length }}</div>
+        <div class="stat-label">İleride</div>
+    </div>
+</div>
+
+{% set gruplar_meta = [
+    ('gecikmis', '⚠️ Gecikmiş Gözden Geçirmeler', 'iptal'),
+    ('bu_ay', '📆 30 Gün İçinde', 'incelemede'),
+    ('yaklasan', '🗓️ 90 Gün İçinde', 'taslak'),
+    ('ileride', '✅ İleride Planlananlar', 'onayli')
+] %}
+
+{% for anahtar, baslik, badge in gruplar_meta %}
+{% if gruplar[anahtar] %}
+<div class="section-card mb-24">
+    <div class="section-header">
+        <span class="section-title">{{ baslik }}</span>
+        <span class="text-muted" style="font-size: 13px;">{{ gruplar[anahtar]|length }} doküman</span>
+    </div>
+    <div class="data-table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Doküman No</th>
+                    <th>Başlık</th>
+                    <th>Süreç</th>
+                    <th>Gözden Geçirme Tarihi</th>
+                    <th class="text-center">Kalan Gün</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for kayit in gruplar[anahtar] %}
+                <tr>
+                    <td><code style="color: var(--text-accent);">{{ kayit.doc.dokuman_no }}</code></td>
+                    <td><a href="{{ request.script_root }}/documents/{{ kayit.doc.id }}" style="color: var(--text-primary); font-weight: 600;">{{ kayit.doc.baslik }}</a></td>
+                    <td class="text-muted">{{ kayit.doc.surec.kod }}</td>
+                    <td>{{ kayit.doc.sonraki_gozden_gecirme.strftime('%d.%m.%Y') }}</td>
+                    <td class="text-center">
+                        {% if kayit.kalan < 0 %}
+                        <span class="status-badge iptal">{{ -kayit.kalan }} gün geçti</span>
+                        {% else %}
+                        <span class="status-badge {{ badge }}">{{ kayit.kalan }} gün</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+
+{% if not (gruplar.gecikmis or gruplar.bu_ay or gruplar.yaklasan or gruplar.ileride) %}
+<div class="section-card">
+    <div class="empty-state" style="padding: 30px;">
+        <div class="empty-icon">📅</div>
+        <p class="text-muted">Gözden geçirme tarihi tanımlı doküman bulunmuyor.</p>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

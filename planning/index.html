@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bozdemir Makine — Üretim Planlama</title>
+  <link rel="stylesheet" href="css/planning.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="brand">
+        <div class="brand-mark">BM</div>
+        <div>
+          <h1>Üretim Planlama</h1>
+          <span>Gantt · Planlanan / Gerçekleşen</span>
+        </div>
+      </div>
+
+      <nav class="header-tabs" aria-label="Görünümler">
+        <button class="tab active" data-view="dashboard">Dashboard</button>
+        <button class="tab" data-view="gantt">Gantt</button>
+        <button class="tab" data-view="cnc">CNC Tezgâh</button>
+        <button class="tab" data-view="projects">Projeler</button>
+      </nav>
+
+      <div class="header-actions">
+        <button class="btn btn-ghost btn-sm" id="btn-export" title="JSON dışa aktar">Dışa Aktar</button>
+        <button class="btn btn-ghost btn-sm" id="btn-reset" title="Örnek veriye dön">Sıfırla</button>
+        <button class="btn" id="btn-new-task">+ Görev</button>
+        <button class="btn btn-primary" id="btn-new-project">+ Proje</button>
+      </div>
+    </header>
+
+    <aside class="sidebar">
+      <div class="side-block">
+        <h3>Proje</h3>
+        <div class="filter-list" id="filter-projects"></div>
+      </div>
+      <div class="side-block">
+        <h3>Süreç</h3>
+        <div class="filter-list" id="filter-stages"></div>
+      </div>
+      <div class="side-block">
+        <h3>Gösterim</h3>
+        <div class="legend">
+          <div class="legend-row"><span class="legend-bar planned"></span> Planlanan süre</div>
+          <div class="legend-row"><span class="legend-bar actual"></span> Gerçekleşen süre</div>
+          <div class="legend-row"><span class="legend-bar delay"></span> Gecikmeli gerçekleşen</div>
+          <div class="legend-row"><span class="legend-bar today"></span> Bugün</div>
+        </div>
+      </div>
+      <div class="side-block" style="margin-top:auto;font-size:0.7rem;color:var(--text-muted);padding:0.35rem;line-height:1.5">
+        Tasarım &amp; Montaj → montaj grupları<br />
+        CNC → ürün grupları (Ø)<br />
+        Veriler tarayıcıda saklanır.
+      </div>
+    </aside>
+
+    <main class="main">
+      <!-- Dashboard -->
+      <section class="view active" id="view-dashboard">
+        <div class="dash-scroll">
+          <div class="kpi-grid">
+            <div class="kpi">
+              <div class="label">Aktif iş</div>
+              <div class="value" id="kpi-active">0</div>
+              <div class="hint" id="kpi-active-hint"></div>
+            </div>
+            <div class="kpi danger">
+              <div class="label">Geciken iş</div>
+              <div class="value" id="kpi-delayed">0</div>
+              <div class="hint" id="kpi-delayed-hint"></div>
+            </div>
+            <div class="kpi warn">
+              <div class="label">Toplam gecikme</div>
+              <div class="value" id="kpi-delay-days">0</div>
+              <div class="hint" id="kpi-delay-days-hint"></div>
+            </div>
+            <div class="kpi">
+              <div class="label">Süre katsayısı</div>
+              <div class="value" id="kpi-slip">1×</div>
+              <div class="hint" id="kpi-slip-hint"></div>
+            </div>
+          </div>
+
+          <div class="dash-grid-2">
+            <div class="panel">
+              <div class="panel-head">
+                <h2>Kim ne üzerinde çalışıyor?</h2>
+              </div>
+              <div class="panel-body" style="padding:0;overflow:auto">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>İş</th>
+                      <th>Sorumlu</th>
+                      <th>Başlangıç</th>
+                      <th>Plan bitiş</th>
+                      <th>Gecikme</th>
+                      <th>Durum</th>
+                    </tr>
+                  </thead>
+                  <tbody id="table-active"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">
+                <h2>Geciken işler</h2>
+              </div>
+              <div class="panel-body" style="padding:0;overflow:auto">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>İş</th>
+                      <th>Sorumlu</th>
+                      <th>Plan</th>
+                      <th>Gerçek</th>
+                      <th>Fark</th>
+                    </tr>
+                  </thead>
+                  <tbody id="table-delayed"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Birim özeti</h2>
+            </div>
+            <div class="panel-body" style="padding:0">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Birim</th>
+                    <th>Aktif</th>
+                    <th>Tamamlanan</th>
+                    <th>Geciken</th>
+                  </tr>
+                </thead>
+                <tbody id="table-units"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Gantt -->
+      <section class="view" id="view-gantt">
+        <div class="toolbar">
+          <div class="toggle-group" title="Görünüm modu">
+            <button class="active" data-gantt-mode="project">Proje</button>
+            <button data-gantt-mode="stage">Süreç / Birim</button>
+            <button data-gantt-mode="cnc">CNC Ürün Grubu</button>
+          </div>
+          <div class="toggle-group" title="Çubuk görünürlüğü">
+            <button class="active" data-toggle="planned">Planlanan</button>
+            <button class="active" data-toggle="actual">Gerçekleşen</button>
+          </div>
+          <span class="spacer"></span>
+          <span id="gantt-meta" style="font-size:0.75rem;color:var(--text-muted)"></span>
+        </div>
+        <div class="gantt-wrap">
+          <div class="gantt">
+            <div class="gantt-corner"></div>
+            <div class="gantt-timeline-header" id="gantt-header"></div>
+            <div class="gantt-labels" id="gantt-labels"></div>
+            <div class="gantt-bars" id="gantt-bars"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CNC -->
+      <section class="view" id="view-cnc">
+        <div class="toolbar">
+          <div style="font-size:0.82rem;color:var(--text-secondary)">
+            Talaşlı imalat işleri <strong>ürün grubuna</strong> göre sıralanır — aynı Ø / aile tezgâhta peş peşe planlanır.
+          </div>
+        </div>
+        <div class="cnc-board" id="cnc-board"></div>
+      </section>
+
+      <!-- Projects -->
+      <section class="view" id="view-projects">
+        <div class="toolbar">
+          <div style="font-size:0.82rem;color:var(--text-secondary)">
+            Proje kartına tıklayınca Gantt açılır. Yeni proje şablonu tasarım + montaj gruplarını ve CNC ürün gruplarını otomatik ekler.
+          </div>
+        </div>
+        <div class="project-list" id="project-list"></div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Task modal -->
+  <div class="modal-backdrop" id="modal-backdrop">
+    <div class="modal" id="modal-task">
+      <div class="modal-head">
+        <h2 id="modal-task-title">Görev</h2>
+        <button class="btn btn-ghost btn-sm" id="btn-close-task">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-field full">
+          <label>Başlık</label>
+          <input type="text" id="f-title" placeholder="Örn. Pinol Grubu Tasarım" />
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Proje</label>
+            <select id="f-project"></select>
+          </div>
+          <div class="form-field">
+            <label>Sorumlu</label>
+            <select id="f-assignee"></select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Süreç</label>
+            <select id="f-stage"></select>
+          </div>
+          <div class="form-field" id="wrap-substage">
+            <label>Üretim alt süreci</label>
+            <select id="f-substage"></select>
+          </div>
+        </div>
+        <div class="form-field full" id="wrap-group">
+          <label id="label-group">Grup</label>
+          <select id="f-group"></select>
+        </div>
+        <div class="form-field">
+          <label>Durum</label>
+          <select id="f-status"></select>
+        </div>
+
+        <div class="section-title">Planlanan tarihler</div>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Plan başlangıç</label>
+            <input type="date" id="f-planned-start" />
+          </div>
+          <div class="form-field">
+            <label>Plan bitiş</label>
+            <input type="date" id="f-planned-end" />
+          </div>
+        </div>
+
+        <div class="section-title">Gerçekleşen tarihler</div>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Gerçek başlangıç</label>
+            <input type="date" id="f-actual-start" />
+          </div>
+          <div class="form-field">
+            <label>Gerçek bitiş</label>
+            <input type="date" id="f-actual-end" />
+          </div>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn" id="btn-delete-task" style="margin-right:auto;color:var(--delay)">Sil</button>
+        <button class="btn" id="btn-cancel-task">Vazgeç</button>
+        <button class="btn btn-primary" id="btn-save-task">Kaydet</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Project modal -->
+  <div class="modal-backdrop" id="modal-project-backdrop">
+    <div class="modal">
+      <div class="modal-head">
+        <h2>Yeni Proje</h2>
+        <button class="btn btn-ghost btn-sm" id="btn-close-project">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-field">
+            <label>Proje kodu</label>
+            <input type="text" id="f-prj-code" />
+          </div>
+          <div class="form-field">
+            <label>Makine tipi</label>
+            <select id="f-prj-machine"></select>
+          </div>
+        </div>
+        <div class="form-field full">
+          <label>Proje adı</label>
+          <input type="text" id="f-prj-name" placeholder="Müşteri — Makine" />
+        </div>
+        <div class="form-field full">
+          <label>Müşteri</label>
+          <input type="text" id="f-prj-customer" />
+        </div>
+        <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.85rem;cursor:pointer">
+          <input type="checkbox" id="f-prj-template" checked />
+          Süreç şablonu oluştur (Satış → Tasarım grupları → Satın alma → CNC/Kaynak/Boya → KK → Montaj grupları)
+        </label>
+      </div>
+      <div class="modal-foot">
+        <button class="btn" id="btn-cancel-project">Vazgeç</button>
+        <button class="btn btn-primary" id="btn-save-project">Oluştur</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tooltip" id="tooltip"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

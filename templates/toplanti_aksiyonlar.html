@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Toplantı aksiyonları{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><a href="{{ url_for('toplantilar') }}">Toplantı Tutanakları</a><span class="separator">›</span><span>Aksiyonlar</span>{% endblock %}
+{% block content %}
+<div class="d-flex align-center justify-between mb-16" style="flex-wrap:wrap;gap:10px;">
+  <h2 style="font-size:19px;font-weight:700;margin:0;">📌 Toplantı kararları ve aksiyonları</h2>
+  <form method="GET" class="d-flex gap-8" style="align-items:center;">
+    <select name="durum" class="form-control" style="width:auto;" onchange="this.form.submit()">{% for d in durumlar %}<option {{ 'selected' if d == durum }}>{{ d }}</option>{% endfor %}<option value="hepsi" {{ 'selected' if durum == 'hepsi' }}>Tümü</option></select>
+    <label class="text-muted" style="font-size:12.5px;"><input type="checkbox" name="benim" value="1" {{ 'checked' if request.args.get('benim') }} onchange="this.form.submit()"> yalnız benimkiler</label>
+  </form>
+</div>
+<div class="section-card"><div class="data-table-wrapper"><table class="data-table">
+  <thead><tr><th>Tutanak</th><th>Tarih</th><th>Konu</th><th>Karar / aksiyon</th><th>Sorumlu</th><th>Termin</th><th>Durum</th><th></th></tr></thead><tbody>
+  {% for m in maddeler %}{% set gec = m.termin and m.termin < bugun and m.durum == 'Açık' %}
+  <tr><td><a href="{{ url_for('toplanti', tid=m.tutanak_id) }}">{{ m.tutanak.tutanak_no }}</a><div class="text-muted" style="font-size:11px;">{{ m.tutanak.tur }}</div></td><td>{{ m.tutanak.tarih.strftime('%d.%m.%Y') }}</td>
+    <td>{{ m.konu or '' }}</td><td>{{ m.karar or m.gorusme or '' }}{% if m.dof_id %} <a href="{{ request.script_root }}/capa/{{ m.dof_id }}" style="font-size:11px;">DÖF</a>{% endif %}</td>
+    <td>{{ m.sorumlu.ad_soyad if m.sorumlu else '' }}{{ ' / ' if m.sorumlu and m.sorumlu_metin }}{{ m.sorumlu_metin or '' }}</td>
+    <td style="{{ 'color:#b91c1c;font-weight:700;' if gec }}">{{ m.termin.strftime('%d.%m.%Y') if m.termin else '' }}{{ ' ⚠' if gec }}</td><td>{{ m.durum }}</td>
+    <td>{% if yazabilir and m.durum == 'Açık' %}<form method="POST" style="display:inline;"><input type="hidden" name="madde_id" value="{{ m.id }}"><input type="hidden" name="geri" value="{{ request.full_path }}"><button class="btn btn-sm btn-success" type="submit">✓ Tamamlandı</button></form>{% endif %}</td></tr>
+  {% else %}<tr><td colspan="8" class="text-muted">Kayıt yok.</td></tr>{% endfor %}
+</tbody></table></div></div>
+{% endblock %}

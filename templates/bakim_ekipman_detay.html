@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}{{ e.kod }} — {{ e.ad }}{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><a href="{{ url_for('bakim_ekipman') }}">Makine & Kalıp Listesi</a><span class="separator">›</span><span>{{ e.kod }}</span>{% endblock %}
+{% block content %}
+<style>
+.bk-etiket{display:inline-block;font-size:11px;padding:1px 8px;border-radius:10px;border:1px solid var(--border);background:var(--bg-secondary);}
+.bk-etiket.gec{background:rgba(239,68,68,.12);color:var(--color-danger,#ef4444);border-color:rgba(239,68,68,.35);}
+.bk-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;}
+</style>
+<div class="mb-16 d-flex align-center justify-between" style="flex-wrap:wrap;gap:10px;">
+  <div><div class="text-muted" style="font-size:12px;">{{ e.tur }}{% if e.bolum %} · {{ e.bolum }}{% endif %}</div>
+    <h2 style="font-size:20px;font-weight:700;"><span style="font-family:monospace;">{{ e.kod }}</span> — {{ e.ad }}{% if e.aktif == false %} <span class="bk-etiket">pasif</span>{% endif %}</h2>
+    <p class="text-muted" style="font-size:13px;">{{ e.marka or 'Marka girilmemiş' }}{% if e.model %} · {{ e.model }}{% endif %}{% if e.seri_no %} · seri no {{ e.seri_no }}{% endif %}{% if e.baski_omru %} · baskı ömrü {{ '{:,}'.format(e.baski_omru).replace(',', '.') }}{% endif %}</p></div>
+  <a href="{{ url_for('bakim_form', ekipman=e.id) }}" class="btn btn-primary">🔧 Bakım formu doldur</a>
+</div>
+
+<div class="section-card mb-16">
+  <div class="section-header"><span class="section-title">🗓️ Bakım planı</span><span class="text-muted" style="font-size:12px;">{{ plan|length }} uygun form</span></div>
+  <div class="section-body" style="padding:0;overflow-x:auto;">
+    {% if plan %}
+    <table class="data-table"><thead><tr><th>Form</th><th>Kategori</th><th>Periyot</th><th>Son bakım</th><th>Durum</th><th></th></tr></thead><tbody>
+    {% for s, p in plan %}
+      <tr><td><strong>{{ s.ad }}</strong> <span class="text-muted" style="font-size:11px;">{{ s.kod }}</span></td><td>{{ s.kategori }}</td><td>{{ s.periyot.ad }}</td>
+        <td>{% if p.son %}<a href="{{ url_for('bakim_kayit', kid=p.son.id) }}">{{ p.son.tarih.strftime('%d.%m.%Y') }}</a>{% if p.son.calisma_saati %} · {{ '{:,}'.format(p.son.calisma_saati).replace(',', '.') }} sa{% endif %}{% else %}—{% endif %}</td>
+        <td><span class="bk-etiket {{ 'gec' if p.gecikti }}">{{ p.metin }}</span></td>
+        <td><a href="{{ url_for('bakim_form', ekipman=e.id, form=s.kod) }}" class="btn btn-outline" style="font-size:12px;padding:2px 10px;">Doldur</a></td></tr>
+    {% endfor %}
+    </tbody></table>
+    {% else %}<p class="text-muted" style="padding:16px;">Bu türe uygun bakım formu yok.</p>{% endif %}
+  </div>
+</div>
+
+<div class="section-card mb-16">
+  <div class="section-header"><span class="section-title">📒 Bakım geçmişi (bakım kartı)</span><span class="text-muted" style="font-size:12px;">{{ kayitlar|length }} kayıt</span></div>
+  <div class="section-body" style="padding:0;overflow-x:auto;">
+    {% if kayitlar %}
+    <table class="data-table"><thead><tr><th>Tarih</th><th>Kayıt no</th><th>Bakım tanımı</th><th>Değiştirilen parçalar</th><th>Bakımcı</th><th>Süre (dk)</th><th>Sonuç</th></tr></thead><tbody>
+    {% for k in kayitlar %}
+      <tr style="cursor:pointer;" onclick="location.href='{{ url_for('bakim_kayit', kid=k.id) }}'"><td>{{ k.tarih.strftime('%d.%m.%Y') }}</td><td><a href="{{ url_for('bakim_kayit', kid=k.id) }}">{{ k.kayit_no }}</a></td>
+        <td>{{ k.form_ad }}{% if k.calisma_saati %} <span class="text-muted">· {{ '{:,}'.format(k.calisma_saati).replace(',', '.') }} sa</span>{% endif %}{% if k.baski_sayisi %} <span class="text-muted">· {{ '{:,}'.format(k.baski_sayisi).replace(',', '.') }} baskı</span>{% endif %}</td>
+        <td>{{ k.degisen_parcalar or '—' }}</td><td>{{ k.bakimci }}</td><td>{{ k.sure_dk or '—' }}</td>
+        <td>{% if k.uygunsuz_sayisi %}<span class="bk-etiket gec">{{ k.uygunsuz_sayisi }} uygun değil</span> {% endif %}{{ k.sonuc }}</td></tr>
+    {% endfor %}
+    </tbody></table>
+    {% else %}<p class="text-muted" style="padding:16px;">Henüz bakım kaydı yok.</p>{% endif %}
+  </div>
+</div>
+
+{% if yazabilir %}
+<div class="section-card">
+  <div class="section-header"><span class="section-title">✏️ Ekipman bilgileri</span></div>
+  <div class="section-body">
+    <form method="POST"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="bk-g">
+        <div class="form-group"><label class="form-label">Kod</label><input class="form-control" value="{{ e.kod }}" disabled></div>
+        <div class="form-group"><label class="form-label">Ad *</label><input name="ad" class="form-control" required value="{{ e.ad }}"></div>
+        <div class="form-group"><label class="form-label">Tür *</label><select name="tur" class="form-control">{% for t in turler %}<option {% if e.tur == t %}selected{% endif %}>{{ t }}</option>{% endfor %}</select></div>
+        <div class="form-group"><label class="form-label">Marka</label><input name="marka" list="bk-marka" class="form-control" value="{{ e.marka or '' }}"><datalist id="bk-marka">{% for m in markalar %}<option value="{{ m }}">{% endfor %}</datalist></div>
+        <div class="form-group"><label class="form-label">Model</label><input name="model" class="form-control" value="{{ e.model or '' }}"></div>
+        <div class="form-group"><label class="form-label">Seri no</label><input name="seri_no" class="form-control" value="{{ e.seri_no or '' }}"></div>
+        <div class="form-group"><label class="form-label">Bölüm</label><select name="bolum" class="form-control"><option value="">—</option>{% for b in bolumler %}<option {% if e.bolum == b %}selected{% endif %}>{{ b }}</option>{% endfor %}</select></div>
+        <div class="form-group"><label class="form-label">Baskı ömrü (kalıp)</label><input name="baski_omru" inputmode="numeric" class="form-control" value="{{ e.baski_omru or '' }}"></div>
+        <div class="form-group" style="grid-column:1/-1;"><label class="form-label">Not</label><input name="notlar" maxlength="500" class="form-control" value="{{ e.notlar or '' }}"></div>
+      </div>
+      <label style="font-size:13px;display:flex;align-items:center;gap:6px;margin-bottom:8px;"><input type="checkbox" name="aktif" value="1" {% if e.aktif != false %}checked{% endif %}> Aktif</label>
+      <button class="btn btn-outline" type="submit">Kaydet</button>
+    </form>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

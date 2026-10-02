@@ -1,0 +1,87 @@
+﻿=== BUG▄N▄N DENET¦M KAYITLARI (2026-08-07) ===
+  #412 [2026-08-07 08:48:48.033854] G÷r³nt³leme  uid=1 ù Dok³man g÷r³nt³lendi: Y01-PO-001
+  #413 [2026-08-07 08:48:49.866341] ¦ndirme      uid=1 ù Dok³man listesi Excel'e aktar²ld²
+  #414 [2026-08-07 08:48:55.363810] G÷r³nt³leme  uid=1 ù PPAP g÷r³nt³lendi: A95135-001
+  #415 [2026-08-07 08:48:55.875962] ¦ndirme      uid=1 ù PPAP A95135-001 Element 1 dosyas² indirildi: DEBAK__Proforma_Invoice.pdf
+  #416 [2026-08-07 08:48:55.980857] G÷r³nt³leme  uid=1 ù PPAP A95135-001 Element 1 dosyas² ÷nizlendi: DEBAK__Proforma_Invoice.pdf
+  #417 [2026-08-07 08:48:56.933420] D³zenleme    uid=1 ù QRQC kapat²ld²: QRQC-2026-001
+  #418 [2026-08-07 08:48:58.202985] ¦ndirme      uid=1 ù Denetim paketi ³retildi standart=ALL sha256=b4638bea46cb896917be3a78c021299ecb2142f3cbc57260fbc7342bce789010
+  #419 [2026-08-07 08:48:59.152170] ¦ndirme      uid=1 ù Rapor d²■a aktar²ld²: compliance.xlsx
+
+=== QRQC #1 T▄M ALANLAR ===
+  id                         = 1
+  qrqc_no                    = QRQC-2026-001
+  baslik                     = Enjeksiyon 02 Hatt²nda Radyal Ãatlak
+  kategori                   = Kalite
+  seviye                     = Hat / Saha
+  hat_istasyon               = Enjeksiyon-02
+  vardiya                    = 1. Vardiya
+  tespit_tarihi              = 2026-07-22 04:12:07.024449
+  bildiren_id                = 1
+  sorumlu_id                 = 2
+  surec_id                   = 10
+  problem_tanimi             = Numune kontrol³nde 35 adette g÷zle g÷r³l³r radyal atlak tespit edildi.
+  etkilenen_miktar           = 35
+  gecici_onlem               = Hammadde kurutma s²cakl²­² kontrol edildi, palet karantinaya al²nd².
+  kok_neden                  = Kurutucu ²s²t²c²s² ar²zas² nedeniyle nemli hammadde beslemesi.
+  kalici_aksiyon             = Is²t²c² rezistans² yenilendi ve nem ÷l³m kontrol³ eklendi.
+  durum                      = Kapat²ld²
+  dof_id                     = 16
+  hedef_kapanis_tarihi       = 2026-07-23
+  kapanis_tarihi             = 2026-08-07 08:48:56.919256
+  olusturma_tarihi           = 2026-07-22 09:12:07.025491
+  guncelleme_tarihi          = 2026-08-07 08:48:56.927421
+
+=== QRQC durum da­²l²m² ===
+  Kapat²ld²: 7
+
+=== DÍF #16 T▄M ALANLAR ===
+  id                         = 16
+  dof_no                     = DÍF-2026-100
+  baslik                     = [QRQC-QRQC-2026-001] Enjeksiyon 02 Hatt²nda Radyal Ãatlak
+  kaynak_tipi                = QRQC
+  ilgili_document_id         = None
+  ilgili_surec_id            = 10
+  tespit_tarihi              = 2026-07-22
+  acan_id                    = 1
+  sorumlu_id                 = 2
+  tanim                      = QRQC Kaynakl² Olay: QRQC-2026-001
+Hat/¦stasyon: Enjeksiyon-02
+Vardiya: 1. Vardiya
+Etkilene...
+  kok_neden                  = Kurutucu ²s²t²c²s² ar²zas² nedeniyle nemli hammadde beslemesi.
+  duzeltici_faaliyet         = Is²t²c² rezistans² yenilendi ve nem ÷l³m kontrol³ eklendi.
+  onleyici_faaliyet          = None
+  planlanan_tarih            = 2026-07-23
+  durum                      = Devam Ediyor
+  etkinlik_kontrolu          = None
+  kapanma_tarihi             = None
+  olusturma_tarihi           = 2026-07-22 09:15:18.984026
+  guncelleme_tarihi          = 2026-07-22 09:15:18.984026
+  kok_neden_yontemi          = None
+  d1_team                    = None
+  d2_problem                 = None
+  d3_containment             = None
+  d4_root_cause              = None
+  d5_corrective              = None
+  d6_implement               = None
+  d7_prevent                 = None
+  d8_congratulate            = None
+  etkinlik_bekleme_gunu      = 30
+  yeniden_acildi             = 0
+  fmea_guncellendi           = 0
+  cp_guncellendi             = 0
+  ilgili_fmea_id             = None
+  ilgili_cp_id               = None
+  benzer_analiz              = None
+  containment_aksiyonu       = Hammadde kurutma s²cakl²­² kontrol edildi, palet karantinaya al²nd².
+  sikayet_musteri            = None
+  sikayet_parca_no           = None
+  sikayet_miktar             = None
+  sikayet_aciliyet           = None
+  garanti_talebi_mi          = 0
+  saha_iade_mi               = 0
+
+=== DÍF #16'ya ba­l² alt kay²tlar ===
+  audit_findings.capa_id=16 -> 0 kay²t
+  qrqc_items.dof_id=16 -> 1 kay²t

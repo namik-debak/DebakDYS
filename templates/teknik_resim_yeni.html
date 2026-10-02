@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Yeni Teknik Resim{% endblock %}
+{% block breadcrumb %}
+<span class="separator">›</span><a href="{{ url_for('teknik_resim_liste') }}">Teknik Resimler</a>
+{% if form.musteri %}<span class="separator">›</span><a href="{{ url_for('teknik_resim_liste', musteri=form.musteri) }}">{{ form.musteri }}</a>{% endif %}
+<span class="separator">›</span><span>Yeni</span>
+{% endblock %}
+{% block content %}
+<style>.tr-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;}</style>
+<h2 class="mb-16" style="font-size:20px;font-weight:700;">📐 Yeni teknik resim</h2>
+<form method="POST" enctype="multipart/form-data">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="section-card mb-16">
+    <div class="section-header"><span class="section-title">1 · Müşteri ve ürün</span></div>
+    <div class="section-body tr-g">
+      <div class="form-group"><label class="form-label">Müşteri *</label>
+        <input name="musteri" list="tr-musteri" class="form-control" required value="{{ form.musteri or '' }}" autocomplete="off" placeholder="ör. Valeo">
+        <datalist id="tr-musteri">{% for m in musteriler %}<option value="{{ m }}">{% endfor %}</datalist></div>
+      <div class="form-group"><label class="form-label">Ürün / resim adı *</label><input name="urun_adi" class="form-control" required value="{{ form.urun_adi or '' }}" placeholder="ör. MOVING CONTACT PIN"></div>
+      <div class="form-group"><label class="form-label">Müşteri resim no *</label><input name="resim_no" class="form-control" required value="{{ form.resim_no or '' }}" placeholder="ör. A221164_001"></div>
+      <div class="form-group"><label class="form-label">DEBAK ürün kodu</label><input name="urun_kodu" class="form-control" value="{{ form.urun_kodu or '' }}" placeholder="ör. 221164 / 24 kavite"></div>
+      <div class="form-group" style="grid-column:1/-1;"><label class="form-label">Açıklama</label><input name="aciklama" maxlength="500" class="form-control" value="{{ form.aciklama or '' }}"></div>
+    </div>
+  </div>
+  <div class="section-card mb-16">
+    <div class="section-header"><span class="section-title">2 · Revizyon ve dosya</span></div>
+    <div class="section-body tr-g">
+      <div class="form-group"><label class="form-label">Revizyon *</label><input name="revizyon" class="form-control" required value="{{ form.revizyon or '' }}" placeholder="ör. C / REV01 / _001"></div>
+      <div class="form-group"><label class="form-label">Revizyon tarihi (resimdeki)</label><input type="date" name="revizyon_tarihi" class="form-control" value="{{ form.revizyon_tarihi or '' }}"></div>
+      <div class="form-group"><label class="form-label">Teslim alma tarihi</label><input type="date" name="teslim_alma_tarihi" class="form-control" value="{{ form.teslim_alma_tarihi or '' }}"><small class="text-muted">Boşsa bugün.</small></div>
+      <div class="form-group"><label class="form-label">Resim dosyası</label><input type="file" name="dosya" class="form-control" accept=".pdf,.tif,.tiff,.png,.jpg,.jpeg,.dwg,.dxf,.stp,.step,.igs,.iges,.x_t,.zip,.xls,.xlsx"><small class="text-muted">PDF önerilir; DWG / STEP de yüklenebilir.</small></div>
+      <div class="form-group" style="grid-column:1/-1;"><label class="form-label">Değişiklik / not</label><input name="degisiklik" maxlength="1000" class="form-control" value="{{ form.degisiklik or '' }}" placeholder="ör. İlk resim, PPAP seviye 3"></div>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;"><button class="btn btn-primary" type="submit">💾 Kaydet</button>
+    <a href="{{ url_for('teknik_resim_liste', musteri=form.musteri) if form.musteri else url_for('teknik_resim_liste') }}" class="btn btn-outline">Vazgeç</a></div>
+</form>
+{% endblock %}

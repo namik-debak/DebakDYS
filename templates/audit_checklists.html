@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Tetkik Soru Listeleri{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><span>Tetkik Soru Listeleri</span>{% endblock %}
+
+{% block content %}
+<div class="mb-24 d-flex align-center justify-between">
+    <div>
+        <h2 style="font-size: 20px; font-weight: 700;">Tetkik Soru Listeleri</h2>
+        <p class="text-muted" style="font-size: 13px;">Proses, Ürün, Saha ve Sistem tetkikleri için soru listeleri — listeyi açmak için satıra tıklayın.</p>
+    </div>
+    {% if can_edit %}
+    <div class="d-flex gap-8">
+        <a href="{{ url_for('audit_automation') }}" class="btn btn-primary" title="Denetim Yönetimi → içe aktar (soru_listeleri.json, saha_soru_listeleri.json, proses_urun_soru_listeleri.json)">📥 Soru listesi içe aktar</a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Soru Listesi Kataloğu -->
+<div class="section-card">
+    <div class="section-header" style="border-bottom: 1px solid var(--border); padding: 12px 20px;">
+        <span class="section-title">📝 Aktif Soru Listesi Şablonları (Toplam: {{ listeler|length }})</span>
+    </div>
+    {% if listeler %}
+    <div class="data-table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Kod</th>
+                    <th>Ad</th>
+                    <th>Tetkik Tipi</th>
+                    <th>Süreç Kodu</th>
+                    <th style="text-align:center;">Soru Sayısı</th>
+                    <th style="text-align:center;">Oluşturma Tarihi</th>
+                    <th style="text-align:center;">Durum</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for l in listeler %}
+                <tr style="cursor:pointer;" onclick="location.href='{{ url_for('audit_checklist_detail', cid=l.id) }}'">
+                    <td><a href="{{ url_for('audit_checklist_detail', cid=l.id) }}"><code style="color:var(--text-accent); font-weight:600;">{{ l.kod }}</code></a></td>
+                    <td><a href="{{ url_for('audit_checklist_detail', cid=l.id) }}" style="color:inherit;"><strong>{{ l.ad }}</strong></a></td>
+                    <td>{{ l.denetim_tipi }}</td>
+                    <td style="font-family:monospace;">{{ l.surec_kod or '—' }}</td>
+                    <td class="text-center" style="font-family:monospace; font-weight:600;">{{ l.questions|length }}</td>
+                    <td class="text-center" style="font-size:12px;">{{ l.olusturma_tarihi.strftime('%Y-%m-%d') if l.olusturma_tarihi else '—' }}</td>
+                    <td class="text-center">
+                        <span class="badge" style="font-size:10px; font-weight:700; background:{{ '#d1fae5' if l.aktif else '#fee2e2' }}; color:{{ '#065f46' if l.aktif else '#991b1b' }};">
+                            {{ 'Aktif' if l.aktif else 'Pasif' }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">📝</div>
+        <h3>Soru Listesi Şablonu Bulunamadı</h3>
+        <p class="text-muted">Sistemde kayıtlı soru listesi bulunmamaktadır. Excel şablonundan soru listesi aktarabilirsiniz.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

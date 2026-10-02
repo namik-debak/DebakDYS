@@ -1,0 +1,18 @@
+﻿==================================================================
+uploads/ H¦JYEN RAPORU
+==================================================================
+  .bak_meta (talimat g³ncelleme yede­i) : 485 dosya
+  .bak / .bak2 (eski yedekler)          : 2 dosya
+  _tmp* (geici ²kar²m art²­²)         : 3 ÷­e
+  Yedeklerin kaplad²­² alan             : 1137.3 MB
+
+  Geici art²klar:
+    D:\UYGULAMA PROJELER\debak dijital\dys\uploads\documents\287\rev0\_tmp_doc287
+    D:\UYGULAMA PROJELER\debak dijital\dys\uploads\documents\287\rev0\_tmp_doc287b
+    D:\UYGULAMA PROJELER\debak dijital\dys\uploads\documents\287\rev0\_tmp_doc287.zip
+
+  .bak / .bak2 dosyalar²:
+    D:\UYGULAMA PROJELER\debak dijital\dys\uploads\documents\287\rev0\D01 T03 El Y²kama Talimat².docx.bak
+    D:\UYGULAMA PROJELER\debak dijital\dys\uploads\documents\287\rev0\D01 T03 El Y²kama Talimat².docx.bak2
+
+  .bak_meta da­²l²m² (orijinal uzant²ya g÷re): {'.docx': 77, '.xls': 58, '.doc': 41, '.xlsx': 22, '.2 T01 Geri Ãa­²rma Plan²': 1, '.2 T02 Kalite vakas² & M³■teri ¦adesi Y÷netimi Talimat²': 1, '.3 T01 Geli■tirme Ínerisi Talimat²': 1, '.3 T02 Veri Analizlerinde Kullan²lan ¦statistik Y÷ntemler': 1}

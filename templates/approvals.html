@@ -1,0 +1,177 @@
+﻿{% extends "base.html" %}
+{% block title %}{{ _('Onay Yönetimi') }}{% endblock %}
+
+{% block breadcrumb %}
+<span class="separator">›</span>
+<span>{{ _('Onay Yönetimi') }}</span>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex align-center justify-between mb-24">
+    <div>
+        <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 4px;">{{ _('Onay Yönetimi') }}</h2>
+        <p class="text-muted" style="font-size: 13px;">{{ _('Onay bekleyen dokümanlar ve onay geçmişi') }}</p>
+    </div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs" data-tab-group="approvals">
+    <button class="tab-item active" data-tab="tab-pending">⏳ {{ _('Bekleyenler') }} ({{ pending|length }})</button>
+    <button class="tab-item" data-tab="tab-history">📜 {{ _('Geçmiş') }}</button>
+</div>
+
+<div data-tab-content="approvals">
+    <!-- Pending Approvals -->
+    <div id="tab-pending" class="tab-content active">
+        {% if pending %}
+        <div class="section-card mb-16">
+            <div class="section-body d-flex align-center justify-between" style="padding: 10px 16px; gap: 12px;">
+                <label style="display:flex; align-items:center; gap:8px; font-size:13px;">
+                    <input type="checkbox" id="bulk-select-all"> {{ _('Tümünü Seç') }}
+                </label>
+                <form id="bulk-approve-form" method="POST" action="{{ request.script_root }}/approvals/bulk-approve">
+                    <button type="submit" class="btn btn-sm btn-success">✓ {{ _('Seçilenleri Onayla') }}</button>
+                </form>
+            </div>
+        </div>
+        {% for approval in pending %}
+        <div class="approval-card">
+            <div class="approval-card-header">
+                <div style="display:flex; align-items:flex-start; gap:10px;">
+                    <input type="checkbox" class="bulk-check" value="{{ approval.id }}" style="margin-top:4px;"
+                           aria-label="Onay seç: {{ approval.document.dokuman_no }}">
+                    <div>
+                    <div class="approval-card-title">{{ approval.document.baslik }}</div>
+                    <div class="approval-card-meta">
+                        <code>{{ approval.document.dokuman_no }}</code> · 
+                        {{ approval.document.surec.kod }} · 
+                        {{ approval.document.dokuman_tipi|enum }} · 
+                        {{ _('Adım') }}: <strong>{{ approval.onay_adimi|enum }}</strong>
+                    </div>
+                    </div>
+                </div>
+                <span class="status-badge incelemede">{{ approval.onay_adimi|enum }}</span>
+            </div>
+            <div class="approval-card-body">
+                <div class="approval-card-info">
+                    <span>📅 {{ approval.tarih.strftime('%d.%m.%Y') if approval.tarih else '-' }}</span>
+                    <span>👤 {{ _('Hazırlayan') }}: {{ approval.document.hazirlayan.ad_soyad if approval.document.hazirlayan else '-' }}</span>
+                </div>
+                <div class="approval-card-actions">
+                    <a href="{{ request.script_root }}/documents/{{ approval.document.id }}" class="btn btn-sm btn-outline">{{ _('Görüntüle') }}</a>
+                    <form method="POST" action="{{ request.script_root }}/approvals/{{ approval.id }}/approve" style="display:inline;">
+                        <button type="submit" class="btn btn-sm btn-success">✓ {{ _('Onayla') }}</button>
+                    </form>
+                    <button class="btn btn-sm btn-danger" onclick="openModal('reject-modal-{{ approval.id }}')">✕ {{ _('Reddet') }}</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reject Modal -->
+        <div class="modal-overlay" id="reject-modal-{{ approval.id }}">
+            <div class="modal">
+                <div class="modal-header">
+                    <span class="modal-title">{{ _('Dokümanı Reddet') }}</span>
+                    <button class="modal-close" onclick="closeModal('reject-modal-{{ approval.id }}')">✕</button>
+                </div>
+                <form method="POST" action="{{ request.script_root }}/approvals/{{ approval.id }}/reject">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="form-label">{{ _('Red Sebebi') }} <span class="required">*</span></label>
+                            <textarea name="aciklama" class="form-control" rows="3" placeholder="{{ _('Red sebebini açıklayınız...') }}" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('reject-modal-{{ approval.id }}')">{{ _('İptal') }}</button>
+                        <button type="submit" class="btn btn-danger">{{ _('Reddet') }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="section-card">
+            <div class="empty-state">
+                <div class="empty-icon">✅</div>
+                <h3>{{ _('Onay bekleyen doküman yok') }}</h3>
+                <p>{{ _('Tüm dokümanlar işleme alınmıştır.') }}</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- History -->
+    <div id="tab-history" class="tab-content">
+        <div class="section-card">
+            {% if history %}
+            <div class="data-table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>{{ _('Doküman No') }}</th>
+                            <th>{{ _('Başlık') }}</th>
+                            <th>{{ _('Adım') }}</th>
+                            <th>{{ _('Kişi') }}</th>
+                            <th>{{ _('Sonuç') }}</th>
+                            <th>{{ _('Açıklama') }}</th>
+                            <th>{{ _('Tarih') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for a in history %}
+                        <tr>
+                            <td><code>{{ a.document.dokuman_no }}</code></td>
+                            <td><a href="{{ request.script_root }}/documents/{{ a.document.id }}">{{ a.document.baslik }}</a></td>
+                            <td>{{ a.onay_adimi|enum }}</td>
+                            <td>{{ a.kullanici.ad_soyad if a.kullanici else '-' }}</td>
+                            <td>
+                                {% if a.durum == 'Onaylandı' %}
+                                <span class="status-badge onayli">{{ _('Onaylandı') }}</span>
+                                {% elif a.durum == 'Reddedildi' %}
+                                <span class="status-badge iptal">{{ _('Reddedildi') }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-muted">{{ a.aciklama or '-' }}</td>
+                            <td class="text-muted">{{ a.tarih.strftime('%d.%m.%Y %H:%M') if a.tarih else '-' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p class="text-muted">{{ _('Henüz onay geçmişi bulunmamaktadır.') }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var selectAll = document.getElementById('bulk-select-all');
+    var form = document.getElementById('bulk-approve-form');
+    if (selectAll) {
+        selectAll.addEventListener('change', function () {
+            document.querySelectorAll('.bulk-check').forEach(function (cb) { cb.checked = selectAll.checked; });
+        });
+    }
+    if (form) {
+        form.addEventListener('submit', function (e) {
+            form.querySelectorAll('input[name="approval_ids"]').forEach(function (n) { n.remove(); });
+            var secili = document.querySelectorAll('.bulk-check:checked');
+            if (secili.length === 0) {
+                e.preventDefault();
+                showToast('{{ _("Lütfen en az bir onay seçin.") }}', 'warning');
+                return;
+            }
+            secili.forEach(function (cb) {
+                var h = document.createElement('input');
+                h.type = 'hidden'; h.name = 'approval_ids'; h.value = cb.value;
+                form.appendChild(h);
+            });
+        });
+    }
+});
+</script>
+{% endblock %}

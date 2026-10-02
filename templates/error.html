@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ code }} — DYS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card" style="text-align:center;">
+            <div class="login-logo" style="margin:0 auto 16px;">D</div>
+            <h1 style="font-size:48px; margin:0; color:var(--color-primary);">{{ code }}</h1>
+            <p style="font-size:15px; color:var(--text-secondary); margin:12px 0 24px;">{{ mesaj }}</p>
+            <a href="{{ request.script_root }}/" class="btn btn-primary btn-lg" style="width:100%;">Ana Sayfaya Dön</a>
+        </div>
+    </div>
+</body>
+</html>

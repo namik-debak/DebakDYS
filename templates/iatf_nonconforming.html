@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% block title %}Uygun Olmayan Ürün & Karantina Yönetimi{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><span>Uygun Olmayan Ürün</span>{% endblock %}
+
+{% block content %}
+<div class="d-flex align-center justify-between mb-24" style="flex-wrap:wrap;gap:12px;">
+  <div>
+    <h2 style="font-size:20px;font-weight:700;">Uygun Olmayan Ürün Kayıtları</h2>
+    <p class="text-muted" style="font-size:13px;">IATF 16949 § 8.7 Uygun Olmayan Çıktının Kontrolü ve Karantina Alanı Takip Sicili. Toplam <strong>{{ kayitlar|length }}</strong> kayıt.</p>
+  </div>
+</div>
+
+<!-- NC Ürün Listesi Tablosu -->
+<div class="section-card mb-24">
+{% if kayitlar %}
+<div class="data-table-wrapper">
+<table class="data-table">
+<thead>
+    <tr>
+        <th>NC No</th>
+        <th>Parça No / Adı</th>
+        <th>Miktar</th>
+        <th>Tespit Yeri</th>
+        <th>Müşteri Bildirim</th>
+        <th>Hata Tanımı</th>
+        <th>Karar / Çıktı</th>
+        <th>Sorumlu</th>
+        <th>DÖF Bağlantısı</th>
+        <th style="text-align:center;">Durum</th>
+    </tr>
+</thead>
+<tbody>
+{% for r in kayitlar %}
+<tr>
+    <td><code style="color:var(--text-accent); font-weight:700;">{{ r.nc_no }}</code></td>
+    <td><strong>{{ r.parca_no or '—' }}</strong><br><span style="font-size:11px;" class="text-muted">{{ r.parca_adi or '' }}</span></td>
+    <td class="text-center" style="font-family:monospace; font-weight:700;">{{ r.miktar or '—' }}</td>
+    <td style="font-size:12px;">{{ r.tespit_yeri or '—' }}</td>
+    <td class="text-center">
+        <span class="badge" style="font-size:10px; font-weight:700; background:{{ '#fee2e2' if r.musteriye_bildirim else '#f3f4f6' }}; color:{{ '#991b1b' if r.musteriye_bildirim else '#4b5563' }};">
+            {{ 'Bildirildi ⚠️' if r.musteriye_bildirim else 'Gerekmiyor' }}
+        </span>
+    </td>
+    <td style="font-size:12px; max-width:180px;">{{ r.tanim or '—' }}</td>
+    <td><span class="badge" style="font-size:10px; background:var(--bg-secondary); color:var(--text-primary);">{{ r.karar or 'Karantinada' }}</span></td>
+    <td><span style="font-size:12px;">{{ r.sorumlu.ad_soyad if r.sorumlu else '—' }}</span></td>
+    <td>
+        {% if r.capa_id %}
+        <a href='{{ request.script_root }}/capa/{{ r.capa_id }}' class="btn btn-outline" style="padding:2px 8px; font-size:11px;">🔍 DÖF</a>
+        {% else %}
+        <span class="text-muted">—</span>
+        {% endif %}
+    </td>
+    <td class="text-center">
+        <span class="status-badge {{ r.durum|slug }}">{{ r.durum }}</span>
+    </td>
+</tr>
+{% endfor %}
+</tbody></table>
+</div>
+{% else %}
+<div class="empty-state"><div class="empty-icon">📋</div><h3>Kayıt yok</h3></div>
+{% endif %}
+</div>
+
+<!-- Yeni Uygun Olmayan Ürün Kaydı Ekleme Formu -->
+{% if can_edit %}
+<div class="section-card">
+    <div class="section-header" style="border-bottom:1px solid var(--border); padding:12px 20px;">
+        <span class="section-title">➕ Yeni Uygun Olmayan Ürün (Karantina / Hurda / Yeniden İşlem) Ekle</span>
+    </div>
+    <div class="section-body" style="padding:20px;">
+        <form method="POST" action="{{ url_for('iatf_nonconforming') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:16px; margin-bottom:16px;">
+                <div class="form-group">
+                    <label class="form-label">Hata Bildirim (NC) No *</label>
+                    <input type="text" name="nc_no" class="form-control" required placeholder="Örn: NC-2026-004">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Parça No</label>
+                    <input type="text" name="parca_no" class="form-control" placeholder="Örn: 52012345-AB">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Parça Adı</label>
+                    <input type="text" name="parca_adi" class="form-control" placeholder="Örn: Sol Kapı Kolu Braketi">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Miktar (Adet/kg) *</label>
+                    <input type="number" step="any" name="miktar" class="form-control" required placeholder="Örn: 150">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Tespit Yeri / Proses *</label>
+                    <input type="text" name="tespit_yeri" class="form-control" required placeholder="Örn: Hat Sonu Kalite Kontrol, Giriş Kalite">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Parti / İzlenebilirlik Kodu</label>
+                    <input type="text" name="parti_izlenebilirlik" class="form-control" placeholder="Örn: LOT-20260715-02">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Karar / Nihai Çıktı *</label>
+                    <select name="karar" class="form-control" required>
+                        <option value="Beklemede" selected>Beklemede (Karantina)</option>
+                        <option value="Hurda">Hurda / İmha</option>
+                        <option value="Yeniden İşleme">Yeniden İşleme (Rework)</option>
+                        <option value="Sapma Onayı Kabul">Sapma Onayı Kabul (Concession)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Müşteri Bildirimi Gerekli mi?</label>
+                    <select name="musteriye_bildirim" class="form-control">
+                        <option value="0" selected>Gerekmiyor</option>
+                        <option value="1">Evet (Sapma İzni Alınacak)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" style="grid-column: span 4;">
+                    <label class="form-label">Hata Açıklaması ve Tanımı *</label>
+                    <textarea name="tanim" class="form-control" rows="2" required placeholder="Parçada saptanan geometrik veya fonksiyonel hatanın detaylı açıklamasını giriniz..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Tespit Tarihi *</label>
+                    <input type="date" name="tespit_tarihi" class="form-control" required value="{{ date_today }}">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Sorumlu / Bildiren</label>
+                    <select name="sorumlu_id" class="form-control">
+                        <option value="">— Seçiniz —</option>
+                        {% for u in users %}
+                        <option value="{{ u.id }}">{{ u.ad_soyad }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">İlişkili DÖF</label>
+                    <select name="capa_id" class="form-control">
+                        <option value="">— Seçiniz (Varsa) —</option>
+                        {% for c in capas %}
+                        <option value="{{ c.id }}">{{ c.dof_no or c.id }} {{ c.baslik|truncate(30) }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Karantina Durumu *</label>
+                    <select name="durum" class="form-control" required>
+                        <option value="Açık" selected>Açık (İşlem Bekliyor)</option>
+                        <option value="Kapatıldı">Kapatıldı (Karar Uygulandı)</option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" style="padding:10px 24px;">💾 NC Kaydını Oluştur</button>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

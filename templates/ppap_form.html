@@ -1,0 +1,92 @@
+﻿{% extends "base.html" %}
+{% block title %}Yeni PPAP Sunumu{% endblock %}
+
+{% block breadcrumb %}
+<span class="separator">›</span>
+<a href="{{ request.script_root }}/ppap">PPAP Yönetimi</a>
+<span class="separator">›</span>
+<span>Yeni Sunum</span>
+{% endblock %}
+
+{% block content %}
+<div class="mb-24">
+    <h2 style="font-size: 20px; font-weight: 700;">📦 Yeni PPAP Sunumu Oluştur</h2>
+    <p class="text-muted" style="font-size: 13px; margin-top: 4px;">
+        Parça bilgilerini girin. 18 PPAP elementi otomatik oluşturulacaktır.
+    </p>
+</div>
+
+<div class="section-card">
+    <div class="section-body">
+        <form method="POST" action="{{ request.script_root }}/ppap/new">
+            <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div class="form-group">
+                    <label class="form-label">Parça Numarası *</label>
+                    <input type="text" name="parca_no" class="form-control" required
+                           placeholder="Ör: A95135-001">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Parça Adı *</label>
+                    <input type="text" name="parca_adi" class="form-control" required
+                           placeholder="Ör: Moving Contact Shaft">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Müşteri *</label>
+                    <input type="text" name="musteri" class="form-control" required
+                           placeholder="Ör: Siemens AG">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Sunum Seviyesi</label>
+                    <select name="sunum_seviyesi" class="form-control">
+                        {% for seviye, aciklama in seviyeler.items() %}
+                        <option value="{{ seviye }}" {{ 'selected' if seviye == 3 }}>
+                            Seviye {{ seviye }} — {{ aciklama }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Sorumlu</label>
+                    <select name="sorumlu_id" class="form-control">
+                        <option value="">Seçiniz...</option>
+                        {% for user in users %}
+                        <option value="{{ user.id }}" {{ 'selected' if user.id == session.get('user_id') }}>
+                            {{ user.ad_soyad }} — {{ user.departman }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Sunum Tarihi</label>
+                    <input type="date" name="sunum_tarihi" class="form-control">
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-top: 16px;">
+                <label class="form-label">Revizyon Nedeni / Açıklama</label>
+                <textarea name="revizyon_nedeni" class="form-control" rows="3"
+                          placeholder="Yeni parça onayı, tasarım değişikliği, malzeme revizyonu..."></textarea>
+            </div>
+
+            <!-- PPAP Seviye Açıklaması -->
+            <div style="margin-top: 20px; padding: 16px; background: rgba(99,102,241,0.06); border: 1px solid rgba(99,102,241,0.15); border-radius: 10px;">
+                <div style="font-weight: 600; font-size: 13px; margin-bottom: 8px; color: var(--text-accent);">
+                    ℹ️ PPAP Sunum Seviyeleri Hakkında
+                </div>
+                <div style="font-size: 12px; color: var(--text-muted); line-height: 1.8;">
+                    <strong>Seviye 1:</strong> Sadece PSW müşteriye sunulur<br>
+                    <strong>Seviye 2:</strong> PSW + numune parçalar + sınırlı destek verisi<br>
+                    <strong>Seviye 3:</strong> PSW + numune parçalar + tam destek verisi (Varsayılan)<br>
+                    <strong>Seviye 4:</strong> PSW + müşteri belirlediği gereksinimler<br>
+                    <strong>Seviye 5:</strong> Tam destek verisi + tedarikçi lokasyonunda inceleme
+                </div>
+            </div>
+
+            <div class="d-flex justify-between align-center" style="margin-top: 24px;">
+                <a href="{{ request.script_root }}/ppap" class="btn btn-secondary">← Geri Dön</a>
+                <button type="submit" class="btn btn-primary">📦 PPAP Sunumu Oluştur</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

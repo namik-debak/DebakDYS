@@ -1,0 +1,16 @@
+{# Modül ekranının üstü: başlık + Kayıtlar / Dokümanlar sekmeleri (2026). Dokümanlar sekmesi: /moduller/<id>/dokumanlar #}
+{% set md = modul_md if modul_md is defined else modul_bilgisi() %}
+{% if md %}
+{% set dok_aktif = request.endpoint == 'modul_dokumanlar' %}
+<div class="modul-sekme" style="margin-bottom:16px;">
+  <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;">
+    <div style="font-size:18px;font-weight:700;">{{ md.baslik }}</div>
+    <div class="text-muted" style="font-size:12px;">{{ md.standart }} · madde {{ md.madde }}</div>
+  </div>
+  {% if md.aciklama %}<p class="text-muted" style="font-size:12px;margin:4px 0 0;">{{ md.aciklama }}</p>{% endif %}
+  <div style="display:flex;gap:20px;border-bottom:1px solid var(--border-color);margin-top:10px;">
+    <a href="{{ request.script_root }}{{ md.yol }}" style="padding:7px 2px;text-decoration:none;font-size:13.5px;{% if not dok_aktif %}border-bottom:2px solid var(--color-primary);color:var(--color-primary);font-weight:600;{% else %}color:var(--text-secondary);{% endif %}">📋 Kayıtlar</a>
+    <a href="{{ request.script_root }}/moduller/{{ md.id }}/dokumanlar" style="padding:7px 2px;text-decoration:none;font-size:13.5px;{% if dok_aktif %}border-bottom:2px solid var(--color-primary);color:var(--color-primary);font-weight:600;{% else %}color:var(--text-secondary);{% endif %}">📂 Dokümanlar ({{ md.toplam }})</a>
+  </div>
+</div>
+{% endif %}

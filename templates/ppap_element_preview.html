@@ -1,0 +1,196 @@
+﻿{% extends "base.html" %}
+{% block title %}Önizleme — {{ elem.element_adi_tr }} — {{ ppap.parca_no }}{% endblock %}
+
+{% block breadcrumb %}
+<span class="separator">›</span>
+<a href="{{ request.script_root }}/ppap">PPAP Yönetimi</a>
+<span class="separator">›</span>
+<a href="{{ request.script_root }}/ppap/{{ ppap.id }}">{{ ppap.parca_no }}</a>
+<span class="separator">›</span>
+<span>Element {{ elem.element_no }} Önizleme</span>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex align-center justify-between mb-16">
+    <div>
+        <div class="d-flex align-center gap-8 mb-4">
+            <span class="ppap-elem-no" style="width:32px;height:32px;font-size:14px;">{{ elem.element_no }}</span>
+            <h2 style="font-size: 18px; font-weight: 700;">{{ elem.element_adi_tr }}</h2>
+        </div>
+        <p class="text-muted" style="font-size: 13px;">
+            {{ ppap.parca_no }} — {{ ppap.parca_adi }} · {{ ppap.musteri }}
+        </p>
+    </div>
+    <div class="d-flex gap-8">
+        <a href="{{ download_url }}" class="btn btn-primary">⬇️ İndir</a>
+        <a href="{{ request.script_root }}/ppap/{{ ppap.id }}" class="btn btn-secondary">← Geri Dön</a>
+    </div>
+</div>
+
+<!-- Önizleme Alanı -->
+<div class="section-card">
+    <div class="section-header d-flex justify-between align-center">
+        <span class="section-title">👁️ Doküman Önizleme — {{ elem.dosya_adi }}</span>
+        <a href="{{ download_url }}" class="btn btn-sm btn-primary">⬇️ İndir</a>
+    </div>
+    <div class="section-body" style="padding: 0; min-height: 500px;">
+        <div id="preview-container" style="width: 100%; min-height: 500px;">
+            <div id="preview-loading" style="display: flex; align-items: center; justify-content: center; height: 500px; gap: 12px;">
+                <div class="spinner"></div>
+                <span class="text-muted">Dosya yükleniyor...</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- PDF.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<!-- SheetJS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<script>
+(function() {
+    const b64Data = "{{ file_data_b64 }}";
+    const ext = "{{ ext }}";
+    const container = document.getElementById('preview-container');
+    const loading = document.getElementById('preview-loading');
+
+    function b64toBytes(b64) {
+        const binary = atob(b64);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+        return bytes;
+    }
+
+    // ── PDF ───────────────────────────────────────────────────
+    if (ext === 'pdf') {
+        const pdfData = b64toBytes(b64Data);
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        let pdfDoc = null, currentPage = 1, scale = 1.5;
+
+        // Toolbar
+        const toolbar = document.createElement('div');
+        toolbar.className = 'preview-toolbar';
+        toolbar.innerHTML = `
+            <button class="btn btn-sm btn-outline" id="pprev-prev">◀ Önceki</button>
+            <span id="pprev-info" style="font-size:13px;color:var(--text-secondary);">Sayfa 1 / ?</span>
+            <button class="btn btn-sm btn-outline" id="pprev-next">Sonraki ▶</button>
+            <span style="margin-left:16px;">
+                <button class="btn btn-sm btn-outline" id="pprev-zout">−</button>
+                <span id="pprev-zoom" style="font-size:13px;color:var(--text-secondary);margin:0 8px;">100%</span>
+                <button class="btn btn-sm btn-outline" id="pprev-zin">+</button>
+            </span>
+        `;
+        container.insertBefore(toolbar, loading);
+
+        const canvasWrapper = document.createElement('div');
+        canvasWrapper.style.cssText = 'overflow:auto;max-height:80vh;display:flex;justify-content:center;padding:20px;background:#2a2a3a;';
+        const canvas = document.createElement('canvas');
+        canvasWrapper.appendChild(canvas);
+        container.appendChild(canvasWrapper);
+
+        function renderPage(num) {
+            pdfDoc.getPage(num).then(function(page) {
+                const viewport = page.getViewport({ scale: scale });
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+                page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport });
+                document.getElementById('pprev-info').textContent = 'Sayfa ' + num + ' / ' + pdfDoc.numPages;
+                document.getElementById('pprev-zoom').textContent = Math.round(scale * 100) + '%';
+            });
+        }
+
+        pdfjsLib.getDocument({ data: pdfData }).promise.then(function(pdf) {
+            pdfDoc = pdf;
+            loading.style.display = 'none';
+            renderPage(1);
+        }).catch(function(err) {
+            loading.innerHTML = '<div style="color:#f87171;padding:40px;text-align:center;">PDF yüklenemedi: ' + err.message + '</div>';
+        });
+
+        document.getElementById('pprev-prev').addEventListener('click', function() { if (currentPage > 1) { currentPage--; renderPage(currentPage); } });
+        document.getElementById('pprev-next').addEventListener('click', function() { if (pdfDoc && currentPage < pdfDoc.numPages) { currentPage++; renderPage(currentPage); } });
+        document.getElementById('pprev-zin').addEventListener('click', function() { scale = Math.min(scale + 0.25, 4); renderPage(currentPage); });
+        document.getElementById('pprev-zout').addEventListener('click', function() { scale = Math.max(scale - 0.25, 0.5); renderPage(currentPage); });
+    }
+
+    // ── Excel / CSV ──────────────────────────────────────────
+    else if (['xlsx', 'xls', 'csv'].includes(ext)) {
+        try {
+            const bytes = b64toBytes(b64Data);
+            const wb = XLSX.read(bytes, { type: 'array' });
+            loading.style.display = 'none';
+
+            // Sheet selector
+            const sheetBar = document.createElement('div');
+            sheetBar.style.cssText = 'padding:12px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border-color);';
+            sheetBar.innerHTML = '<span style="font-size:13px;font-weight:600;">Sayfa:</span>';
+            const sel = document.createElement('select');
+            sel.className = 'filter-select';
+            wb.SheetNames.forEach(function(name) {
+                const opt = document.createElement('option');
+                opt.value = name; opt.textContent = name;
+                sel.appendChild(opt);
+            });
+            sheetBar.appendChild(sel);
+
+            const infoSpan = document.createElement('span');
+            infoSpan.style.cssText = 'font-size:12px;color:var(--text-muted);';
+            sheetBar.appendChild(infoSpan);
+            container.appendChild(sheetBar);
+
+            const tableWrap = document.createElement('div');
+            tableWrap.style.cssText = 'overflow:auto;max-height:70vh;padding:0;';
+            container.appendChild(tableWrap);
+
+            function renderSheet(name) {
+                const ws = wb.Sheets[name];
+                const html = XLSX.utils.sheet_to_html(ws, { editable: false });
+                tableWrap.innerHTML = html;
+                const table = tableWrap.querySelector('table');
+                if (table) {
+                    table.className = 'excel-preview-table';
+                    const rows = table.querySelectorAll('tr').length;
+                    const cols = table.querySelector('tr') ? table.querySelector('tr').querySelectorAll('td,th').length : 0;
+                    infoSpan.textContent = rows + ' satır × ' + cols + ' sütun';
+                }
+            }
+
+            renderSheet(wb.SheetNames[0]);
+            sel.addEventListener('change', function() { renderSheet(this.value); });
+        } catch(e) {
+            loading.innerHTML = '<div style="color:#f87171;padding:40px;text-align:center;">Excel dosyası yüklenemedi: ' + e.message + '</div>';
+        }
+    }
+
+    // ── Resimler ─────────────────────────────────────────────
+    else if (['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp', 'bmp'].includes(ext)) {
+        loading.style.display = 'none';
+        const mime = ext === 'svg' ? 'image/svg+xml' : 'image/' + ext;
+        container.innerHTML = '<div style="text-align:center;padding:30px;background:#1e1e2e;"><img src="data:' + mime + ';base64,' + b64Data + '" style="max-width:100%;max-height:80vh;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,0.3);"></div>';
+    }
+
+    // ── Metin dosyaları ──────────────────────────────────────
+    else if (['txt', 'json', 'xml', 'html', 'htm', 'css', 'js', 'py', 'md', 'yaml', 'yml', 'ini', 'cfg', 'log', 'sql', 'sh', 'bat'].includes(ext)) {
+        try {
+            const bytes = b64toBytes(b64Data);
+            const text = new TextDecoder('utf-8').decode(bytes);
+            loading.style.display = 'none';
+            const pre = document.createElement('pre');
+            pre.className = 'text-preview-content';
+            pre.textContent = text;
+            container.appendChild(pre);
+        } catch(e) {
+            loading.innerHTML = '<div style="color:#f87171;padding:40px;text-align:center;">Dosya okunamadı.</div>';
+        }
+    }
+
+    // ── Desteklenmeyen ───────────────────────────────────────
+    else {
+        loading.innerHTML = '<div style="padding:60px;text-align:center;"><div style="font-size:48px;margin-bottom:16px;">📄</div><h3 style="color:var(--text-primary);">Bu dosya türü önizlenemiyor</h3><p class="text-muted" style="margin-top:8px;">Dosyayı indirerek görüntüleyebilirsiniz.</p><a href="' + '{{ download_url }}' + '" class="btn btn-primary" style="margin-top:16px;">⬇️ Dosyayı İndir</a></div>';
+    }
+})();
+</script>
+{% endblock %}
+

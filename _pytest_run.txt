@@ -1,0 +1,7 @@
+﻿python.exe : D:\UYGULAMA PROJELER\debak dijital\dys\.venv\Scripts\python.exe: No module named pytest
+At C:\Users\labaratuvar03\AppData\Local\Temp\ps-script-1999491d-d85a-4ea5-b1a6-e1d31b86ddb0.ps1:112 char:56
++ ... jital\dys"; & ".venv\Scripts\python.exe" -m pytest -q --tb=short 2>&1 ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (D:\UYGULAMA PRO...le named pytest:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

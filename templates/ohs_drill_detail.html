@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}{{ drill.drill_no or _('Tatbikat') }}{% endblock %}
+{% block breadcrumb %}
+<span class="separator">›</span>
+<a href="{{ request.script_root }}/ohs/drills">{{ _('Acil Durum Tatbikatları') }}</a>
+<span class="separator">›</span>
+<span>{{ drill.drill_no or drill.id }}</span>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex align-center justify-between mb-24" style="flex-wrap:wrap; gap:12px;">
+    <div>
+        <h2 style="font-size: 20px; font-weight: 700;">{{ drill.drill_no or _('Tatbikat') }}</h2>
+        <p class="text-muted" style="font-size: 13px;">{{ _('Acil durum tatbikatı detayı') }}</p>
+    </div>
+    <a href="{{ request.script_root }}/ohs/drills" class="btn btn-outline">← {{ _('Listeye Dön') }}</a>
+</div>
+
+<div class="section-card mb-16">
+    <div class="section-header"><span class="section-title">{{ _('Genel Bilgiler') }}</span></div>
+    <div class="section-body" style="padding:20px; display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+        <div><strong class="text-muted">{{ _('No') }}</strong><div><code>{{ drill.drill_no or '—' }}</code></div></div>
+        <div><strong class="text-muted">{{ _('Katılımcı Sayısı') }}</strong>
+            <div>{{ katilimcilar|length if katilimcilar else (drill.katilimci_sayisi if drill.katilimci_sayisi is not none else '—') }}</div>
+        </div>
+        <div><strong class="text-muted">{{ _('Planlanan') }}</strong>
+            <div>{{ drill.planlanan_tarihi.strftime('%d.%m.%Y') if drill.planlanan_tarihi else '—' }}</div>
+        </div>
+        <div><strong class="text-muted">{{ _('Gerçekleşen') }}</strong>
+            <div>{{ drill.gerceklesen_tarihi.strftime('%d.%m.%Y') if drill.gerceklesen_tarihi else '—' }}</div>
+        </div>
+        <div style="grid-column:span 2;"><strong class="text-muted">{{ _('Senaryo') }}</strong>
+            <div style="white-space:pre-wrap; margin-top:4px;">{{ drill.senaryo or '—' }}</div>
+        </div>
+        <div style="grid-column:span 2;"><strong class="text-muted">{{ _('Etkinlik Sonucu') }}</strong>
+            <div style="white-space:pre-wrap; margin-top:4px;">{{ drill.etkinlik_sonucu or '—' }}</div>
+        </div>
+        <div style="grid-column:span 2;"><strong class="text-muted">{{ _('Aksiyon') }}</strong>
+            <div style="white-space:pre-wrap; margin-top:4px;">{{ drill.aksiyon or '—' }}</div>
+        </div>
+        <div><strong class="text-muted">{{ _('İlgili DÖF') }}</strong>
+            <div>
+                {% if drill.capa %}
+                <a href="{{ request.script_root }}/capa/{{ drill.capa_id }}">{{ drill.capa.dof_no }}</a>
+                {% else %}—{% endif %}
+            </div>
+        </div>
+        <div><strong class="text-muted">{{ _('Kayıt Tarihi') }}</strong>
+            <div>{{ drill.olusturma_tarihi.strftime('%d.%m.%Y %H:%M') if drill.olusturma_tarihi else '—' }}</div>
+        </div>
+    </div>
+</div>
+
+<div class="section-card">
+    <div class="section-header"><span class="section-title">{{ _('Katılımcılar') }}</span></div>
+    <div class="section-body" style="padding:0;">
+        {% if katilimcilar %}
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>{{ _('Ad Soyad') }}</th>
+                    <th>{{ _('Departman') }}</th>
+                    <th>{{ _('Unvan') }}</th>
+                    <th>{{ _('E-posta') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in katilimcilar %}
+                <tr>
+                    <td>{{ u.ad_soyad }}</td>
+                    <td class="text-muted">{{ u.departman or '—' }}</td>
+                    <td class="text-muted">{{ u.unvan or '—' }}</td>
+                    <td class="text-muted" style="font-size:12px;">{{ u.eposta or '—' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="text-muted" style="padding:16px; margin:0;">{{ _('Seçili katılımcı yok.') }}
+            {% if drill.katilimci_sayisi %} ({{ _('Eski kayıt — sayı') }}: {{ drill.katilimci_sayisi }}){% endif %}
+        </p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

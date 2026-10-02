@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block title %}Kontrol Planı Yönetimi (CP){% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><span>Kontrol Planı</span>{% endblock %}
+
+{% block content %}
+<div class="d-flex align-center justify-between mb-24" style="flex-wrap:wrap;gap:12px;">
+  <div>
+    <h2 style="font-size:20px;font-weight:700;">Kontrol Planları</h2>
+    <p class="text-muted" style="font-size:13px;">IATF 16949 Ek A Kontrol Planı Gereksinimleri (Prototip, Ön Seri, Seri Üretim). Toplam <strong>{{ kayitlar|length }}</strong> kayıt.</p>
+  </div>
+</div>
+
+<!-- Kontrol Planı Listesi Tablosu -->
+<div class="section-card mb-24">
+{% if kayitlar %}
+<div class="data-table-wrapper">
+<table class="data-table">
+<thead>
+    <tr>
+        <th>Kontrol Planı No</th>
+        <th>Tip / Aşama</th>
+        <th>Parça No</th>
+        <th>Parça Adı</th>
+        <th>Üretim Prosesi</th>
+        <th>Revizyon</th>
+        <th>Bağlantılı FMEA</th>
+        <th>İlgili Doküman</th>
+        <th>Oluşturma Tarihi</th>
+    </tr>
+</thead>
+<tbody>
+{% for r in kayitlar %}
+<tr>
+    <td><code style="color:var(--text-accent); font-weight:700;">{{ r.cp_no }}</code></td>
+    <td><span class="badge" style="font-size:10px; font-weight:700; background:var(--bg-secondary); color:var(--text-primary);">{{ r.tip }}</span></td>
+    <td><code>{{ r.parca_no or '—' }}</code></td>
+    <td style="font-weight:600;">{{ r.parca_adi or '—' }}</td>
+    <td style="font-size:12px;">{{ r.proses or '—' }}</td>
+    <td style="font-family:monospace;">{{ r.revizyon or '00' }}</td>
+    <td>
+        {% if r.fmea_id %}
+        <a href="{{ request.script_root }}/iatf/fmea/{{ r.fmea_id }}" class="btn btn-outline" style="padding:2px 8px; font-size:11px;">🔍 FMEA</a>
+        {% else %}
+        <span class="text-muted">—</span>
+        {% endif %}
+    </td>
+    <td>
+        {% if r.ilgili_document %}
+        <span style="font-size:12px;" class="text-muted">{{ r.ilgili_document.dokuman_no }}</span>
+        {% else %}
+        <span class="text-muted">—</span>
+        {% endif %}
+    </td>
+    <td style="font-size:12px; font-family:monospace;">{{ r.olusturma_tarihi.strftime('%Y-%m-%d') if r.olusturma_tarihi else '—' }}</td>
+</tr>
+{% endfor %}
+</tbody></table>
+</div>
+{% else %}
+<div class="empty-state"><div class="empty-icon">📋</div><h3>Kayıt yok</h3></div>
+{% endif %}
+</div>
+
+<!-- Yeni Kontrol Planı Ekleme Formu -->
+{% if can_edit %}
+<div class="section-card">
+    <div class="section-header" style="border-bottom:1px solid var(--border); padding:12px 20px;">
+        <span class="section-title">➕ Yeni Kontrol Planı Üst Kaydı Ekle</span>
+    </div>
+    <div class="section-body" style="padding:20px;">
+        <form method="POST" action="{{ url_for('iatf_control_plans') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:16px; margin-bottom:16px;">
+                <div class="form-group">
+                    <label class="form-label">Kontrol Planı No *</label>
+                    <input type="text" name="cp_no" class="form-control" required placeholder="Örn: CP-5201-REV01">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tip / Aşama *</label>
+                    <select name="tip" class="form-control" required>
+                        <option value="Prototip">Prototip</option>
+                        <option value="Ön Seri">Ön Seri</option>
+                        <option value="Seri Üretim" selected>Seri Üretim</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Parça No</label>
+                    <input type="text" name="parca_no" class="form-control" placeholder="Örn: 52012345">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Parça Adı</label>
+                    <input type="text" name="parca_adi" class="form-control" placeholder="Örn: Arka Havalandırma Izgarası">
+                </div>
+                
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label">Üretim Prosesi / Hücresi</label>
+                    <input type="text" name="proses" class="form-control" placeholder="Örn: Plastik Enjeksiyon ve Montaj Hattı">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Revizyon</label>
+                    <input type="text" name="revizyon" class="form-control" value="00" placeholder="Örn: 01">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">İlişkili FMEA Analizi</label>
+                    <select name="fmea_id" class="form-control">
+                        <option value="">— Seçiniz (Varsa) —</option>
+                        {% for f in fmeas %}
+                        <option value="{{ f.id }}">{{ f.fmea_no }} {{ f.kapsam or '' }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label">Süreç Doküman Bağlantısı</label>
+                    <select name="ilgili_document_id" class="form-control">
+                        <option value="">— Doküman Seçiniz —</option>
+                        {% for d in documents %}
+                        <option value="{{ d.id }}">{{ d.dokuman_no }} {{ d.baslik }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" style="padding:10px 24px;">💾 Kontrol Planını Kaydet</button>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

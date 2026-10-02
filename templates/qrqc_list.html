@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+{% block title %}{{ _('QRQC Liste — Hızlı Yanıt Kalite Kontrolü') }}{% endblock %}
+
+{% block breadcrumb %}
+<span class="separator">›</span>
+<a href="{{ request.script_root }}/qrqc">{{ _('QRQC') }}</a>
+<span class="separator">›</span>
+<span>{{ _('Liste') }}</span>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex align-center justify-between mb-24" style="flex-wrap:wrap; gap:12px;">
+    <div>
+        <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 4px;">📋 {{ _('QRQC Olay Kayıtları') }}</h2>
+        <p class="text-muted" style="font-size: 13px;">
+            {{ _('Tüm QRQC kayıtları, filtreler ve DÖF bağlantı durumları') }}
+        </p>
+    </div>
+    <div class="d-flex gap-8" style="flex-wrap:wrap;">
+        <a href="{{ request.script_root }}/qrqc" class="btn btn-outline">⚡ {{ _('QRQC Panosu') }}</a>
+        <a href="{{ request.script_root }}/qrqc/new" class="btn btn-primary">➕ {{ _('Yeni QRQC Kaydı') }}</a>
+    </div>
+</div>
+
+<div class="section-card mb-24">
+    <div class="section-body" style="padding:16px;">
+        <form method="GET" class="d-flex gap-12 align-center" style="flex-wrap:wrap;">
+            <div class="filter-group">
+                <label class="filter-label">{{ _('Durum') }}:</label>
+                <select name="durum" class="filter-select" onchange="this.form.submit()">
+                    <option value="">{{ _('Tümü') }}</option>
+                    {% for d in durumlar %}
+                    <option value="{{ d }}" {{ 'selected' if secili_durum == d }}>{{ d }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">{{ _('Kategori') }}:</label>
+                <select name="kategori" class="filter-select" onchange="this.form.submit()">
+                    <option value="">{{ _('Tümü') }}</option>
+                    {% for k in kategoriler %}
+                    <option value="{{ k }}" {{ 'selected' if secili_kategori == k }}>{{ k }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">{{ _('Seviye') }}:</label>
+                <select name="seviye" class="filter-select" onchange="this.form.submit()">
+                    <option value="">{{ _('Tümü') }}</option>
+                    {% for s in seviyeler %}
+                    <option value="{{ s }}" {{ 'selected' if secili_seviye == s }}>{{ s }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">{{ _('Vardiya') }}:</label>
+                <select name="vardiya" class="filter-select" onchange="this.form.submit()">
+                    <option value="">{{ _('Tümü') }}</option>
+                    {% for v in vardiyalar %}
+                    <option value="{{ v }}" {{ 'selected' if secili_vardiya == v }}>{{ v }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            {% if secili_durum or secili_kategori or secili_seviye or secili_vardiya %}
+            <a href="{{ request.script_root }}/qrqc/list" class="btn btn-sm btn-outline">✕ {{ _('Filtreleri Temizle') }}</a>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+<div class="section-card">
+    <div class="section-body" style="padding:0;">
+        {% if kayitlar %}
+        <div class="data-table-wrapper">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>{{ _('QRQC No') }}</th>
+                        <th>{{ _('Başlık / Açıklama') }}</th>
+                        <th>{{ _('Kategori / Seviye') }}</th>
+                        <th>{{ _('Hat / Vardiya') }}</th>
+                        <th>{{ _('Tespit Tarihi') }}</th>
+                        <th>{{ _('Sorumlu') }}</th>
+                        <th>{{ _('Durum') }}</th>
+                        <th>{{ _('DÖF') }}</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for q in kayitlar %}
+                    <tr>
+                        <td>
+                            <a href="{{ request.script_root }}/qrqc/{{ q.id }}" style="font-weight:700;">{{ q.qrqc_no }}</a>
+                        </td>
+                        <td>
+                            <div>{{ q.baslik }}</div>
+                            {% if q.etkilenen_miktar %}
+                            <small class="text-muted">{{ _('Etkilenen Miktar') }}: {{ q.etkilenen_miktar }} {{ _('adet') }}</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge badge-info">{{ q.kategori }}</span>
+                            <small class="text-muted d-block">{{ q.seviye }}</small>
+                        </td>
+                        <td>
+                            <div>{{ q.hat_istasyon or '-' }}</div>
+                            <small class="text-muted">{{ q.vardiya or '' }}</small>
+                        </td>
+                        <td>{{ q.tespit_tarihi.strftime('%d.%m.%Y %H:%M') if q.tespit_tarihi else '-' }}</td>
+                        <td>{{ q.sorumlu.ad_soyad if q.sorumlu else '-' }}</td>
+                        <td>
+                            {% if q.durum == 'Açık' %}
+                                {% if q.mudahele_suresi_astimi %}
+                                <span class="badge badge-danger">🚨 {{ _('Açık (24s Gecikti)') }}</span>
+                                {% else %}
+                                <span class="badge badge-warning">⚡ {{ _('Açık') }}</span>
+                                {% endif %}
+                            {% elif q.durum == 'Geçici Aksiyonda' %}
+                                <span class="badge badge-info">🛠️ {{ _('Geçici Aksiyonda') }}</span>
+                            {% elif q.durum == 'DÖF Tetiklendi' %}
+                                <span class="badge badge-purple">🔗 {{ _('DÖF Tetiklendi') }}</span>
+                            {% elif q.durum == 'Kapatıldı' %}
+                                <span class="badge badge-success">✅ {{ _('Kapatıldı') }}</span>
+                            {% else %}
+                                <span class="badge badge-secondary">{{ q.durum }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if q.dof %}
+                            <a href="{{ request.script_root }}/capa/{{ q.dof.id }}" class="badge badge-purple" style="text-decoration:none;" title="{{ q.dof.baslik }}">
+                                🛠️ {{ q.dof.dof_no }}
+                            </a>
+                            {% else %}
+                            <form method="POST" action="{{ request.script_root }}/qrqc/{{ q.id }}/trigger-dof" style="display:inline;">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-xs btn-outline-purple"
+                                        onclick="return confirm('{{ _('Bu QRQC kaydından yeni bir DÖF oluşturulacak. Devam edilsin mi?') }}');">
+                                    ➕ {{ _('DÖF Tetikle') }}
+                                </button>
+                            </form>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ request.script_root }}/qrqc/{{ q.id }}" class="btn btn-xs btn-outline">{{ _('Detay') }}</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div style="padding:32px; text-align:center;" class="text-muted">
+            📋 {{ _('Filtre kriterlerine uygun QRQC kaydı bulunamadı.') }}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}{{ ad }}{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><span>Kalite</span><span class="separator">›</span><span>{{ ad }}</span>{% endblock %}
+{% block content %}
+<style>
+.kl-kart{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px;}
+.kl-kart div{border:1px solid var(--border-color);border-radius:10px;padding:10px 12px;background:var(--bg-card,var(--bg-secondary));}
+.kl-kart b{display:block;font-size:22px;} .kl-kart span{font-size:12px;color:var(--text-secondary);}
+.onem-Kritik{background:#fee2e2;color:#b91c1c;} .onem-Major{background:#ffedd5;color:#c2410c;} .onem-Minor{background:#e0f2fe;color:#0369a1;}
+.kl-etk{display:inline-block;padding:1px 8px;border-radius:10px;font-size:11.5px;font-weight:600;}
+.gec{color:#b91c1c;font-weight:700;}
+</style>
+<div class="d-flex align-center justify-between mb-16" style="flex-wrap:wrap;gap:10px;">
+  <div><h2 style="font-size:20px;font-weight:700;margin:0;">{{ '🏭' if tk == 'TU' else '📣' }} {{ ad }} <span class="text-muted" style="font-size:13px;font-weight:400;">/ {{ ad_en }} · {{ spec.kod }}</span></h2>
+    <p class="text-muted" style="font-size:12.5px;margin:4px 0 0;">{% if tk == 'TU' %}Tedarikçi kaynaklı uygunsuzluklar: tespit, karar, tedarikçiden 4D / 8D yanıtı, etkinlik doğrulaması. Rapor (SCAR) A4 PDF olarak tedarikçiye gönderilir.{% else %}Müşteri şikayetleri 8D yapısında: D1 ekip … D8 kapanış, geçici önlem ve 8D terminleri. 8D raporu A4 PDF olarak müşteriye gönderilir.{% endif %}</p></div>
+  <div class="d-flex gap-8">
+    <a href="{{ url_for('kalite_liste', tur=tur, durum=durum, onem=onem, yil=yil, q=q, excel=1) }}" class="btn btn-outline">⬇ Excel</a>
+    {% if yazabilir %}<a href="{{ url_for('kalite_kayit', tur=tur) }}" class="btn btn-primary">➕ Yeni {{ 'uygunsuzluk' if tk == 'TU' else 'şikayet' }}</a>{% endif %}
+  </div>
+</div>
+<div class="kl-kart">
+  <div><b>{{ ozet.acik }}</b><span>Açık / Open</span></div>
+  <div><b class="{{ 'gec' if ozet.geciken }}">{{ ozet.geciken }}</b><span>Termini geçen / Overdue</span></div>
+  <div><b style="color:#b91c1c;">{{ ozet.kritik }}</b><span>Açık kritik / Open critical</span></div>
+  <div><b>{{ ozet.bu_yil }}</b><span>{{ bugun.year }} toplam / total</span></div>
+  <div><b>{{ '{:,.0f}'.format(ozet.hatali).replace(',', '.') }}</b><span>{{ bugun.year }} hatalı adet / NOK qty</span></div>
+</div>
+<form method="GET" class="d-flex gap-8" style="flex-wrap:wrap;align-items:center;margin-bottom:10px;">
+  <select name="durum" class="form-control" style="width:auto;" onchange="this.form.submit()">
+    <option value="acik" {{ 'selected' if durum == 'acik' }}>Açık olanlar</option><option value="hepsi" {{ 'selected' if durum == 'hepsi' }}>Tümü</option>
+    {% for d in spec.durumlar %}<option {{ 'selected' if d == durum }}>{{ d }}</option>{% endfor %}</select>
+  <select name="onem" class="form-control" style="width:auto;" onchange="this.form.submit()"><option value="">Tüm önem</option>{% for o in ['Kritik', 'Major', 'Minor'] %}<option {{ 'selected' if o == onem }}>{{ o }}</option>{% endfor %}</select>
+  <select name="yil" class="form-control" style="width:auto;" onchange="this.form.submit()"><option value="">Tüm yıllar</option>{% for y in yillar %}<option {{ 'selected' if y == yil }}>{{ y }}</option>{% endfor %}</select>
+  <input name="q" value="{{ q }}" class="form-control" style="max-width:260px;" placeholder="No, ürün, {{ 'tedarikçi' if tk == 'TU' else 'müşteri' }}, problem …"><button class="btn btn-sm btn-outline">Ara</button>
+</form>
+<div class="section-card"><div class="data-table-wrapper"><table class="data-table">
+<thead><tr><th>No</th><th>Tarih</th><th>{{ 'Tedarikçi' if tk == 'TU' else 'Müşteri' }}</th><th>Ürün</th><th>Hata</th><th>Önem</th><th style="text-align:right;">Hatalı</th><th>8D termini</th><th>Durum</th><th>Sorumlu</th><th></th></tr></thead><tbody>
+{% for k in liste %}{% set g = gecikmis(k, tk) %}
+<tr><td><a href="{{ url_for('kalite_kayit', tur=tur, kid=k.id) }}"><strong>{{ k.no }}</strong></a>{% if tk == 'MS' and k.musteri_ref %}<div class="text-muted" style="font-size:11px;">{{ k.musteri_ref }}</div>{% endif %}</td>
+  <td>{{ k.tarih.strftime('%d.%m.%Y') }}</td><td>{{ k.tedarikci_ad if tk == 'TU' else k.musteri }}</td>
+  <td>{{ k.urun_no or '' }}<div class="text-muted" style="font-size:11px;">{{ k.urun_adi or '' }}</div></td><td>{{ k.veri.get('hata_turu') or '' }}</td>
+  <td>{% if k.onem %}<span class="kl-etk onem-{{ k.onem }}">{{ k.onem }}</span>{% endif %}</td>
+  <td style="text-align:right;">{{ '{:,.0f}'.format(k.hatali_miktar).replace(',', '.') if k.hatali_miktar is not none else '' }}</td>
+  <td class="{{ 'gec' if g }}">{{ k.termin_8d.strftime('%d.%m.%Y') if k.termin_8d else '' }}{{ ' ⚠' if g }}</td>
+  <td><span class="status-badge {{ 'onayli' if k.durum == 'Kapatıldı' else ('taslak' if k.durum == 'İptal' else 'incelemede') }}">{{ k.durum }}</span>{% if k.gonderim_tarihi %}<div class="text-muted" style="font-size:10.5px;">✉ {{ k.gonderim_tarihi.strftime('%d.%m.%Y') }}</div>{% endif %}</td>
+  <td>{{ k.sorumlu.ad_soyad if k.sorumlu else '' }}</td>
+  <td><a href="{{ url_for('kalite_pdf', tur=tur, kid=k.id) }}" target="_blank" class="btn btn-sm btn-outline" title="A4 PDF">PDF</a></td></tr>
+{% else %}<tr><td colspan="11" class="text-muted">Kayıt yok.</td></tr>{% endfor %}
+</tbody></table></div></div>
+{% endblock %}

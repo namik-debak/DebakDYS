@@ -1,0 +1,181 @@
+﻿{% extends "base.html" %}
+{% block title %}Kullanıcı Yönetimi{% endblock %}
+
+{% block breadcrumb %}
+<span class="separator">›</span>
+<span>Kullanıcı Yönetimi</span>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex align-center justify-between mb-24">
+    <div>
+        <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 4px;">Kullanıcı Yönetimi</h2>
+        <p class="text-muted" style="font-size: 13px;">Toplam {{ users|length }} kullanıcı</p>
+    </div>
+    <button class="btn btn-primary" onclick="openModal('user-modal')">➕ Yeni Kullanıcı</button>
+</div>
+
+<div class="section-card">
+    <div class="data-table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Ad Soyad</th>
+                    <th>E-posta</th>
+                    <th>Departman</th>
+                    <th>Ünvan</th>
+                    <th>Rol</th>
+                    <th>Durum</th>
+                    <th>Kayıt Tarihi</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td><strong>{{ user.ad_soyad }}</strong></td>
+                    <td class="text-muted">{{ user.eposta }}</td>
+                    <td>{{ user.departman }}</td>
+                    <td>{{ user.unvan }}</td>
+                    <td>
+                        {% if user.rol == 'Admin' %}
+                        <span class="status-badge" style="background: rgba(139,92,246,0.15); color: #8b5cf6;">Admin</span>
+                        {% elif user.rol == 'Doküman Kontrol' %}
+                        <span class="status-badge" style="background: var(--color-info-bg); color: var(--color-info);">Dok. Kontrol</span>
+                        {% else %}
+                        <span class="status-badge" style="background: var(--bg-glass); color: var(--text-secondary);">{{ user.rol }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if user.aktif %}
+                        <span class="status-badge onayli">Aktif</span>
+                        {% else %}
+                        <span class="status-badge eskimis">Pasif</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-muted">{{ user.olusturma_tarihi.strftime('%d.%m.%Y') if user.olusturma_tarihi else '-' }}</td>
+                    <td>
+                        <div class="d-flex gap-8">
+                            <button class="btn btn-sm btn-outline" onclick="openModal('edit-user-{{ user.id }}')">✏️</button>
+                            {% if user.id != session.get('user_id') %}
+                            <form method="POST" action="{{ request.script_root }}/admin/users/{{ user.id }}/toggle" style="display:inline;" title="{{ 'Pasife al' if user.aktif else 'Aktifleştir' }}">
+                                <button type="submit" class="btn btn-sm {{ 'btn-danger' if user.aktif else 'btn-success' }}">
+                                    {{ '🚫' if user.aktif else '✅' }}
+                                </button>
+                            </form>
+                            {% if is_admin %}
+                            <form method="POST" action="{{ request.script_root }}/admin/users/{{ user.id }}/delete" style="display:inline;" id="delete-user-{{ user.id }}"
+                                  onsubmit="return confirm('{{ user.ad_soyad }} kalıcı olarak silinecek. Bu işlem geri alınamaz. Onaylıyor musunuz?');" title="Kalıcı olarak sil">
+                                <button type="submit" class="btn btn-sm btn-danger">🗑️</button>
+                            </form>
+                            {% endif %}
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Edit User Modals (tablo dışında — tam görünüm için) -->
+{% for user in users %}
+<div class="modal-overlay" id="edit-user-{{ user.id }}">
+    <div class="modal">
+        <div class="modal-header">
+            <span class="modal-title">Kullanıcı Düzenle</span>
+            <button class="modal-close" onclick="closeModal('edit-user-{{ user.id }}')">✕</button>
+        </div>
+        <form method="POST" action="{{ request.script_root }}/admin/users/{{ user.id }}/edit">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Ad Soyad</label>
+                    <input type="text" name="ad_soyad" class="form-control" value="{{ user.ad_soyad }}" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">E-posta</label>
+                    <input type="email" name="eposta" class="form-control" value="{{ user.eposta }}" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Departman</label>
+                        <input type="text" name="departman" class="form-control" value="{{ user.departman }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Ünvan</label>
+                        <input type="text" name="unvan" class="form-control" value="{{ user.unvan }}" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Rol</label>
+                        <select name="rol" class="form-control">
+                            {% for r in ['Admin', 'Doküman Kontrol', 'Kullanıcı', 'Sadece Görüntüleme'] %}
+                            <option value="{{ r }}" {{ 'selected' if user.rol == r }}>{{ r }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Yeni Şifre (Boş bırakılırsa değişmez)</label>
+                        <input type="password" name="sifre" class="form-control" placeholder="••••••••">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('edit-user-{{ user.id }}')">İptal</button>
+                <button type="submit" class="btn btn-primary">Kaydet</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endfor %}
+
+<!-- New User Modal -->
+<div class="modal-overlay" id="user-modal">
+    <div class="modal">
+        <div class="modal-header">
+            <span class="modal-title">Yeni Kullanıcı</span>
+            <button class="modal-close" onclick="closeModal('user-modal')">✕</button>
+        </div>
+        <form method="POST" action="{{ request.script_root }}/admin/users/new">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Ad Soyad <span class="required">*</span></label>
+                    <input type="text" name="ad_soyad" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">E-posta <span class="required">*</span></label>
+                    <input type="email" name="eposta" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Şifre <span class="required">*</span></label>
+                    <input type="password" name="sifre" class="form-control" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Departman <span class="required">*</span></label>
+                        <input type="text" name="departman" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Ünvan <span class="required">*</span></label>
+                        <input type="text" name="unvan" class="form-control" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Rol</label>
+                    <select name="rol" class="form-control">
+                        {% for r in ['Kullanıcı', 'Doküman Kontrol', 'Admin', 'Sadece Görüntüleme'] %}
+                        <option value="{{ r }}">{{ r }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('user-modal')">İptal</button>
+                <button type="submit" class="btn btn-primary">Oluştur</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+{% block title %}M03 F08 Ürün Enjeksiyon Parametreleri{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><a href="{{ request.script_root }}/uretim/enjeksiyon-parametreleri">Enjeksiyon Parametreleri</a>{% if secili %}<span class="separator">›</span><span>{{ secili.urun_adi }}</span>{% endif %}{% endblock %}
+{% block content %}
+<style>
+.sec-bar{display:grid;grid-template-columns:minmax(160px,220px) minmax(240px,1fr) auto;gap:10px;align-items:end;}
+@media (max-width:760px){.sec-bar{grid-template-columns:1fr;}}
+.pt td,.pt th{padding:4px 8px;font-size:12px;}
+.pt td.v{font-family:monospace;font-weight:700;}
+.pt td.s{font-family:monospace;color:var(--text-muted);}
+.degisti{background:rgba(245,158,11,.15);}
+.disi{background:rgba(239,68,68,.18);}
+.etiket{font-size:10px;font-weight:700;padding:1px 6px;border-radius:8px;}
+.e-deg{background:rgba(245,158,11,.25);} .e-disi{background:rgba(239,68,68,.3);}
+.kart-bas{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 16px;font-size:13px;}
+.kart-bas span{display:block;font-size:10px;color:var(--text-muted);text-transform:uppercase;}
+.mus{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;}
+.mus a{display:block;padding:10px 12px;border:1px solid var(--border);border-radius:8px;text-decoration:none;color:inherit;background:var(--bg-secondary);}
+.mus a b{display:block;font-size:14px;}
+</style>
+
+<div class="d-flex align-center justify-between mb-16" style="flex-wrap:wrap;gap:10px;">
+  <div>
+    <h2 style="font-size:20px;font-weight:700;">M03 F08 · Ürün Enjeksiyon Parametreleri</h2>
+    <p class="text-muted" style="font-size:13px;">Ürünü seçin → geçerli parametre kartı (değer ± sapma) ve ayar geçmişi açılır. Yeni ayar önceki değerlerle gelir; onaylanan kayıt geçerli kart olur. (M03 P01 Md. 5.3.1)</p>
+  </div>
+  {% if bekleyen %}<span class="status-badge yellow">{{ bekleyen }} kayıt onay bekliyor</span>{% endif %}
+</div>
+
+<div class="section-card mb-16"><div class="section-body">
+  <form method="GET" class="sec-bar" id="secim">
+    <div class="form-group" style="margin:0;"><label class="form-label">Müşteri</label>
+      <select name="musteri" id="f-mus" class="form-control"><option value="">Tüm müşteriler</option>
+        {% for m in musteriler %}<option {% if m == f_musteri %}selected{% endif %}>{{ m }}</option>{% endfor %}</select></div>
+    <div class="form-group" style="margin:0;"><label class="form-label">Ürün adı</label>
+      <input id="f-ara" class="form-control" placeholder="Ürün adı / kodu yazın…" autocomplete="off" style="margin-bottom:4px;">
+      <select name="urun" id="f-urun" class="form-control" size="1">
+        <option value="">— ürün seçin ({{ urunler|length }}) —</option>
+        {% for u in urunler %}<option value="{{ u.id }}" data-m="{{ u.musteri or '—' }}" {% if secili and u.id == secili.id %}selected{% endif %}>{{ u.urun_adi }}{% if u.tanim and u.tanim != u.urun_adi %} — {{ u.tanim }}{% endif %} · {{ u.musteri or '—' }}</option>{% endfor %}
+      </select></div>
+    <button class="btn btn-primary" type="submit">Aç</button>
+  </form>
+</div></div>
+
+{% if not secili %}
+<div class="section-card mb-16"><div class="section-header"><span class="section-title">Müşteriler</span></div>
+  <div class="section-body mus">
+  {% for m in musteriler %}{% set n = urunler|selectattr('musteri', 'equalto', (m if m != '—' else none))|list|length %}
+    <a href="?musteri={{ m|urlencode }}" onclick="document.getElementById('f-mus').value='{{ m }}';filtrele();document.getElementById('f-urun').focus();return false;"><b>{{ m }}</b><span class="text-muted" style="font-size:12px;">{{ n }} ürün</span></a>
+  {% endfor %}
+  </div></div>
+{% if can_approve %}
+<div class="section-card mb-16"><div class="section-header"><span class="section-title">➕ Yeni ürün kartı</span></div><div class="section-body">
+  <form method="POST" action="{{ request.script_root }}/uretim/enjeksiyon-parametreleri/yeni-urun" class="filters-bar" style="flex-wrap:wrap;gap:8px;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input name="urun_adi" class="filter-select" placeholder="Ürün adı / kodu *" required>
+    <input name="tanim" class="filter-select" placeholder="Tanım">
+    <input name="musteri" class="filter-select" placeholder="Müşteri" list="mus-list"><datalist id="mus-list">{% for m in musteriler %}<option>{{ m }}</option>{% endfor %}</datalist>
+    <select name="sablon" class="filter-select">{% for s in sablonlar %}<option>{{ s.ad }}</option>{% endfor %}</select>
+    <button class="btn btn-outline" type="submit">Kartı aç</button>
+  </form>
+  <p class="text-muted" style="font-size:12px;margin-top:6px;">Parametre listesi seçilen şablondan gelir (Termoset/Bagalit: {{ (sablonlar|selectattr('ad','equalto','Termoset (Bagalit)')|first or {'parametreler': []}).parametreler|length }} · Termoplast: {{ (sablonlar|selectattr('ad','equalto','Termoplast')|first or {'parametreler': []}).parametreler|length }} parametre).</p>
+</div></div>
+{% endif %}
+{% if session.get('rol') == 'Admin' %}
+<details class="section-card"><summary class="section-header" style="cursor:pointer;"><span class="section-title">Excel geçmişini içe aktar</span></summary><div class="section-body">
+  <form method="POST" action="{{ request.script_root }}/uretim/enjeksiyon-parametreleri/aktar" enctype="multipart/form-data" class="filters-bar" style="gap:8px;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="file" name="dosya" accept=".json" required>
+    <button class="btn btn-outline" type="submit">Aktar</button></form>
+  <p class="text-muted" style="font-size:12px;margin-top:6px;">'YENİ YAPI\DYS Aktarım\Enjeksiyon\enjeksiyon_parametreleri.json' — tekrar yüklemek güvenlidir (aynı kayıtlar eklenmez).</p>
+</div></details>
+{% endif %}
+
+{% else %}
+{% set g = gecerli %}
+<div class="section-card mb-16" style="border-left:4px solid var(--color-primary);"><div class="section-body">
+  <div class="d-flex justify-between" style="flex-wrap:wrap;gap:8px;">
+    <div><h3 style="font-size:17px;font-weight:700;">{{ secili.urun_adi }}</h3><div class="text-muted" style="font-size:12px;">{{ secili.tanim or '' }}</div></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      {% if can_fill %}<a class="btn btn-primary" href="?urun={{ secili.id }}&yeni=1#yeni">＋ Yeni ayar kaydı</a>{% endif %}
+      <a class="btn btn-outline" href="{{ request.script_root }}/uretim/enjeksiyon-parametreleri/{{ secili.id }}/yazdir" target="_blank">🖨️ Kart çıktısı</a>
+    </div>
+  </div>
+  <div class="kart-bas" style="margin-top:10px;">
+    <div><span>Müşteri</span>{{ secili.musteri or '—' }}</div>
+    <div><span>Malzeme</span>{{ g.malzeme if g and g.malzeme else '—' }}</div>
+    <div><span>Makina</span>{{ g.makina if g and g.makina else '—' }}</div>
+    <div><span>Geçerli ayar tarihi</span>{{ g.tarih.strftime('%d.%m.%Y') if g and g.tarih else '—' }}</div>
+    <div><span>Şablon</span>{{ secili.sablon or '—' }}</div>
+    <div><span>Ayar geçmişi</span>{{ gecmis|length }} kayıt</div>
+  </div>
+</div></div>
+
+{% if bekleyenler %}
+<div class="section-card mb-16" style="border-left:4px solid #f59e0b;">
+  <div class="section-header"><span class="section-title">⏳ Onay bekleyen ayar ({{ bekleyenler|length }})</span></div>
+  <div class="section-body">
+  {% for k in bekleyenler %}{% set kk = karsilastirmalar.get(k.id, []) %}
+    <div style="margin-bottom:12px;">
+      <div style="font-size:13px;"><strong>{{ k.tarih.strftime('%d.%m.%Y') if k.tarih else '—' }}</strong> · {{ k.makina or '—' }} · {{ k.malzeme or '' }} · giren: {{ k.kaydeden.ad_soyad if k.kaydeden else '—' }}
+        {% set nd = kk|selectattr('degisti')|list|length %}{% set nt = kk|selectattr('tolerans_disi')|list|length %}
+        · <span class="etiket e-deg">{{ nd }} değişen</span> {% if nt %}<span class="etiket e-disi">{{ nt }} tolerans dışı</span>{% endif %}</div>
+      {% if k.aciklama %}<div class="text-muted" style="font-size:12px;">{{ k.aciklama }}</div>{% endif %}
+      <table class="data-table pt" style="margin-top:6px;"><thead><tr><th>Parametre</th><th>Önceki</th><th>Yeni</th><th>Sapma</th></tr></thead><tbody>
+      {% for p in kk if p.degisti %}<tr class="{{ 'disi' if p.tolerans_disi else 'degisti' }}"><td>{{ p.ad }}</td><td class="v">{{ p.onceki or '—' }}</td><td class="v">{{ p.deger or '—' }}</td><td class="s">{{ p.sapma }}</td></tr>
+      {% else %}<tr><td colspan="4" class="text-muted">Önceki geçerli ayara göre değişiklik yok.</td></tr>{% endfor %}
+      </tbody></table>
+      {% if can_approve %}
+      <form method="POST" action="{{ request.script_root }}/uretim/enjeksiyon-parametreleri/kayit/{{ k.id }}" class="filters-bar" style="gap:8px;margin-top:6px;">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input name="not" class="filter-select" placeholder="Not (isteğe bağlı)" style="min-width:240px;">
+        <button class="btn btn-primary" name="islem" value="onayla">Onayla</button><button class="btn btn-outline" name="islem" value="reddet">Reddet</button></form>
+      {% endif %}
+    </div>
+  {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+{% if yeni and can_fill %}
+<div class="section-card mb-16" id="yeni"><div class="section-header"><span class="section-title">＋ Yeni ayar kaydı</span>
+  <span class="text-muted" style="font-size:12px;">Önceki geçerli değerlerle dolu gelir; yalnız değişenleri düzeltin. Sarı = değişti, kırmızı = önceki değere göre tolerans dışı.</span></div>
+  <div class="section-body">
+  <form method="POST" id="yeni-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="urun_id" value="{{ secili.id }}">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:10px;">
+      <div class="form-group"><label class="form-label">Tarih</label><input type="date" name="tarih" class="form-control" value="{{ bugun.isoformat() }}"></div>
+      <div class="form-group"><label class="form-label">Makina</label><input name="makina" class="form-control" value="{{ g.makina if g and g.makina else '' }}" placeholder="ör. K-21"></div>
+      <div class="form-group"><label class="form-label">Malzeme</label><input name="malzeme" class="form-control" value="{{ g.malzeme if g and g.malzeme else '' }}"></div>
+    </div>
+    <table class="data-table pt"><thead><tr><th style="width:40%;">Parametre</th><th>Önceki</th><th>Yeni değer</th><th>Sapma</th><th></th></tr></thead><tbody>
+    {% for p in taban %}
+      <tr data-onceki="{{ p.deger }}"><td><input name="p_ad_{{ loop.index0 }}" value="{{ p.ad }}" class="form-control" style="padding:3px 6px;font-size:12px;"></td>
+        <td class="v">{{ p.deger or '—' }}</td>
+        <td><input name="p_deger_{{ loop.index0 }}" value="{{ p.deger }}" class="form-control deger" style="padding:3px 6px;font-size:12px;font-family:monospace;max-width:120px;"></td>
+        <td><input name="p_sapma_{{ loop.index0 }}" value="{{ p.sapma }}" class="form-control sapma" style="padding:3px 6px;font-size:12px;max-width:90px;"></td>
+        <td class="durum"></td></tr>
+    {% endfor %}
+    {% for i in range(3) %}{% set j = taban|length + i %}
+      <tr data-onceki=""><td><input name="p_ad_{{ j }}" class="form-control" placeholder="Ek parametre (isteğe bağlı)" style="padding:3px 6px;font-size:12px;"></td><td class="v">—</td>
+        <td><input name="p_deger_{{ j }}" class="form-control deger" style="padding:3px 6px;font-size:12px;max-width:120px;"></td>
+        <td><input name="p_sapma_{{ j }}" class="form-control sapma" style="padding:3px 6px;font-size:12px;max-width:90px;"></td><td class="durum"></td></tr>
+    {% endfor %}
+    </tbody></table>
+    <div class="form-group" style="margin-top:10px;"><label class="form-label">Açıklama / değişiklik nedeni</label><textarea name="aciklama" class="form-control" rows="2" placeholder="ör. kalıp değişimi, yeni malzeme partisi, çevrim süresi iyileştirme"></textarea></div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <button class="btn btn-primary" type="submit">Kaydet ve onaya gönder</button>
+      <span id="ozet" class="text-muted" style="font-size:12px;"></span>
+    </div>
+  </form>
+  </div>
+</div>
+{% endif %}
+
+<div class="section-card mb-16"><div class="section-header"><span class="section-title">📋 Geçerli parametre kartı{% if g and g.tarih %} ({{ g.tarih.strftime('%d.%m.%Y') }}){% endif %}</span></div>
+<div class="section-body" style="padding:0;">
+{% if g %}
+  {% set eski = gecmis|selectattr('durum', 'equalto', 'Onaylandı')|list %}
+  <table class="data-table pt"><thead><tr><th>Parametre</th><th>Değer</th><th>Sapma</th>
+    {% for x in eski[1:4] %}<th class="text-muted" style="font-weight:400;">{{ x.tarih.strftime('%d.%m.%y') if x.tarih else '—' }}<br>{{ x.makina or '' }}</th>{% endfor %}</tr></thead><tbody>
+  {% for p in g.parametreler %}
+    <tr><td>{{ p.ad }}</td><td class="v">{{ p.deger or '—' }}</td><td class="s">{{ p.sapma }}</td>
+    {% for x in eski[1:4] %}{% set q = x.parametreler|selectattr('ad', 'equalto', p.ad)|first %}<td class="s">{{ q.deger if q else '' }}</td>{% endfor %}</tr>
+  {% endfor %}
+  </tbody></table>
+{% else %}<p class="text-muted" style="padding:12px;">Bu ürün için onaylı ayar yok. Yeni ayar kaydı girin.</p>{% endif %}
+</div></div>
+
+<details class="section-card"><summary class="section-header" style="cursor:pointer;"><span class="section-title">🕘 Ayar geçmişi ({{ gecmis|length }})</span></summary>
+<div class="section-body" style="padding:0;">
+  <table class="data-table pt"><thead><tr><th>Tarih</th><th>Makina</th><th>Malzeme</th><th>Durum</th><th>Kaynak</th><th>Giren / Onaylayan</th><th>Değişiklik</th></tr></thead><tbody>
+  {% for k in gecmis %}{% set kk = karsilastirmalar.get(k.id, []) %}
+    <tr><td>{{ k.tarih.strftime('%d.%m.%Y') if k.tarih else '—' }}</td><td>{{ k.makina or '—' }}</td><td>{{ k.malzeme or '' }}</td>
+      <td><span class="status-badge {{ 'green' if k.durum == 'Onaylandı' else ('red' if k.durum == 'Reddedildi' else 'yellow') }}">{{ k.durum }}</span>{% if g and k.id == g.id %} <b>(geçerli)</b>{% endif %}</td>
+      <td class="text-muted">{{ k.kaynak or '' }}</td>
+      <td style="font-size:11px;">{{ k.kaydeden.ad_soyad if k.kaydeden else '—' }} / {{ k.onaylayan.ad_soyad if k.onaylayan else '—' }}</td>
+      <td>{% if kk %}{% set nd = kk|selectattr('degisti')|list|length %}{% set nt = kk|selectattr('tolerans_disi')|list|length %}{% if nd %}<span class="etiket e-deg">{{ nd }}</span>{% endif %}{% if nt %} <span class="etiket e-disi">{{ nt }} tol. dışı</span>{% endif %}{% endif %}</td></tr>
+  {% endfor %}
+  </tbody></table>
+</div></details>
+{% endif %}
+
+<script>
+function filtrele(){
+  const m = document.getElementById('f-mus').value, a = (document.getElementById('f-ara').value || '').toLocaleLowerCase('tr');
+  const s = document.getElementById('f-urun'); let ilk = null, n = 0;
+  [...s.options].forEach((o, i) => { if (!i) return;
+    const ok = (!m || o.dataset.m === m) && (!a || o.text.toLocaleLowerCase('tr').includes(a));
+    o.hidden = !ok; if (ok) { n++; if (!ilk) ilk = o; } });
+  s.options[0].text = '— ürün seçin (' + n + ') —';
+  if (a && ilk && n === 1) s.value = ilk.value;
+}
+document.getElementById('f-mus').addEventListener('change', filtrele);
+document.getElementById('f-ara').addEventListener('input', filtrele);
+document.getElementById('f-urun').addEventListener('change', e => { if (e.target.value) document.getElementById('secim').submit(); });
+filtrele();
+(function(){
+  const f = document.getElementById('yeni-form'); if (!f) return;
+  const tol = s => { const m = String(s || '').match(/(?:\+\/-|±|\+-)\s*(\d+(?:[.,]\d+)?)/); return m ? parseFloat(m[1].replace(',', '.')) : null; };
+  const num = v => { const x = parseFloat(String(v).trim().replace(',', '.')); return isNaN(x) ? null : x; };
+  function kontrol(){
+    let d = 0, t = 0;
+    f.querySelectorAll('tbody tr').forEach(tr => {
+      const o = tr.dataset.onceki, v = tr.querySelector('.deger').value, sp = tr.querySelector('.sapma').value, c = tr.querySelector('.durum');
+      const degisti = o !== '' && v !== o, a = num(v), b = num(o), tt = tol(sp);
+      const disi = degisti && a !== null && b !== null && tt !== null && Math.abs(a - b) > tt + 1e-9;
+      tr.classList.toggle('degisti', degisti && !disi); tr.classList.toggle('disi', disi);
+      c.innerHTML = disi ? '<span class="etiket e-disi">tolerans dışı</span>' : (degisti ? '<span class="etiket e-deg">değişti</span>' : '');
+      d += degisti ? 1 : 0; t += disi ? 1 : 0;
+    });
+    document.getElementById('ozet').textContent = d ? (d + ' parametre değişti' + (t ? ', ' + t + ' tanesi önceki değere göre tolerans dışı — açıklamaya nedenini yazın' : '')) : 'Değişiklik yok';
+  }
+  f.addEventListener('input', kontrol); kontrol();
+})();
+</script>
+{% endblock %}

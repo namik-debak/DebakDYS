@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}ISMS Genel Bakış{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><span>ISMS</span>{% endblock %}
+{% block content %}
+<div class="mb-24"><h2 style="font-size:20px;font-weight:700;">ISMS Genel Bakış</h2>
+<p class="text-muted" style="font-size:13px;">ISO/IEC 27001 bilgi güvenliği yönetimi</p></div>
+<div class="stats-grid">
+<a href="{{ request.script_root }}/isms/assets" class="stat-card" style="text-decoration:none;color:inherit;"><div class="stat-icon blue">🗄️</div><div class="stat-value">{{ ozet.varlik }}</div><div class="stat-label">Varlık</div></a>
+<a href="{{ request.script_root }}/isms/soa" class="stat-card" style="text-decoration:none;color:inherit;"><div class="stat-icon purple">📑</div><div class="stat-value">{{ ozet.soa }}</div><div class="stat-label">SoA</div></a>
+<a href="{{ request.script_root }}/isms/risks" class="stat-card" style="text-decoration:none;color:inherit;"><div class="stat-icon red">⚠️</div><div class="stat-value">{{ ozet.risk }}</div><div class="stat-label">Risk</div></a>
+<a href="{{ request.script_root }}/isms/incidents" class="stat-card" style="text-decoration:none;color:inherit;"><div class="stat-icon orange">🚨</div><div class="stat-value">{{ ozet.olay }}</div><div class="stat-label">Olay</div></a>
+<a href="{{ request.script_root }}/isms/access-reviews" class="stat-card" style="text-decoration:none;color:inherit;"><div class="stat-icon yellow">🔑</div><div class="stat-value">{{ ozet.erisim }}</div><div class="stat-label">Erişim İncelemesi</div></a>
+<a href="{{ request.script_root }}/isms/backups" class="stat-card" style="text-decoration:none;color:inherit;"><div class="stat-icon green">💾</div><div class="stat-value">{{ ozet.yedek }}</div><div class="stat-label">Yedek</div></a>
+</div>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}IMS Genel Bakış{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><span>IMS</span>{% endblock %}
+{% block content %}
+<div class="mb-24">
+  <h2 style="font-size:20px;font-weight:700;">IMS Genel Bakış</h2>
+  <p class="text-muted" style="font-size:13px;">Entegre yönetim sistemi özeti</p>
+</div>
+<div class="stats-grid mb-24">
+  <a href="{{ request.script_root }}/ims/requirements" class="stat-card" style="text-decoration:none;color:inherit;">
+    <div class="stat-icon blue">📐</div><div class="stat-value">{{ ozet.gereksinim }}</div><div class="stat-label">Gereklilik</div></a>
+  <a href="{{ request.script_root }}/ims/context" class="stat-card" style="text-decoration:none;color:inherit;">
+    <div class="stat-icon purple">🌐</div><div class="stat-value">{{ ozet.baglam }}</div><div class="stat-label">Bağlam</div></a>
+  <a href="{{ request.script_root }}/ims/context" class="stat-card" style="text-decoration:none;color:inherit;">
+    <div class="stat-icon orange">🤝</div><div class="stat-value">{{ ozet.taraf }}</div><div class="stat-label">İlgili Taraf</div></a>
+  <a href="{{ request.script_root }}/ims/reviews" class="stat-card" style="text-decoration:none;color:inherit;">
+    <div class="stat-icon green">📋</div><div class="stat-value">{{ ozet.ygg }}</div><div class="stat-label">YGG</div></a>
+  <a href="{{ request.script_root }}/ims/legal" class="stat-card" style="text-decoration:none;color:inherit;">
+    <div class="stat-icon yellow">⚖️</div><div class="stat-value">{{ ozet.yasal }}</div><div class="stat-label">Mevzuat</div></a>
+  <a href="{{ request.script_root }}/performance" class="stat-card" style="text-decoration:none;color:inherit;">
+    <div class="stat-icon blue">📊</div><div class="stat-value">{{ ozet.kpi }}</div><div class="stat-label">KPI</div></a>
+</div>
+{% endblock %}

@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}İç Tetkik{% endblock %}
+
+{% block breadcrumb %}
+<span class="separator">›</span>
+<span>İç Tetkik</span>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex align-center justify-between mb-24">
+    <div>
+        <h2 style="font-size: 20px; font-weight: 700;">İç Tetkik</h2>
+        <p class="text-muted" style="font-size: 13px;">Sistem · Proses · Ürün denetimleri — toplam <strong style="color: var(--text-primary);">{{ kayitlar|length }}</strong></p>
+    </div>
+    <div class="d-flex gap-8">
+        <a href="{{ request.script_root }}/audits/checklists" class="btn btn-outline">📋 Soru Listeleri</a>
+        <a href="{{ request.script_root }}/audits/new" class="btn btn-primary">➕ Yeni Tetkik</a>
+    </div>
+</div>
+
+<div class="section-card mb-16">
+    <div class="section-body" style="padding: 12px 16px;">
+        <form method="GET" action="{{ request.script_root }}/audits" class="filters-bar">
+            <div class="filter-group">
+                <label class="filter-label">Tip:</label>
+                <select name="tip" class="filter-select" onchange="this.form.submit()">
+                    <option value="">Tümü</option>
+                    {% for t in tipler %}
+                    <option value="{{ t }}" {{ 'selected' if request.args.get('tip') == t }}>{{ t|enum }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Durum:</label>
+                <select name="durum" class="filter-select" onchange="this.form.submit()">
+                    <option value="">Tümü</option>
+                    {% for d in durumlar %}
+                    <option value="{{ d }}" {{ 'selected' if request.args.get('durum') == d }}>{{ d|enum }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% if request.args.get('durum') or request.args.get('tip') %}
+            <a href="{{ request.script_root }}/audits" class="btn btn-sm btn-outline">✕ Temizle</a>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+<div class="section-card">
+    {% if kayitlar %}
+    <div class="data-table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr><th>Tetkik No</th><th>Tip</th><th>Başlık</th><th>Süreç / Ürün</th><th>Tetkikçi</th><th>Planlanan</th><th>Bulgu</th><th>Durum</th><th></th></tr>
+            </thead>
+            <tbody>
+                {% for a in kayitlar %}
+                <tr>
+                    <td><code style="color: var(--text-accent);">{{ a.tetkik_no }}</code></td>
+                    <td><span class="status-badge {{ (a.denetim_tipi or 'Sistem Denetimi')|slug }}">{{ (a.denetim_tipi or 'Sistem Denetimi')|enum }}</span></td>
+                    <td><a href="{{ request.script_root }}/audits/{{ a.id }}" class="doc-title">{{ a.baslik }}</a></td>
+                    <td style="font-size:12px;">
+                        {% if a.denetim_tipi == 'Ürün Denetimi' %}
+                            {{ a.urun_adi or '—' }}
+                        {% else %}
+                            {{ a.denetlenen_surec.kod if a.denetlenen_surec else '—' }}
+                        {% endif %}
+                    </td>
+                    <td style="font-size:12px;">{{ a.tetkik_eden.ad_soyad if a.tetkik_eden else '-' }}</td>
+                    <td class="text-muted" style="font-size:12px;">{{ a.planlanan_tarih.strftime('%d.%m.%Y') if a.planlanan_tarih else '-' }}</td>
+                    <td class="text-center">{{ a.findings|length }}</td>
+                    <td><span class="status-badge {{ a.durum|slug }}">{{ a.durum|enum }}</span></td>
+                    <td><a href="{{ request.script_root }}/audits/{{ a.id }}" class="btn btn-sm btn-outline">Detay</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">🕵️</div>
+        <h3>Tetkik bulunamadı</h3>
+        <a href="{{ request.script_root }}/audits/new" class="btn btn-primary">Yeni Tetkik Planla</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

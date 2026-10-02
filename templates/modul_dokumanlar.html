@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}{{ modul_md.baslik }} — Dokümanlar{% endblock %}
+
+{% block breadcrumb %}
+<span class="separator">›</span>
+<a href="{{ request.script_root }}{{ modul_md.yol }}">{{ modul_md.baslik }}</a>
+<span class="separator">›</span>
+<span>Dokümanlar</span>
+{% endblock %}
+
+{% block content %}
+<style>
+.md-grup{margin-bottom:14px;}
+.md-grup h3{font-size:13px;font-weight:700;margin:0 0 4px;color:var(--text-secondary);}
+.md-satir{display:flex;align-items:center;gap:12px;padding:8px 12px;border-bottom:1px solid var(--border-color);}
+.md-satir:last-child{border-bottom:none;}
+.md-satir .ad{flex:1;min-width:0;}
+.md-satir .ad a{text-decoration:none;}
+.md-satir .etiket{font-size:11px;border-radius:10px;padding:1px 8px;margin-left:6px;white-space:nowrap;}
+.md-satir .islem{white-space:nowrap;display:flex;gap:6px;}
+</style>
+<p class="text-muted" style="font-size:12px;margin:-4px 0 12px;">Dokümanlar DYS doküman kaydında tutulur; bu sayfa yalnız gösterir. Onay, revizyon ve dağıtım dokümanın kendi sayfasında işler.</p>
+{% for g, liste in modul_md.gruplar %}
+<div class="section-card md-grup">
+  <div class="section-header" style="padding:10px 14px;"><span class="section-title" style="font-size:14px;">📁 {{ g.split(' › ')[-1] }} <span class="text-muted" style="font-weight:400;">({{ liste|length }})</span></span>
+    {% if '›' in g %}<span class="text-muted" style="font-size:11px;">{{ g }}</span>{% endif %}</div>
+  <div class="section-body" style="padding:0;">
+  {% for d in liste %}
+    {% set doc = docs.get(d.id) if d.id else None %}
+    <div class="md-satir">
+      <div class="ad">
+        {% if doc %}<a href="{{ request.script_root }}/documents/{{ doc.id }}"><strong>{{ doc.dokuman_no }}</strong> {{ doc.baslik }}</a>
+        {% else %}<strong>{{ d.no }}</strong> <span class="text-muted">(DYS'de kayıt yok)</span>{% endif %}
+        {% if doc and doc.durum in ['Eskimiş', 'İptal'] %}<span class="etiket" style="background:var(--color-danger-bg, #fee2e2);color:var(--color-danger, #b91c1c);">{{ doc.durum }}</span>
+        {% elif doc %}<span class="etiket" style="background:var(--bg-secondary);color:var(--text-secondary);">{{ doc.dokuman_tipi }} · Rev. {{ doc.revizyon_no }} · {{ doc.durum }}</span>{% endif %}
+      </div>
+      <div class="islem">
+      {% if doc %}
+        {% set fi = form_islem(doc) %}
+        {% if fi and fi.tur == 'modul' and fi.url.endswith(modul_md.yol) %}
+          <span class="etiket" style="background:var(--color-success-bg, #dcfce7);color:var(--color-success, #15803d);">bu ekranda</span>
+          <a href="{{ fi.url }}" class="btn btn-sm btn-primary">➕ Yeni kayıt</a>
+        {% elif fi and fi.tur == 'modul' %}
+          <a href="{{ fi.url }}" class="btn btn-sm btn-outline">→ {{ fi.ad }}</a>
+        {% elif fi and fi.tur in ('sablon', 'disarida') %}
+          <span class="etiket" title="{{ fi.not }}">{{ 'şablon' if fi.tur == 'sablon' else fi.ad }}</span>
+        {% elif fi and fi.tur == 'dinamik' %}
+          <a href="{{ fi.url }}" class="btn btn-sm btn-primary">✏️ Doldur</a>
+          <a href="{{ fi.detay }}" class="btn btn-sm btn-outline">Kayıtlar</a>
+        {% endif %}
+        <a href="{{ request.script_root }}/documents/{{ doc.id }}" class="btn btn-sm btn-outline">👁️ Aç</a>
+      {% endif %}
+      </div>
+    </div>
+  {% endfor %}
+  </div>
+</div>
+{% else %}
+<div class="empty-state"><div class="empty-icon">📂</div><h3>Bu modüle bağlı doküman yok</h3></div>
+{% endfor %}
+{% endblock %}

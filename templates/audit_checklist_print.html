@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><title>{{ audit.tetkik_no }} — Denetim Soru Listesi</title>
+<style>
+@page{size:A4 landscape;margin:10mm;}
+body{font-family:Arial,Helvetica,sans-serif;font-size:10px;color:#000;margin:0;background:#fff;}
+table{border-collapse:collapse;width:100%;}
+td,th{border:1px solid #000;padding:3px 4px;vertical-align:top;}
+.antet td{font-size:11px;}
+.antet .logo{width:120px;text-align:center;font-weight:700;font-size:16px;}
+.antet .baslik{text-align:center;font-weight:700;font-size:14px;}
+th{background:#e7ecf5;font-size:9px;}
+.kutu{display:inline-block;width:9px;height:9px;border:1px solid #000;margin-right:2px;vertical-align:middle;}
+.dolu{background:#000;}
+.bolum td{background:#f2f2f2;font-weight:700;}
+.not{font-size:9px;color:#333;}
+.imza td{height:42px;}
+@media screen{body{padding:16px;max-width:1100px;margin:auto;} .ekran{margin-bottom:10px;}}
+@media print{.ekran{display:none;} tr{page-break-inside:avoid;}}
+</style></head><body>
+<div class="ekran"><button onclick="window.print()">🖨️ Yazdır</button> <span class="not">Sahada doldurulan çıktı sonrasında DYS'de "Soru Listesi" ekranına girilir; imzalı çıktı taranıp kanıt olarak eklenebilir.</span></div>
+<table class="antet">
+<tr><td class="logo" rowspan="3">DEBAK</td><td class="baslik" rowspan="3">İÇ SÜREÇ DENETİMİ SORU LİSTESİ<br><span style="font-size:11px;font-weight:400;">{{ checklist.ad if checklist else audit.baslik }}</span></td>
+<td>Doküman No: <b>{{ checklist.kod.split('-')[0] if checklist else 'Y01.6 F01' }}</b></td></tr>
+<tr><td>Tetkik No: <b>{{ audit.tetkik_no }}</b></td></tr>
+<tr><td>Çıktı No: {{ cikti_no }}<br>{{ simdi.strftime('%d.%m.%Y %H:%M') }}</td></tr>
+</table>
+<table style="margin-top:4px;">
+<tr><td style="width:33%;">Denetlenen süreç: <b>{{ (audit.denetlenen_surec.kod ~ ' ' ~ audit.denetlenen_surec.ad) if audit.denetlenen_surec else (audit.urun_adi or '—') }}</b></td>
+<td style="width:33%;">Plan / gerçekleşen tarih: <b>{{ audit.planlanan_tarih.strftime('%d.%m.%Y') if audit.planlanan_tarih else '—' }}</b> / ..............</td>
+<td>Denetçi(ler): <b>{% for e in ekip %}{{ e.ad }}{{ ', ' if not loop.last }}{% else %}{{ audit.tetkik_eden.ad_soyad if audit.tetkik_eden else '' }}{% endfor %}</b></td></tr>
+<tr><td colspan="3">Denetlenenler: </td></tr>
+</table>
+{% if sorular %}
+<table style="margin-top:4px;">
+<thead><tr><th style="width:26px;">No</th><th style="width:40px;">Şart</th><th>Soru</th><th style="width:80px;">Kime</th><th style="width:230px;">Gözlem / Objektif delil</th>
+<th style="width:34px;">Uygun</th><th style="width:34px;">Kısmen</th><th style="width:34px;">Uygun-suz</th><th style="width:28px;">N/A</th><th style="width:44px;">Derece<br>Mj/Mn/G/İF</th></tr></thead>
+<tbody>
+{% set ns = namespace(b=None) %}
+{% for q in sorular %}{% set a = answers.get(q.id) %}
+{% if q.bolum != ns.b %}{% set ns.b = q.bolum %}<tr class="bolum"><td colspan="10">{{ q.bolum or 'Genel' }}</td></tr>{% endif %}
+<tr><td>{{ q.sira }}</td><td>{{ q.sart_no or '' }}</td><td>{{ q.soru_metin }}</td><td class="not">{{ q.kime or '' }}</td><td>{{ a.gozlem if a and a.gozlem else '' }}</td>
+{% for c in ['Uygun', 'Kısmen Uygun', 'Uygunsuz', 'N/A'] %}<td style="text-align:center;"><span class="kutu {{ 'dolu' if a and a.sonuc == c else '' }}"></span></td>{% endfor %}
+<td></td></tr>
+{% endfor %}
+</tbody></table>
+{% else %}<p>Bu tetkike bağlı soru listesi yok. Bulgular aşağıya yazılır.</p>
+<table><tr><th>Bulgu</th><th style="width:90px;">Derece</th></tr>{% for i in range(12) %}<tr><td style="height:24px;"></td><td></td></tr>{% endfor %}</table>{% endif %}
+{% set _ek = denetim_ek_kanitlari(audit) %}{% if _ek %}
+<table style="margin-top:6px;"><tr><th colspan="4">Ek kanıt dokümanları</th></tr><tr><th style="width:120px;">Tür</th><th>Kanıt</th><th>Açıklama</th><th style="width:50px;">Soru</th></tr>
+{% for e in _ek %}<tr><td>{{ e.k.kanit_tipi or 'Diğer' }}</td><td>{{ e.k.dosya_adi or '' }}{% if e.dokuman %}{{ e.dokuman.dokuman_no }} {{ e.dokuman.baslik }}{% endif %}</td><td>{{ e.k.aciklama or '' }}</td><td>{{ (e.soru.soru_no or e.soru.sira) if e.soru else '' }}</td></tr>{% endfor %}</table>
+{% endif %}
+<table style="margin-top:6px;"><tr><th>Güçlü yönler / Genel değerlendirme</th></tr><tr><td style="height:60px;"></td></tr></table>
+<table class="imza" style="margin-top:6px;"><tr><th>Baş denetçi</th><th>Denetçi</th><th>Denetlenen süreç sorumlusu</th></tr><tr><td></td><td></td><td></td></tr></table>
+<p class="not">Derece: Mj = Majör uygunsuzluk, Mn = Minör uygunsuzluk, G = Gözlem, İF = İyileştirme fırsatı. Kontrolsüz kopya — geçerli sürüm DYS'dedir.</p>
+</body></html>

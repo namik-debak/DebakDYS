@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Yetkinlik Matrisi{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><span>Yetkinlik Matrisi</span>{% endblock %}
+{% block content %}
+<div class="d-flex align-center justify-between mb-24" style="flex-wrap:wrap;gap:12px;">
+  <div>
+    <h2 style="font-size:20px;font-weight:700;">Yetkinlik Matrisi</h2>
+    <p class="text-muted" style="font-size:13px;">Rol / departman / süreç bazlı gerekli yetkinlikler</p>
+  </div>
+  <a href="{{ request.script_root }}/training" class="btn btn-outline">Eğitimler</a>
+</div>
+{% if can_edit %}
+<div class="section-card mb-16">
+  <div class="section-header"><span class="section-title">Yeni Yetkinlik</span></div>
+  <div class="section-body">
+    <form method="POST" action="{{ request.script_root }}/competency/new" class="filters-bar" style="flex-wrap:wrap;gap:10px;">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input name="ad" class="filter-select" placeholder="Yetkinlik adı" required style="min-width:180px;">
+      <select name="kapsam_tipi" class="filter-select">{% for t in kapsam_tipleri %}<option>{{ t }}</option>{% endfor %}</select>
+      <input name="kapsam_deger" class="filter-select" placeholder="Kapsam değeri" required style="min-width:140px;">
+      <input name="gecerlilik_ay" type="number" min="1" class="filter-select" placeholder="Geçerlilik (ay)" style="width:120px;">
+      <label style="font-size:12px;"><input type="checkbox" name="kritik_mi" value="1"> Kritik</label>
+      <button class="btn btn-primary" type="submit">Ekle</button>
+    </form>
+  </div>
+</div>
+{% endif %}
+<div class="section-card mb-24">
+{% if kayitlar %}
+<table class="data-table">
+<thead><tr><th>Yetkinlik</th><th>Kapsam</th><th>Değer</th><th>Geçerlilik</th><th>Kritik</th></tr></thead>
+<tbody>
+{% for r in kayitlar %}
+<tr>
+  <td>{{ r.ad }}</td>
+  <td>{{ r.kapsam_tipi }}</td>
+  <td>{{ r.kapsam_deger }}</td>
+  <td>{{ r.gecerlilik_ay or '—' }} ay</td>
+  <td>{% if r.kritik_mi %}<span class="status-badge red">Evet</span>{% else %}—{% endif %}</td>
+</tr>
+{% endfor %}
+</tbody></table>
+{% else %}
+<div class="empty-state"><div class="empty-icon">🧩</div><h3>Yetkinlik tanımı yok</h3></div>
+{% endif %}
+</div>
+<div class="section-card">
+  <div class="section-header"><span class="section-title">Son Eğitimler</span></div>
+  <div class="section-body" style="padding:0;">
+  {% if egitimler %}
+  <table class="data-table">
+  <thead><tr><th>Eğitim</th><th>Katılımcı</th><th>Tarih</th></tr></thead>
+  <tbody>
+  {% for e in egitimler %}
+  <tr>
+    <td>{{ e.egitim_adi }}</td>
+    <td>{{ e.kullanici.ad_soyad if e.kullanici else '—' }}</td>
+    <td class="text-muted">{{ e.egitim_tarihi.strftime('%d.%m.%Y') if e.egitim_tarihi else '—' }}</td>
+  </tr>
+  {% endfor %}
+  </tbody></table>
+  {% else %}<p class="text-muted" style="padding:16px;">Eğitim kaydı yok.</p>{% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,5 @@
+﻿=== CURRENT FILE ===
+[footer] sec0.footer: 'Dok³man No: D01 T03    Rev: 1    Tarih: 14.02.2023'
+
+=== BACKUP FILE ===
+[footer] sec0.footer: 'D2 T44(1)_14.02.2023'

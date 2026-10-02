@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+{% block title %}{{ capa.dof_no }}{% endblock %}
+
+{% block breadcrumb %}
+<span class="separator">›</span>
+<a href="{{ request.script_root }}/capa">DÖF</a>
+<span class="separator">›</span>
+<span>{{ capa.dof_no }}</span>
+{% endblock %}
+
+{% block content %}
+{% if capa.dis_kimlik %}<div class="alert alert-info" style="margin-bottom:12px;">📈 Bu DÖF, Performans Değerlendirme (KPI) modülündeki uygunsuzluk kaydının yansımasıdır; kök neden, aksiyonlar ve kapatma orada yürütülür.
+  <a href="{{ url_for('pk_panel', yol='/uygunsuzluk/' ~ capa.dis_kimlik) }}" class="btn btn-sm btn-primary" style="margin-left:8px;">Uygunsuzluk kaydını aç →</a></div>{% endif %}
+<div class="d-flex align-center justify-between mb-24">
+    <div>
+        <h2 style="font-size: 20px; font-weight: 700;">{{ capa.dof_no }} — {{ capa.baslik }}</h2>
+        <p class="text-muted" style="font-size: 13px;">
+            <span class="status-badge {{ capa.durum|slug }}">{{ capa.durum|enum }}</span>
+            &nbsp;·&nbsp; Kaynak: {{ capa.kaynak_tipi|enum }}
+            {% if capa.gecikti_mi %}&nbsp;·&nbsp;<span class="risk-badge yuksek">Gecikti</span>{% endif %}
+        </p>
+    </div>
+    <div class="d-flex gap-8">
+        <a href="{{ request.script_root }}/capa/{{ capa.id }}/export.pdf" class="btn btn-outline">⬇ PDF</a>
+        {% if is_editor %}
+        <a href="{{ request.script_root }}/capa/{{ capa.id }}/edit" class="btn btn-outline">✏️ Düzenle</a>
+        {% if capa.durum != 'Kapatıldı' %}
+        <button class="btn btn-primary" onclick="openModal('close-modal')">✅ Kapat</button>
+        {% else %}
+        <button class="btn btn-outline" onclick="openModal('reopen-modal')">↺ Yeniden Aç</button>
+        {% endif %}
+        {% endif %}
+    </div>
+</div>
+
+{% if capa.qrqc_records %}
+<div class="alert alert-purple mb-16 d-flex align-center justify-between" style="padding:12px 16px; background:#f3e8ff; border:1px solid #c084fc; border-radius:8px;">
+    <div class="d-flex align-center gap-8">
+        <span style="font-size:20px;">⚡</span>
+        <div>
+            <strong>{{ _('İlişkili QRQC Olay Kaydı') }}:</strong>
+            {% for q in capa.qrqc_records %}
+            <a href="{{ request.script_root }}/qrqc/{{ q.id }}" class="badge badge-purple" style="text-decoration:none;">
+                {{ q.qrqc_no }} — {{ q.baslik }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="section-card mb-16">
+    <div class="section-body" style="padding: 20px;">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div><strong class="text-muted">Sorumlu:</strong> {{ capa.sorumlu.ad_soyad if capa.sorumlu else '-' }}</div>
+            <div><strong class="text-muted">Açan:</strong> {{ capa.acan.ad_soyad if capa.acan else '-' }}</div>
+            <div><strong class="text-muted">Tespit:</strong> {{ capa.tespit_tarihi.strftime('%d.%m.%Y') if capa.tespit_tarihi else '-' }}</div>
+            <div><strong class="text-muted">Planlanan Kapanış:</strong> {{ capa.planlanan_tarih.strftime('%d.%m.%Y') if capa.planlanan_tarih else '-' }}</div>
+            <div><strong class="text-muted">İlgili Süreç:</strong> {{ (capa.ilgili_surec.kod + ' - ' + capa.ilgili_surec.ad) if capa.ilgili_surec else '-' }}</div>
+            <div><strong class="text-muted">İlgili Doküman:</strong>
+                {% if capa.ilgili_document %}
+                <a href="{{ request.script_root }}/documents/{{ capa.ilgili_document_id }}">{{ capa.ilgili_document.dokuman_no }}</a>
+                {% else %}-{% endif %}
+            </div>
+            {% if capa.kapanma_tarihi %}
+            <div><strong class="text-muted">Kapanış:</strong> {{ capa.kapanma_tarihi.strftime('%d.%m.%Y') }}</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% macro blok(baslik, icerik) %}
+<div class="section-card mb-16">
+    <div class="section-header" style="padding: 12px 16px;"><strong>{{ baslik }}</strong></div>
+    <div class="section-body" style="padding: 16px; white-space: pre-wrap;">{{ icerik or '—' }}</div>
+</div>
+{% endmacro %}
+
+{{ blok('Uygunsuzluk Tanımı', capa.tanim) }}
+
+<div class="section-card mb-16">
+    <div class="section-header" style="padding: 12px 16px;">
+        <strong>{{ _('Kök Neden Analizi') }}
+            {% if capa.kok_neden_yontemi %}
+            <span class="text-muted" style="font-weight:500; font-size:13px;">({{ capa.kok_neden_yontemi }})</span>
+            {% endif %}
+        </strong>
+    </div>
+    <div class="section-body" style="padding: 16px;">
+        {% if capa.kok_neden_yontemi == '8D' %}
+        <div class="eight-d-grid">
+            <div><strong class="text-muted">D1 — {{ _('Takım') }}</strong><div style="white-space:pre-wrap; margin-top:4px;">{{ capa.d1_team or '—' }}</div></div>
+            <div><strong class="text-muted">D2 — {{ _('Problem') }}</strong><div style="white-space:pre-wrap; margin-top:4px;">{{ capa.d2_problem or '—' }}</div></div>
+            <div><strong class="text-muted">D3 — {{ _('Geçici Önlem') }}</strong><div style="white-space:pre-wrap; margin-top:4px;">{{ capa.d3_containment or '—' }}</div></div>
+            <div><strong class="text-muted">D4 — {{ _('Kök Neden') }}</strong><div style="white-space:pre-wrap; margin-top:4px;">{{ capa.d4_root_cause or '—' }}</div></div>
+            <div><strong class="text-muted">D5 — {{ _('Kalıcı Aksiyon') }}</strong><div style="white-space:pre-wrap; margin-top:4px;">{{ capa.d5_corrective or '—' }}</div></div>
+            <div><strong class="text-muted">D6 — {{ _('Uygulama') }}</strong><div style="white-space:pre-wrap; margin-top:4px;">{{ capa.d6_implement or '—' }}</div></div>
+            <div><strong class="text-muted">D7 — {{ _('Önleme') }}</strong><div style="white-space:pre-wrap; margin-top:4px;">{{ capa.d7_prevent or '—' }}</div></div>
+            <div><strong class="text-muted">D8 — {{ _('Takdir') }}</strong><div style="white-space:pre-wrap; margin-top:4px;">{{ capa.d8_congratulate or '—' }}</div></div>
+        </div>
+        <p class="text-muted" style="font-size:12px; margin-top:12px;">
+            {{ _('Etkinlik bekleme') }}: {{ capa.etkinlik_bekleme_gunu or 30 }} {{ _('gün') }}
+            {% if capa.yeniden_acildi %} · {{ _('Yeniden açıldı') }}{% endif %}
+        </p>
+        {% elif kok_bloklar %}
+        <div class="kok-detail-blocks">
+            {% for baslik, icerik in kok_bloklar %}
+            <div class="kok-detail-block">
+                <strong class="text-muted">{{ baslik }}</strong>
+                <div style="white-space:pre-wrap; margin-top:4px;">{{ icerik }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div style="white-space:pre-wrap;">—</div>
+        {% endif %}
+    </div>
+</div>
+
+{{ blok('Düzeltici Faaliyet', capa.duzeltici_faaliyet) }}
+{{ blok('Önleyici Faaliyet', capa.onleyici_faaliyet) }}
+{{ blok('Etkinlik Kontrolü', capa.etkinlik_kontrolu) }}
+
+<!-- Kapatma Modalı -->
+<div class="modal-overlay" id="close-modal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>DÖF Kapat</h3>
+            <button class="modal-close" onclick="closeModal('close-modal')" aria-label="Kapat">✕</button>
+        </div>
+        <form method="POST" action="{{ request.script_root }}/capa/{{ capa.id }}/close">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Etkinlik Kontrolü / Kapanış Notu</label>
+                    <textarea name="etkinlik_kontrolu" class="form-control" rows="3">{{ capa.etkinlik_kontrolu or '' }}</textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal('close-modal')">İptal</button>
+                <button type="submit" class="btn btn-primary">DÖF'ü Kapat</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Yeniden Açma Modalı -->
+<div class="modal-overlay" id="reopen-modal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>DÖF Yeniden Aç</h3>
+            <button class="modal-close" onclick="closeModal('reopen-modal')" aria-label="Kapat">✕</button>
+        </div>
+        <form method="POST" action="{{ request.script_root }}/capa/{{ capa.id }}/reopen">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Yeniden Açma Gerekçesi</label>
+                    <textarea name="gerekce" class="form-control" rows="3" placeholder="Etkinlik doğrulanamadı, uygunsuzluk tekrar etti..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal('reopen-modal')">İptal</button>
+                <button type="submit" class="btn btn-primary">Yeniden Aç</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,938 @@
+{% extends "base.html" %}
+{% block title %}{{ doc.dokuman_no }} — {{ doc.baslik }}{% endblock %}
+
+{% block breadcrumb %}
+<span class="separator">›</span>
+<a href="{{ request.script_root }}/documents">Dokümanlar</a>
+<span class="separator">›</span>
+<span>{{ doc.dokuman_no }}</span>
+{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="doc-detail-header">
+    <div class="doc-detail-info">
+        <h1>{{ doc.baslik }}</h1>
+        <div class="doc-meta-row">
+            <span class="doc-meta-item"><strong>{{ doc.dokuman_no }}</strong></span>
+            <span class="doc-meta-item">📄 {{ doc.dokuman_tipi }}</span>
+            <span class="doc-meta-item">🔄 {{ doc.surec.kod }} - {{ doc.surec.ad }}</span>
+            <span class="doc-meta-item">Rev. {{ doc.revizyon_no }}</span>
+            <span class="status-badge {{ doc.durum|slug }}">{{ doc.durum|enum }}</span>
+            <span class="sec-badge {{ doc.guvenlik_sinifi|slug }}">{{ doc.guvenlik_sinifi|enum }}</span>
+        </div>
+    </div>
+    <div class="doc-detail-actions">
+        {% if doc.dosya_yolu or doc.dosya_adi %}
+        <a href="{{ url_for('document_print', doc_id=doc.id) }}" class="btn btn-primary" title="Filigranlı kontrollü kopya PDF indir">🖨️ Kontrollü kopya</a>
+        <a href="{{ url_for('document_download', doc_id=doc.id) }}" class="btn btn-secondary">⬇️ İndir</a>
+        {% if can_fetch_master %}
+        <a href="{{ url_for('document_download', doc_id=doc.id, master=1) }}" class="btn btn-outline" title="Paylaşımdaki orijinal dosya (filigransız) — yalnızca düzenleme için">📄 Orijinal</a>
+        {% endif %}
+        {% endif %}
+        {% if doc.dokuman_tipi == 'Prosedür' %}
+        {% set es = esli_dokuman(doc, 'A') %}
+        {% if es %}<a href="{{ request.script_root }}/documents/{{ es.id }}" class="btn btn-primary" title="{{ es.baslik }}">🔀 İş Akışı ({{ es.no }})</a>{% endif %}
+        <a href="{{ request.script_root }}/documents/{{ doc.id }}/procedure.docx" class="btn btn-outline">📄 Antetli Prosedür (DOCX)</a>
+        {% elif doc.dokuman_tipi == 'İş Akışı' %}
+        {% set es = esli_dokuman(doc, 'P') %}
+        {% if es %}<a href="{{ request.script_root }}/documents/{{ es.id }}" class="btn btn-primary" title="{{ es.baslik }}">📘 Prosedür ({{ es.no }})</a>{% endif %}
+        {% elif doc.dokuman_tipi == 'Form' %}
+        {% set fi = form_islem(doc) %}
+        {% if fi and fi.tur in ('sablon', 'disarida') %}<span class="btn btn-outline" style="cursor:default;" title="{{ fi.not }}">{{ '📄 Şablon — indirip kullanın' if fi.tur == 'sablon' else '↗ Kaydı ' ~ fi.ad ~ ' ile tutulur' }}</span>
+        {% elif fi %}<a href="{{ fi.url }}" class="btn btn-primary" title="Bu form DYS'de {{ fi.ad }} ekranında işletilir">📝 DYS'de doldur ({{ fi.ad }})</a>{% endif %}
+        {% if fi and fi.detay %}<a href="{{ fi.detay }}" class="btn btn-outline">📋 Kayıtlar</a>{% endif %}
+        {% endif %}
+        {% if session.get('rol') in ['Admin', 'Doküman Kontrol'] %}
+        {% if doc.durum != 'Onaylı' %}
+        <a href="{{ request.script_root }}/documents/{{ doc.id }}/edit" class="btn btn-secondary">✏️ Düzenle</a>
+        {% endif %}
+        {% if doc.durum == 'Onaylı' %}
+        <a href="{{ request.script_root }}/documents/{{ doc.id }}/revise" class="btn btn-warning btn-sm" title="Yeni revizyon başlat">🔄 Revize Et</a>
+        {% endif %}
+        {% if doc.durum not in ['İptal', 'Eskimiş'] %}
+        <button class="btn btn-secondary btn-sm" onclick="openModal('cancel-modal')">🚫 İptal Et</button>
+        <button class="btn btn-secondary btn-sm" onclick="openModal('obsolete-modal')">📛 Eskit</button>
+        {% endif %}
+        <form method="POST" action="{{ request.script_root }}/documents/{{ doc.id }}/legal-hold" style="display:inline;">
+            <button type="submit" class="btn btn-secondary btn-sm" title="Yasal saklama">
+                {{ '🔒 Legal Hold Açık' if doc.legal_hold else '🔓 Legal Hold' }}
+            </button>
+        </form>
+        {% if session.get('rol') == 'Admin' and doc.durum in ['İptal', 'Eskimiş'] and not doc.legal_hold %}
+        <button class="btn btn-secondary btn-sm" onclick="openModal('disposal-modal')">🗑️ İmha Talebi</button>
+        {% endif %}
+        {% endif %}
+    </div>
+</div>
+
+{% if doc.iptal_nedeni %}
+<div class="section-card mb-16" style="border-left: 3px solid var(--color-warning);">
+    <div class="section-body" style="font-size:13px;">
+        <strong>Yaşam döngüsü notu ({{ doc.durum }}):</strong> {{ doc.iptal_nedeni }}
+        {% if doc.yerine_gecen_id %}
+        <br>Yerine geçen: <a href="{{ request.script_root }}/documents/{{ doc.yerine_gecen_id }}">#{{ doc.yerine_gecen_id }}</a>
+        {% endif %}
+        {% if doc.legal_hold %}<br><strong style="color:var(--color-danger);">🔒 Yasal saklama aktif — imha engellendi.</strong>{% endif %}
+    </div>
+</div>
+{% endif %}
+
+<!-- İptal Modal -->
+<div id="cancel-modal" class="modal-overlay">
+    <div class="modal">
+        <div class="modal-header"><span class="modal-title">🚫 Dokümanı İptal Et</span><button class="modal-close" onclick="closeModal('cancel-modal')">✕</button></div>
+        <form method="POST" action="{{ request.script_root }}/documents/{{ doc.id }}/cancel">
+            <div class="modal-body">
+                <div class="form-group"><label class="form-label">İptal Gerekçesi *</label><textarea name="iptal_nedeni" class="form-control" rows="3" required></textarea></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('cancel-modal')">Vazgeç</button>
+                <button type="submit" class="btn btn-primary">İptal Et</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Eskit Modal -->
+<div id="obsolete-modal" class="modal-overlay">
+    <div class="modal">
+        <div class="modal-header"><span class="modal-title">📛 Dokümanı Eskit</span><button class="modal-close" onclick="closeModal('obsolete-modal')">✕</button></div>
+        <form method="POST" action="{{ request.script_root }}/documents/{{ doc.id }}/obsolete">
+            <div class="modal-body">
+                <div class="form-group"><label class="form-label">Gerekçe / Not</label><textarea name="iptal_nedeni" class="form-control" rows="3"></textarea></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('obsolete-modal')">Vazgeç</button>
+                <button type="submit" class="btn btn-primary">Eskit</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- İmha Talebi Modal -->
+<div id="disposal-modal" class="modal-overlay">
+    <div class="modal">
+        <div class="modal-header"><span class="modal-title">🗑️ Kayıt İmha Talebi</span><button class="modal-close" onclick="closeModal('disposal-modal')">✕</button></div>
+        <form method="POST" action="{{ request.script_root }}/documents/{{ doc.id }}/disposal/request">
+            <div class="modal-body">
+                <div class="form-group"><label class="form-label">Gerekçe</label><textarea name="gerekce" class="form-control" rows="2" placeholder="Saklama süresi doldu..."></textarea></div>
+                <div class="form-group"><label class="form-label">Yasal Dayanak</label><input type="text" name="yasal_dayanak" class="form-control"></div>
+                <p class="text-muted" style="font-size:12px;">İmha, iki farklı yöneticinin onayıyla yürütülür.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('disposal-modal')">Vazgeç</button>
+                <button type="submit" class="btn btn-primary">Talep Oluştur</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Tabs -->
+{% set icerik_once = doc.icerik_json and doc.dokuman_tipi in ('Prosedür', 'İş Akışı') %}
+<div class="tabs" data-tab-group="doc-detail">
+    {% if icerik_once %}
+    <button class="tab-item active" data-tab="tab-icerik">{{ '🔀 Akış' if doc.dokuman_tipi == 'İş Akışı' else '📝 İçerik' }}</button>
+    {% endif %}
+    {% if doc.dosya_adi %}
+    <button class="tab-item {{ '' if icerik_once else 'active' }}" data-tab="tab-preview">👁️ {{ 'Dosya' if icerik_once else 'Önizleme' }}</button>
+    <button class="tab-item" data-tab="tab-info">📋 Bilgiler</button>
+    {% else %}
+    <button class="tab-item {{ '' if icerik_once else 'active' }}" data-tab="tab-info">📋 Bilgiler</button>
+    {% endif %}
+    {% if doc.icerik_json and not icerik_once %}
+    <button class="tab-item" data-tab="tab-icerik">📝 İçerik</button>
+    {% endif %}
+    <button class="tab-item" data-tab="tab-approval">✅ Onay Akışı</button>
+    <button class="tab-item" data-tab="tab-revisions">📜 Revizyon Geçmişi</button>
+    <button class="tab-item" data-tab="tab-distribution">📨 Dağıtım</button>
+    <button class="tab-item" data-tab="tab-standards">🛡️ Standartlar</button>
+    <button class="tab-item" data-tab="tab-atif">🔗 Atıflar{% if atif_yapanlar or atiflari %} ({{ atif_yapanlar|length }} / {{ atiflari|length }}){% endif %}</button>
+</div>
+
+<div data-tab-content="doc-detail">
+    <!-- Tab: Preview -->
+    {% if doc.dosya_adi %}
+    <div id="tab-preview" class="tab-content {{ '' if icerik_once else 'active' }}">
+        <div class="section-card">
+            <div class="section-header">
+                <span class="section-title">👁️ Doküman Önizleme — {{ doc.dosya_adi }}</span>
+                <div class="d-flex gap-8">
+                    <a href="{{ url_for('document_print', doc_id=doc.id) }}" class="btn btn-sm btn-primary">🖨️ Kontrollü kopya</a>
+                    <a href="{{ url_for('document_download', doc_id=doc.id) }}" class="btn btn-sm btn-secondary">⬇️ İndir</a>
+                </div>
+            </div>
+            <div class="section-body" style="padding: 0;">
+                {% if file_found is defined and not file_found %}
+                <div class="issued-copy-banner" style="background:#7f1d1d;color:#fff;">
+                    <strong>Dosya bulunamadı</strong>
+                    <span>IIS, dosya paylaşımını kendi Windows kullanıcısıyla açar. DebakDYSPool kimliğini, Explorer’da \\192.168.0.249\kalite klasörünü açabilen bir domain hesabı (ör. DEBAKAS\Administrator) yapın.</span>
+                </div>
+                {% endif %}
+                {% if copy_spec %}
+                <div class="issued-copy-banner issued-copy-banner-{{ copy_spec.kind }}">
+                    <strong>{{ copy_spec.label }}</strong>
+                    <span>{{ copy_spec.footer_left }} · {{ copy_spec.footer_right }}</span>
+                    <span class="issued-copy-hint">Yazdırılan kâğıt kopyalar bu işaretle geçerlidir. Orijinal kayıt dosya sunucusundadır.</span>
+                </div>
+                {% endif %}
+                {% set ext = doc.dosya_adi.rsplit('.', 1)[-1]|lower if '.' in doc.dosya_adi else '' %}
+
+                {% if ext == 'pdf' or pdf_mod %}
+                <!-- PDF Önizleme: PDF.js canvas render (Office dosyaları PDF'e dönüştürülerek, antet ve sayfa düzeniyle) -->
+                <div class="preview-container issued-copy" id="pdf-preview-area" data-watermark="{{ copy_spec.label if copy_spec else 'KONTROLLÜ KOPYA' }}">
+                    <div class="preview-toolbar">
+                        {% if pdf_mod and ham_gorunum_var %}<a class="btn btn-sm btn-outline" href="?gorunum=ham#tab-preview" title="Excel: hücre / sayfa tablosu · Word: metin">{{ '▦ Tablo görünümü' if ext in ['xls', 'xlsx', 'csv'] else '¶ Metin görünümü' }}</a>{% endif %}
+                        <button class="btn btn-sm btn-outline" id="pdf-prev" disabled>◀ Önceki</button>
+                        <span class="preview-page-info">Sayfa <span id="pdf-page-num">1</span> / <span id="pdf-page-count">-</span></span>
+                        <button class="btn btn-sm btn-outline" id="pdf-next">Sonraki ▶</button>
+                        <button class="btn btn-sm btn-outline" id="pdf-zoom-out">−</button>
+                        <span class="preview-page-info" id="pdf-zoom-label">100%</span>
+                        <button class="btn btn-sm btn-outline" id="pdf-zoom-in">+</button>
+                    </div>
+                    <div class="preview-canvas-wrapper" id="pdf-canvas-wrapper">
+                        <div class="preview-loading" id="pdf-loading">
+                            <div class="spinner"></div>
+                            <span>{{ 'Belge hazırlanıyor… (ilk açılışta PDF\'e dönüştürülür, birkaç saniye sürebilir)' if pdf_mod else 'PDF yükleniyor...' }}</span>
+                        </div>
+                        <canvas id="pdf-canvas"></canvas>
+                    </div>
+                </div>
+
+                {% elif ext in ['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp', 'bmp'] %}
+                <!-- Resim Önizleme -->
+                <div class="preview-container preview-image-container issued-copy" data-watermark="{{ copy_spec.label if copy_spec else 'KONTROLLÜ KOPYA' }}">
+                    <img src="{{ request.script_root }}/documents/{{ doc.id }}/preview" alt="{{ doc.baslik }}" class="preview-image">
+                </div>
+
+                {% elif ext in ['xlsx', 'xls', 'csv'] %}
+                <!-- Excel/CSV Önizleme: SheetJS ile HTML tablo -->
+                <div class="preview-container issued-copy" id="excel-preview-area" data-watermark="{{ copy_spec.label if copy_spec else 'KONTROLLÜ KOPYA' }}">
+                    <div class="preview-toolbar" id="excel-toolbar" style="display: none;">
+                        <span class="preview-page-info">Sayfa:</span>
+                        <select id="excel-sheet-select" class="filter-select" style="min-width: 150px;"></select>
+                        <span class="preview-page-info" id="excel-info"></span>
+                    </div>
+                    <div id="excel-loading" class="preview-loading-center">
+                        <div class="spinner"></div>
+                        <span>Excel dosyası yükleniyor...</span>
+                    </div>
+                    <div id="excel-table-container" class="preview-table-container" style="overflow: auto; max-height: 70vh; width: 100%; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 8px;"></div>
+                </div>
+
+                {% elif ext in ['txt', 'json', 'xml', 'html', 'css', 'js', 'py', 'md', 'log', 'ini', 'cfg', 'yaml', 'yml'] %}
+                <!-- Metin Dosyası Önizleme: fetch ile çek ve pre'de göster -->
+                <div class="preview-container" id="text-preview-area">
+                    <div id="text-loading" class="preview-loading-center">
+                        <div class="spinner"></div>
+                        <span>Dosya yükleniyor...</span>
+                    </div>
+                    <pre id="text-content" class="preview-text-content" style="display: none;"></pre>
+                </div>
+
+                {% elif ext == 'docx' %}
+                <!-- DOCX Önizleme: Mammoth.js -->
+                <div class="preview-container issued-copy" id="docx-preview-area" style="overflow: auto; max-height: 70vh; width: 100%; padding: 30px; background: white; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+                    <div id="docx-loading" class="preview-loading-center">
+                        <div class="spinner"></div>
+                        <span>Word dosyası yükleniyor...</span>
+                    </div>
+                    <div id="docx-content-container" style="color: black; text-align: left; line-height: 1.6;"></div>
+                </div>
+
+                {% elif ext in ['doc', 'pptx', 'ppt'] %}
+                <!-- Office Dosyaları — desteklenmiyor -->
+                <div class="preview-office">
+                    <div class="preview-office-icon">
+                        {% if ext == 'doc' %}📝{% elif ext in ['pptx', 'ppt'] %}📽️{% endif %}
+                    </div>
+                    <h3>{{ doc.dosya_adi }}</h3>
+                    <p class="text-muted">{{ ext|upper }} dosyaları için önizleme henüz desteklenmiyor. Dosyayı indirip bilgisayarınızda açabilirsiniz.</p>
+                    <div class="d-flex gap-8" style="margin-top: 16px; justify-content: center;">
+                        <a href="{{ request.script_root }}/documents/{{ doc.id }}/download" class="btn btn-primary">⬇️ Dosyayı İndir</a>
+                    </div>
+                </div>
+
+                {% else %}
+                <!-- Desteklenmeyen Format -->
+                <div class="preview-office">
+                    <div class="preview-office-icon">📄</div>
+                    <h3>{{ doc.dosya_adi }}</h3>
+                    <p class="text-muted">Bu dosya formatı (.{{ ext }}) önizleme için desteklenmiyor.</p>
+                    <div class="d-flex gap-8" style="margin-top: 16px; justify-content: center;">
+                        <a href="{{ request.script_root }}/documents/{{ doc.id }}/download" class="btn btn-primary">⬇️ Dosyayı İndir</a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Tab: Info -->
+    <div id="tab-info" class="tab-content {{ '' if (doc.dosya_adi or icerik_once) else 'active' }}">
+        <div class="section-card">
+            <div class="section-header">
+                <span class="section-title">📋 Doküman Bilgileri</span>
+            </div>
+            <div class="section-body">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Doküman No</span>
+                        <span class="info-value" style="font-family: monospace;">{{ doc.dokuman_no }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Başlık</span>
+                        <span class="info-value">{{ doc.baslik }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Süreç</span>
+                        <span class="info-value">{{ doc.surec.kod }} - {{ doc.surec.ad }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Doküman Tipi</span>
+                        <span class="info-value">{{ doc.dokuman_tipi }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Doküman Seviyesi</span>
+                        <span class="info-value">Seviye {{ doc.dokuman_seviyesi }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Güvenlik Sınıfı</span>
+                        <span class="info-value">
+                            <span class="sec-badge {{ doc.guvenlik_sinifi|slug }}">{{ doc.guvenlik_sinifi|enum }}</span>
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Revizyon No</span>
+                        <span class="info-value">{{ doc.revizyon_no }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Durum</span>
+                        <span class="info-value">
+                            <span class="status-badge {{ doc.durum|slug }}">{{ doc.durum|enum }}</span>
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Hazırlayan</span>
+                        <span class="info-value">{{ doc.hazirlayan.ad_soyad if doc.hazirlayan else '-' }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Kontrol Eden</span>
+                        <span class="info-value">{{ doc.kontrol_eden.ad_soyad if doc.kontrol_eden else '-' }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Onaylayan</span>
+                        <span class="info-value">{{ doc.onaylayan.ad_soyad if doc.onaylayan else '-' }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Yürürlük Tarihi</span>
+                        <span class="info-value">{{ doc.yururluk_tarihi.strftime('%d.%m.%Y') if doc.yururluk_tarihi else '-' }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Sonraki Gözden Geçirme</span>
+                        <span class="info-value">{{ doc.sonraki_gozden_gecirme.strftime('%d.%m.%Y') if doc.sonraki_gozden_gecirme else '-' }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Saklama Süresi</span>
+                        <span class="info-value">{{ doc.saklama_suresi_ay }} ay</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Dosya</span>
+                        <span class="info-value">{{ doc.dosya_adi if doc.dosya_adi else 'Dosya yüklenmemiş' }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Oluşturma Tarihi</span>
+                        <span class="info-value">{{ doc.olusturma_tarihi.strftime('%d.%m.%Y %H:%M') if doc.olusturma_tarihi else '-' }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab: İçerik (Şablon) -->
+    {% if doc.icerik_json %}
+    {% set icerik = doc.icerik_json | fromjson %}
+    {% set sablon = DOKUMAN_SABLONLARI.get(doc.dokuman_tipi, []) %}
+    {% set sablon_keys = [] %}
+    {% for k, b, p in sablon %}{% set _ = sablon_keys.append(k) %}{% endfor %}
+    <div id="tab-icerik" class="tab-content {{ 'active' if icerik_once else '' }}">
+        {% if doc.dokuman_tipi == 'İş Akışı' and icerik.get('akis') %}
+        {% set bolumler = icerik.get('akis')|fromjson %}
+        <div class="section-card mb-16">
+            <div class="section-header">
+                <span class="section-title">🔀 {{ doc.dokuman_no }} · {{ doc.baslik }}</span>
+                {% if icerik.get('ilgili_prosedur') %}<span class="text-muted" style="font-size:12px;">İlgili prosedür: {{ icerik.get('ilgili_prosedur')|kodlari_bagla }}</span>{% endif %}
+            </div>
+            <div class="section-body">
+                {% if icerik.get('amac') %}<p class="text-muted" style="font-size:13px;margin-bottom:14px;"><em>Amaç: {{ icerik.get('amac') }}</em></p>{% endif %}
+                {% for b in bolumler %}
+                <h3 class="akis-bolum">{{ b.baslik }}</h3>
+                <table class="data-table akis-tablo">
+                    <thead><tr><th style="width:56px;">Md.</th><th style="width:230px;">Akış</th><th>Faaliyet</th><th style="width:170px;">Sorumlu</th><th style="width:210px;">Doküman / Talimat</th><th style="width:190px;">Kayıt</th></tr></thead>
+                    <tbody>
+                    {% for s in b.adimlar %}
+                    <tr>
+                        <td class="text-muted">{{ s.md }}</td>
+                        <td>
+                            <div class="akis-sekil akis-{{ s.sekil or 'proc' }}">{{ s.metin }}</div>
+                            {% if not loop.last %}<div class="akis-ok">{% if s.sekil == 'dec' and s.asagi_etiket != '' %}<span>{{ s.asagi_etiket or 'O.K.' }}</span>{% endif %}↓</div>{% endif %}
+                            {% if s.dal %}<div class="akis-dal">→ {{ s.dal.etiket or 'RED' }}: {{ s.dal.hedef }}</div>{% endif %}
+                            {% if s.geri %}<div class="akis-dal geri">↺ {{ s.geri.etiket or 'Hayır' }}: {{ s.geri.adim or 1 }} adım geri</div>{% endif %}
+                        </td>
+                        <td style="white-space:pre-line;">{{ s.faaliyet|kodlari_bagla }}</td>
+                        <td style="white-space:pre-line;font-size:12px;">{{ s.sorumlu }}</td>
+                        <td style="white-space:pre-line;font-size:12px;">{{ s.dokuman|kodlari_bagla }}</td>
+                        <td style="white-space:pre-line;font-size:12px;">{{ s.kayit|kodlari_bagla }}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% endfor %}
+                {% if icerik.get('notlar') %}
+                <h3 class="akis-bolum">Notlar</h3>
+                <div style="white-space:pre-line;font-size:13px;line-height:1.6;">{{ icerik.get('notlar')|kodlari_bagla }}</div>
+                {% endif %}
+            </div>
+        </div>
+        <style>
+            .akis-bolum{font-size:14px;font-weight:700;margin:18px 0 8px;padding:6px 10px;background:var(--bg-tertiary,#eef2f8);border-radius:6px;}
+            .akis-tablo td{vertical-align:middle;}
+            .akis-sekil{margin:0 auto;max-width:210px;padding:8px 10px;text-align:center;font-size:12px;border:1.5px solid #555;background:#fff;color:#111;}
+            .akis-term{border-radius:999px;background:#d9ead3;}
+            .akis-proc{border-radius:3px;}
+            .akis-dec{background:#ffe6b0;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);padding:18px 26px;border:none;}
+            .akis-doc{border-radius:3px 3px 14px 3px;background:#f2f2f2;}
+            .akis-pre{background:#fff2cc;border-left:5px double #555;border-right:5px double #555;}
+            .akis-ok{text-align:center;color:#666;font-size:14px;line-height:16px;}
+            .akis-ok span{font-size:10px;font-weight:700;margin-right:4px;}
+            .akis-dal{text-align:center;color:#c0392b;font-size:11px;font-weight:700;margin-top:3px;}
+            .akis-dal.geri{color:#555;}
+            .doc-code-link{font-weight:600;text-decoration:underline dotted;}
+        </style>
+        {% elif doc.dokuman_tipi == 'Prosedür' %}
+        <div class="procedure-sheet section-card mb-16">
+            <div class="procedure-antet" aria-label="{{ _('Doküman anteti') }}">
+                <div class="procedure-antet-logo">
+                    <img src="{{ url_for('static', filename='branding/debak-logo.png') }}" alt="debak" width="96" height="40">
+                </div>
+                <div class="procedure-antet-process">{{ doc.surec.kod if doc.surec else '' }} {{ (doc.surec.ad if doc.surec else '')|upper }}</div>
+                <div class="procedure-antet-meta-label procedure-antet-ml-1">{{ _('Doküman Kodu') }}</div>
+                <div class="procedure-antet-meta-value procedure-antet-mv-1">{{ doc.dokuman_no }}</div>
+                <div class="procedure-antet-meta-label procedure-antet-ml-2">{{ _('Rev. No') }}</div>
+                <div class="procedure-antet-meta-value procedure-antet-mv-2">{{ doc.revizyon_no }}</div>
+                <div class="procedure-antet-meta-label procedure-antet-ml-3">{{ _('Rev. Tarihi') }}</div>
+                <div class="procedure-antet-meta-value procedure-antet-mv-3">{{ doc.yururluk_tarihi.strftime('%d.%m.%Y') if doc.yururluk_tarihi else (doc.guncelleme_tarihi.strftime('%d.%m.%Y') if doc.guncelleme_tarihi else '—') }}</div>
+                <div class="procedure-antet-meta-label procedure-antet-ml-4">{{ _('Sayfa') }}</div>
+                <div class="procedure-antet-meta-value procedure-antet-mv-4">—</div>
+                <div class="procedure-antet-title">{{ doc.baslik }}</div>
+            </div>
+            <div class="section-body procedure-body">
+                {% for key, baslik, _ph in sablon %}
+                <section class="procedure-section mb-24">
+                    <h3 class="procedure-h1">{{ baslik }}</h3>
+                    {% if key in ('kayitlar', 'ilgili_dokumanlar') %}
+                    {% set parsed = icerik.get(key)|procedure_refs %}
+                    <ul class="procedure-ref-list">
+                        {% if parsed %}
+                            {% for item in parsed %}
+                            <li>
+                                {% if item.id %}
+                                <a href="{{ request.script_root }}/documents/{{ item.id }}">{{ item.dokuman_no }} — {{ item.baslik }}</a>
+                                {% else %}
+                                {{ item.dokuman_no }}{% if item.dokuman_no and item.baslik %} — {% endif %}{{ item.baslik }}
+                                {% endif %}
+                            </li>
+                            {% endfor %}
+                        {% else %}
+                        <li class="text-muted">…</li>
+                        {% endif %}
+                    </ul>
+                    {% else %}
+                    <div class="procedure-text">{{ (icerik.get(key)|kodlari_bagla) or '…' }}</div>
+                    {% endif %}
+                </section>
+                {% endfor %}
+            </div>
+            <div class="procedure-footer" aria-label="{{ _('Doküman alt bilgisi') }}">
+                <div>
+                    <div class="procedure-footer-label">{{ _('HAZIRLAYAN') }}</div>
+                    <div class="procedure-footer-value">{{ (doc.hazirlayan.unvan or doc.hazirlayan.ad_soyad) if doc.hazirlayan else '—' }}</div>
+                </div>
+                <div>
+                    <div class="procedure-footer-label">{{ _('KONTROL EDEN') }}</div>
+                    <div class="procedure-footer-value">{{ (doc.kontrol_eden.unvan or doc.kontrol_eden.ad_soyad) if doc.kontrol_eden else '—' }}</div>
+                </div>
+                <div>
+                    <div class="procedure-footer-label">{{ _('ONAYLAYAN') }}</div>
+                    <div class="procedure-footer-value">{{ (doc.onaylayan.unvan or doc.onaylayan.ad_soyad) if doc.onaylayan else '—' }}</div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="section-card">
+            <div class="section-header">
+                <span class="section-title">📝 Doküman İçeriği — {{ doc.dokuman_tipi }} Şablonu</span>
+            </div>
+            <div class="section-body">
+                {% for key, baslik, _ph in sablon %}
+                {% if icerik.get(key) %}
+                <div class="mb-24">
+                    <h3 style="font-size: 15px; font-weight: 700; margin-bottom: 8px; color: var(--text-primary);">{{ baslik }}</h3>
+                    <p style="white-space: pre-wrap; line-height: 1.6; color: var(--text-secondary);">{{ icerik.get(key) }}</p>
+                </div>
+                {% endif %}
+                {% endfor %}
+                {% for key, value in icerik.items() %}
+                {% if key not in sablon_keys %}
+                <div class="mb-24">
+                    <h3 style="font-size: 15px; font-weight: 700; margin-bottom: 8px; color: var(--text-primary);">{{ key }}</h3>
+                    <p style="white-space: pre-wrap; line-height: 1.6; color: var(--text-secondary);">{{ value }}</p>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Tab: Approval Flow -->
+    <div id="tab-approval" class="tab-content">
+        <div class="section-card">
+            <div class="section-header">
+                <span class="section-title">✅ Onay İş Akışı</span>
+                {% if session.get('rol') in ['Admin', 'Doküman Kontrol'] and doc.durum in ['Taslak', 'İncelemede'] %}
+                <form method="POST" action="{{ request.script_root }}/documents/{{ doc.id }}/submit-approval" style="display:inline;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-sm btn-primary">Onaya Gönder</button>
+                </form>
+                {% endif %}
+            </div>
+            <div class="section-body">
+                <!-- Visual Flow -->
+                <div class="approval-flow">
+                    {% set steps = ['Hazırlama', 'Kontrol', 'Onay'] %}
+                    {% for step_name in steps %}
+                    {% set step_approval = doc.approvals|selectattr('onay_adimi', 'equalto', step_name)|list|last %}
+                    <div class="approval-step {% if step_approval and step_approval.durum == 'Onaylandı' %}completed{% elif step_approval and step_approval.durum == 'Reddedildi' %}rejected{% elif step_approval and step_approval.durum == 'Bekliyor' %}active{% endif %}">
+                        <div class="approval-circle">
+                            {% if step_approval and step_approval.durum == 'Onaylandı' %}✓
+                            {% elif step_approval and step_approval.durum == 'Reddedildi' %}✕
+                            {% elif step_approval and step_approval.durum == 'Bekliyor' %}⏳
+                            {% else %}{{ loop.index }}{% endif %}
+                        </div>
+                        <div class="approval-label">{{ step_name }}</div>
+                        <div class="approval-user">
+                            {% if step_approval and step_approval.kullanici %}
+                            {{ step_approval.kullanici.ad_soyad }}
+                            {% else %}—{% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Approval History Table -->
+                {% if doc.approvals %}
+                <div class="data-table-wrapper mt-24">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Adım</th>
+                                <th>Kişi</th>
+                                <th>Durum</th>
+                                <th>Açıklama</th>
+                                <th>Tarih</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for approval in doc.approvals|sort(attribute='tarih', reverse=True) %}
+                            <tr>
+                                <td><strong>{{ approval.onay_adimi }}</strong></td>
+                                <td>{{ approval.kullanici.ad_soyad if approval.kullanici else '-' }}</td>
+                                <td>
+                                    {% if approval.durum == 'Onaylandı' %}
+                                    <span class="status-badge onayli">Onaylandı</span>
+                                    {% elif approval.durum == 'Reddedildi' %}
+                                    <span class="status-badge iptal">Reddedildi</span>
+                                    {% else %}
+                                    <span class="status-badge incelemede">Bekliyor</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-muted">{{ approval.aciklama or '-' }}</td>
+                                <td class="text-muted">{{ approval.tarih.strftime('%d.%m.%Y %H:%M') if approval.tarih else '-' }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab: Revisions -->
+    <div id="tab-revisions" class="tab-content">
+        <div class="section-card">
+            <div class="section-header">
+                <span class="section-title">📜 Revizyon Geçmişi</span>
+            </div>
+            <div class="section-body">
+                {% if doc.revisions %}
+                <div class="timeline">
+                    {% for rev in doc.revisions|sort(attribute='revizyon_no', reverse=True) %}
+                    <div class="timeline-item">
+                        <div class="timeline-header">
+                            <span class="timeline-title">Revizyon {{ rev.revizyon_no }}</span>
+                            <span class="timeline-date">{{ rev.tarih.strftime('%d.%m.%Y %H:%M') if rev.tarih else '' }}</span>
+                        </div>
+                        <div class="timeline-body">
+                            <p>{{ rev.degisiklik_aciklamasi or 'İlk yayın' }}</p>
+                            {% if rev.degisiklik_kategorisi or rev.etki_degerlendirmesi %}<p class="text-muted" style="margin-top: 4px;">{% if rev.degisiklik_kategorisi %}Değişiklik sınıfı: <strong>{{ rev.degisiklik_kategorisi }}</strong>{% endif %}{% if rev.etki_degerlendirmesi %} · Etki: {{ rev.etki_degerlendirmesi }}{% endif %}</p>{% endif %}
+                            {% if rev.hazirlayan %}
+                            <p class="text-muted" style="margin-top: 4px;">Hazırlayan: {{ rev.hazirlayan.ad_soyad }}</p>
+                            {% endif %}
+                            {% if rev.dosya_adi %}
+                            <p style="margin-top: 4px;">📎 {{ rev.dosya_adi }} ({{ "%.1f"|format(rev.dosya_boyutu or 0) }} KB)</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state" style="padding: 30px;">
+                    <p class="text-muted">Henüz revizyon kaydı yok.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab: Atıflar (2026) — revizyon etki analizi: bu dokümana atıf yapanlar ve bu dokümanın atıfları -->
+    <div id="tab-atif" class="tab-content">
+        <div class="section-card">
+            <div class="section-header">
+                <span class="section-title">🔗 Bu dokümana atıf yapan dokümanlar ({{ atif_yapanlar|length }})</span>
+                <a href="{{ url_for('rapor_atiflar') }}" class="btn btn-sm btn-secondary">Atıf bütünlüğü raporu</a>
+            </div>
+            <div class="section-body">
+                {% if atif_yapanlar %}
+                <p class="text-muted" style="margin-bottom:8px;">Bu doküman revize edildiğinde, iptal edildiğinde ya da numarası değiştiğinde aşağıdaki dokümanların da gözden geçirilmesi gerekir (IATF 16949 7.5.3.2 · değişiklik etkisi).</p>
+                <div class="data-table-wrapper"><table class="data-table"><thead><tr><th>Doküman</th><th>Başlık</th><th>Tip</th><th>Durum</th></tr></thead><tbody>
+                {% for d in atif_yapanlar %}<tr><td><a href="{{ url_for('document_detail', doc_id=d.id) }}">{{ d.dokuman_no }}</a></td><td>{{ d.baslik }}</td><td>{{ d.dokuman_tipi }}</td><td>{{ d.durum }}</td></tr>{% endfor %}
+                </tbody></table></div>
+                {% else %}<p class="text-muted">DYS içeriğinde bu dokümana atıf yapan doküman bulunmadı (Word / Excel dosya içleri taranmaz).</p>{% endif %}
+            </div>
+        </div>
+        <div class="section-card">
+            <div class="section-header"><span class="section-title">➡️ Bu dokümanın atıfları ({{ atiflari|length }})</span></div>
+            <div class="section-body">
+                {% if atiflari %}
+                <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                {% for kod, durum, hid in atiflari %}
+                    {% set renk = 'var(--color-success, #16a34a)' if durum == 'Yürürlükte' else ('var(--color-danger, #dc2626)' if durum in ('Eskimiş', 'İptal', "DYS'de yok") else 'var(--text-secondary)') %}
+                    {% if hid %}<a href="{{ url_for('document_detail', doc_id=hid) }}" class="badge" style="border:1px solid {{ renk }};color:{{ renk }};padding:3px 8px;border-radius:12px;text-decoration:none;" title="{{ durum }}">{{ kod }} · {{ durum }}</a>
+                    {% else %}<span class="badge" style="border:1px solid {{ renk }};color:{{ renk }};padding:3px 8px;border-radius:12px;" title="{{ durum }}">{{ kod }} · {{ durum }}</span>{% endif %}
+                {% endfor %}
+                </div>
+                {% else %}<p class="text-muted">Bu dokümanın DYS içeriğinde başka dokümana atıf yok.</p>{% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab: Distribution -->
+    <div id="tab-distribution" class="tab-content">
+        <div class="section-card">
+            <div class="section-header">
+                <span class="section-title">📨 Dağıtım Listesi</span>
+                {% if session.get('rol') in ['Admin', 'Doküman Kontrol'] %}
+                <button class="btn btn-sm btn-primary" onclick="openModal('distribution-modal')">Dağıtım Ekle</button>
+                {% endif %}
+            </div>
+            <div class="section-body">
+                {% if doc.distributions %}
+                <div class="data-table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Kişi</th>
+                                <th>Dağıtım Tarihi</th>
+                                <th>Durum</th>
+                                <th>Okunma Tarihi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for dist in doc.distributions %}
+                            <tr>
+                                <td><strong>{{ dist.kullanici.ad_soyad if dist.kullanici else '-' }}</strong></td>
+                                <td class="text-muted">{{ dist.dagitim_tarihi.strftime('%d.%m.%Y %H:%M') if dist.dagitim_tarihi else '-' }}</td>
+                                <td>
+                                    {% if dist.okundu_mu %}
+                                    <span class="status-badge onayli" data-dist-id="{{ dist.id }}">Okundu</span>
+                                    {% else %}
+                                    <span class="status-badge incelemede" data-dist-id="{{ dist.id }}">Okunmadı</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-muted">{{ dist.okunma_tarihi.strftime('%d.%m.%Y %H:%M') if dist.okunma_tarihi else '-' }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state" style="padding: 30px;">
+                    <p class="text-muted">Henüz dağıtım yapılmamış.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab: Standards -->
+    <div id="tab-standards" class="tab-content">
+        <div class="section-card">
+            <div class="section-header">
+                <span class="section-title">🛡️ İlgili Standartlar</span>
+            </div>
+            <div class="section-body">
+                {% if doc.ilgili_standartlar %}
+                <div class="info-grid">
+                    {% for std in doc.ilgili_standartlar.split(',') %}
+                    <div style="padding: 12px 16px; background: var(--bg-glass); border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+                        {% set std = std.strip() %}
+                        {% if 'IATF' in std %}<span class="std-badge iatf" style="font-size: 12px; padding: 4px 10px;">{{ std }}</span>
+                        {% elif '14001' in std %}<span class="std-badge iso14001" style="font-size: 12px; padding: 4px 10px;">{{ std }}</span>
+                        {% elif '45001' in std %}<span class="std-badge iso45001" style="font-size: 12px; padding: 4px 10px;">{{ std }}</span>
+                        {% elif '27001' in std %}<span class="std-badge iso27001" style="font-size: 12px; padding: 4px 10px;">{{ std }}</span>
+                        {% else %}<span>{{ std }}</span>{% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted">İlgili standart belirtilmemiş.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Distribution Modal -->
+<div class="modal-overlay" id="distribution-modal">
+    <div class="modal">
+        <div class="modal-header">
+            <span class="modal-title">📨 Dağıtım Ekle</span>
+            <button class="modal-close" onclick="closeModal('distribution-modal')">✕</button>
+        </div>
+        <form method="POST" action="{{ request.script_root }}/documents/{{ doc.id }}/distribute">
+            <div class="modal-body">
+                <p class="text-muted" style="font-size:12px; margin-bottom:12px;">
+                    Aşağıdakilerden birini veya birkaçını seçebilirsiniz (kullanıcı, departman ve/veya grup).
+                </p>
+                <div class="form-group">
+                    <label class="form-label">Kullanıcı</label>
+                    <select name="kullanici_id" class="form-control">
+                        <option value="">— Seçiniz —</option>
+                        {% for user in users %}
+                        <option value="{{ user.id }}">{{ user.ad_soyad }} ({{ user.departman }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Departman (tümüne dağıt)</label>
+                    <select name="departman" class="form-control">
+                        <option value="">— Seçiniz —</option>
+                        {% for d in departmanlar %}
+                        <option value="{{ d }}">{{ d }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Dağıtım Grubu</label>
+                    <select name="group_id" class="form-control">
+                        <option value="">— Seçiniz —</option>
+                        {% for g in dist_gruplar %}
+                        <option value="{{ g.id }}">{{ g.ad }} ({{ g.members|length }} kişi)</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('distribution-modal')">İptal</button>
+                <button type="submit" class="btn btn-primary">Dağıtım Yap</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+{% if doc.dosya_adi %}
+{% set ext = doc.dosya_adi.rsplit('.', 1)[-1]|lower if '.' in doc.dosya_adi else '' %}
+<script>
+window.DYS_PREVIEW_URL = {{ (url_for('document_preview', doc_id=doc.id, format='pdf') if pdf_mod else url_for('document_preview', doc_id=doc.id))|tojson }};
+window.DYS_PDF_MOD = {{ 'true' if pdf_mod else 'false' }};
+window.DYS_PREVIEW_FAIL = function(el, msg) {
+  if (!el) return;
+  el.innerHTML = '<div class="preview-office-icon" style="font-size:48px;">⚠️</div>'
+    + '<p style="color: var(--color-danger); margin-top: 12px;">' + (msg || 'Önizleme yüklenemedi') + '</p>'
+    + '<a href="' + {{ url_for('document_download', doc_id=doc.id)|tojson }} + '" class="btn btn-primary" style="margin-top:16px;">⬇️ Dosyayı İndir</a>';
+};
+</script>
+
+{% if ext == 'pdf' or pdf_mod %}
+<!-- PDF.js CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+(function() {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    let pdfDoc = null;
+    let pageNum = 1;
+    let scale = 1.5;
+    const canvas = document.getElementById('pdf-canvas');
+    const ctx = canvas.getContext('2d');
+    const loading = document.getElementById('pdf-loading');
+
+    function renderPage(num) {
+        pdfDoc.getPage(num).then(function(page) {
+            const viewport = page.getViewport({ scale: scale });
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+            const renderContext = { canvasContext: ctx, viewport: viewport };
+            page.render(renderContext);
+            document.getElementById('pdf-page-num').textContent = num;
+            document.getElementById('pdf-prev').disabled = (num <= 1);
+            document.getElementById('pdf-next').disabled = (num >= pdfDoc.numPages);
+        });
+    }
+
+    pdfjsLib.getDocument({ url: window.DYS_PREVIEW_URL, withCredentials: true }).promise.then(function(pdf) {
+        pdfDoc = pdf;
+        document.getElementById('pdf-page-count').textContent = pdf.numPages;
+        loading.style.display = 'none';
+        canvas.style.display = 'block';
+        renderPage(pageNum);
+    }).catch(function(err) {
+        // Office dosyası PDF'e dönüştürülemediyse eski (tablo / metin) önizlemeye geç
+        if (window.DYS_PDF_MOD) { window.location.replace(window.location.pathname + '?gorunum=ham#tab-preview'); return; }
+        window.DYS_PREVIEW_FAIL(loading, 'PDF yüklenemedi: ' + err.message);
+    });
+
+    document.getElementById('pdf-prev').addEventListener('click', function() {
+        if (pageNum > 1) { pageNum--; renderPage(pageNum); }
+    });
+    document.getElementById('pdf-next').addEventListener('click', function() {
+        if (pdfDoc && pageNum < pdfDoc.numPages) { pageNum++; renderPage(pageNum); }
+    });
+    document.getElementById('pdf-zoom-in').addEventListener('click', function() {
+        scale += 0.25;
+        document.getElementById('pdf-zoom-label').textContent = Math.round(scale / 1.5 * 100) + '%';
+        renderPage(pageNum);
+    });
+    document.getElementById('pdf-zoom-out').addEventListener('click', function() {
+        if (scale > 0.5) { scale -= 0.25; }
+        document.getElementById('pdf-zoom-label').textContent = Math.round(scale / 1.5 * 100) + '%';
+        renderPage(pageNum);
+    });
+})();
+</script>
+
+{% elif ext in ['xlsx', 'xls', 'csv'] %}
+<!-- SheetJS CDN -->
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<script>
+(function() {
+    const loading = document.getElementById('excel-loading');
+    fetch(window.DYS_PREVIEW_URL, { credentials: 'same-origin' })
+        .then(function(r) {
+            if (!r.ok) throw new Error('Dosya alınamadı (HTTP ' + r.status + ')');
+            return r.arrayBuffer();
+        })
+        .then(function(buf) {
+            let workbook = XLSX.read(buf, { type: 'array' });
+            loading.style.display = 'none';
+            document.getElementById('excel-toolbar').style.display = 'flex';
+            const select = document.getElementById('excel-sheet-select');
+            function renderSheet(sheetName) {
+                const ws = workbook.Sheets[sheetName];
+                const html = XLSX.utils.sheet_to_html(ws, { editable: false });
+                const container = document.getElementById('excel-table-container');
+                container.innerHTML = html;
+                const table = container.querySelector('table');
+                if (table) table.classList.add('data-table', 'excel-rendered-table');
+                const range = XLSX.utils.decode_range(ws['!ref'] || 'A1');
+                document.getElementById('excel-info').textContent =
+                    (range.e.r - range.s.r + 1) + ' satır × ' + (range.e.c - range.s.c + 1) + ' sütun';
+            }
+            workbook.SheetNames.forEach(function(name) {
+                const opt = document.createElement('option');
+                opt.value = name;
+                opt.textContent = name;
+                select.appendChild(opt);
+            });
+            select.addEventListener('change', function() { renderSheet(this.value); });
+            renderSheet(workbook.SheetNames[0]);
+        })
+        .catch(function(err) {
+            window.DYS_PREVIEW_FAIL(loading, 'Dosya yüklenemedi: ' + err.message);
+        });
+})();
+</script>
+
+{% elif ext in ['txt', 'json', 'xml', 'html', 'css', 'js', 'py', 'md', 'log', 'ini', 'cfg', 'yaml', 'yml'] %}
+<script>
+(function() {
+    const loading = document.getElementById('text-loading');
+    fetch(window.DYS_PREVIEW_URL, { credentials: 'same-origin' })
+        .then(function(r) {
+            if (!r.ok) throw new Error('Dosya alınamadı (HTTP ' + r.status + ')');
+            return r.text();
+        })
+        .then(function(text) {
+            loading.style.display = 'none';
+            const pre = document.getElementById('text-content');
+            pre.textContent = text;
+            pre.style.display = 'block';
+        })
+        .catch(function(err) {
+            window.DYS_PREVIEW_FAIL(loading, err.message);
+        });
+})();
+</script>
+{% elif ext == 'docx' %}
+<!-- Mammoth.js CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<script>
+(function() {
+    const loading = document.getElementById('docx-loading');
+    fetch(window.DYS_PREVIEW_URL, { credentials: 'same-origin' })
+        .then(function(r) {
+            if (!r.ok) throw new Error('Dosya alınamadı (HTTP ' + r.status + ')');
+            return r.arrayBuffer();
+        })
+        .then(function(buf) {
+            return mammoth.convertToHtml({ arrayBuffer: buf });
+        })
+        .then(function(result) {
+            loading.style.display = 'none';
+            const container = document.getElementById('docx-content-container');
+            container.innerHTML = result.value;
+            container.querySelectorAll('table').forEach(function(t) {
+                t.style.width = '100%';
+                t.style.borderCollapse = 'collapse';
+                t.style.marginBottom = '1rem';
+                t.querySelectorAll('td, th').forEach(function(cell) {
+                    cell.style.border = '1px solid #ccc';
+                    cell.style.padding = '8px';
+                });
+            });
+        })
+        .catch(function(err) {
+            window.DYS_PREVIEW_FAIL(loading, 'Dosya yüklenemedi: ' + err.message);
+        });
+})();
+</script>
+{% endif %}
+
+{% endif %}
+{% endblock %}

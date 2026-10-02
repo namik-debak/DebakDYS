@@ -1,0 +1,320 @@
+{% extends "base.html" %}
+{% block title %}SPC — İstatistiksel Proses Kontrol{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><span>SPC Kontrol Kartları</span>{% endblock %}
+
+{% set is_editor = session.get('rol') in ['Admin', 'Doküman Kontrol'] %}
+
+{% block content %}
+<div class="mb-24">
+    <h2 style="font-size: 20px; font-weight: 700;">SPC — İstatistiksel Proses Kontrol <span class="text-muted" style="font-size:13px;font-weight:400;">IATF 16949 § 9.1.1.1</span></h2>
+    <p class="text-muted" style="font-size: 13px;">Proses yeterliliği, normal dağılım analizi ve Cp / Cpk takibi.</p>
+</div>
+
+{# ── Analiz Gösterim Paneli (Seçili Kayıt İçin) ────────────────── #}
+<div id="spcAnalysisCard" class="section-card mb-24" style="display:none;border-top:4px solid var(--color-primary);">
+    <div class="d-flex align-center justify-between" style="padding:16px 20px;border-bottom:1px solid var(--border);">
+        <h3 style="font-size:15px;font-weight:700;margin:0;" id="analysisTitle">📈 Proses Yeterlilik Analizi</h3>
+        <button type="button" class="btn btn-outline" style="padding:4px 12px;font-size:11px;" onclick="document.getElementById('spcAnalysisCard').style.display='none'">✕ Kapat</button>
+    </div>
+    <div style="padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+        <!-- Grafikler -->
+        <div>
+            <div style="font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;">Histogram & Normal Eğri</div>
+            <div style="position:relative;width:100%;height:260px;background:var(--bg-secondary);border-radius:8px;padding:12px;border:1px solid var(--border);">
+                <canvas id="spcCanvas" style="width:100%;height:100%;"></canvas>
+            </div>
+            <div style="display:flex;gap:16px;margin-top:10px;justify-content:center;font-size:11px;color:var(--text-muted);">
+                <span><span style="display:inline-block;width:10px;height:10px;background:#6366f1;border-radius:2px;margin-right:4px;"></span>Frekans</span>
+                <span><span style="display:inline-block;width:10px;height:2px;background:#a78bfa;vertical-align:middle;margin-right:4px;"></span>Normal Eğri</span>
+                <span><span style="display:inline-block;width:10px;height:2px;background:#dc2626;vertical-align:middle;margin-right:4px;"></span>Tolerans (LSL/USL)</span>
+            </div>
+        </div>
+        
+        <!-- İstatistiksel Özet -->
+        <div>
+            <div style="font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;">İstatistiksel Özet & Yetenek İndeksleri</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px;">
+                <div style="background:var(--bg-secondary);padding:10px;border-radius:6px;border:1px solid var(--border);text-align:center;">
+                    <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;">Ortalama (x̄)</div>
+                    <div style="font-size:15px;font-weight:700;font-family:monospace;" id="valMean">—</div>
+                </div>
+                <div style="background:var(--bg-secondary);padding:10px;border-radius:6px;border:1px solid var(--border);text-align:center;">
+                    <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;">Std. Sapma (s)</div>
+                    <div style="font-size:15px;font-weight:700;font-family:monospace;" id="valStd">—</div>
+                </div>
+                <div style="background:var(--bg-secondary);padding:10px;border-radius:6px;border:1px solid var(--border);text-align:center;">
+                    <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;">Ölçüm Sayısı</div>
+                    <div style="font-size:15px;font-weight:700;font-family:monospace;" id="valN">—</div>
+                </div>
+            </div>
+            
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                <div style="background:var(--bg-secondary);padding:12px;border-radius:8px;border:1.5px solid rgba(99,102,241,0.2);text-align:center;">
+                    <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;font-weight:600;">Proses Potansiyeli (Cp)</div>
+                    <div style="font-size:24px;font-weight:800;color:var(--color-primary);margin-top:4px;" id="valCp">—</div>
+                </div>
+                <div style="background:var(--bg-secondary);padding:12px;border-radius:8px;border:2px solid rgba(16,185,129,0.3);text-align:center;">
+                    <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;font-weight:600;">Proses Yeterliliği (Cpk)</div>
+                    <div style="font-size:24px;font-weight:800;color:#16a34a;margin-top:4px;" id="valCpk">—</div>
+                </div>
+            </div>
+            
+            <div style="margin-top:16px;">
+                <div style="font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:6px;">Ölçüm Verileri (İlk 30 Değer)</div>
+                <div style="max-height:80px;overflow-y:auto;background:var(--bg-secondary);border:1px solid var(--border);border-radius:6px;padding:8px;font-family:monospace;font-size:11px;line-height:1.6;color:var(--text-secondary);" id="valOlcumler">
+                    —
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# ── SPC Kayıt Tablosu ─────────────────────────────────────────── #}
+<div class="section-card mb-24">
+    <div class="section-header" style="border-bottom:1px solid var(--border);padding:12px 20px;"><span class="section-title">📉 Kayıtlı SPC Kontrol Kartları</span></div>
+    {% if kayitlar %}
+    <div class="data-table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Parça No</th>
+                    <th>Karakteristik</th>
+                    <th>Ölçüm Tarihi</th>
+                    <th style="text-align:center;">LSL</th>
+                    <th style="text-align:center;">USL</th>
+                    <th style="text-align:center;">Ortalama</th>
+                    <th style="text-align:center;">Std. Sapma</th>
+                    <th style="text-align:center;">Cp</th>
+                    <th style="text-align:center;">Cpk</th>
+                    <th style="text-align:center;">Ölçüm Sayısı</th>
+                    <th style="text-align:center;">Analiz</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in kayitlar %}
+                <tr>
+                    <td><code style="color:var(--text-accent);font-weight:600;">{{ r.parca_no }}</code></td>
+                    <td><strong>{{ r.karakteristik }}</strong></td>
+                    <td style="font-size:12px;">{{ r.olcum_tarihi or '—' }}</td>
+                    <td class="text-center">{{ r.lsl }}</td>
+                    <td class="text-center">{{ r.usl }}</td>
+                    <td class="text-center" style="font-family:monospace;">{{ r.ortalama|round(4) if r.ortalama is not none else '—' }}</td>
+                    <td class="text-center" style="font-family:monospace;">{{ r.std_sapma|round(4) if r.std_sapma is not none else '—' }}</td>
+                    <td class="text-center">
+                      {% if r.cp is not none %}
+                        <span class="badge" style="font-weight:700;background:{{ '#d1fae5' if r.cp >= 1.33 else ('#fef3c7' if r.cp >= 1.0 else '#fee2e2') }};color:{{ '#065f46' if r.cp >= 1.33 else ('#92400e' if r.cp >= 1.0 else '#991b1b') }};">
+                          {{ r.cp }}
+                        </span>
+                      {% else %}—{% endif %}
+                    </td>
+                    <td class="text-center">
+                      {% if r.cpk is not none %}
+                        <span class="badge" style="font-weight:700;background:{{ '#d1fae5' if r.cpk >= 1.33 else ('#fef3c7' if r.cpk >= 1.0 else '#fee2e2') }};color:{{ '#065f46' if r.cpk >= 1.33 else ('#92400e' if r.cpk >= 1.0 else '#991b1b') }};">
+                          {{ r.cpk }}
+                        </span>
+                      {% else %}—{% endif %}
+                    </td>
+                    <td class="text-center" style="font-family:monospace;">{{ r.olcum_listesi|length }}</td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-outline" style="padding:2px 8px;font-size:11px;"
+                            onclick="showAnalysis('{{ r.parca_no|replace("'", "\\'") }}', '{{ r.karakteristik|replace("'", "\\'") }}', {{ r.lsl }}, {{ r.usl }}, {{ r.ortalama }}, {{ r.std_sapma }}, {{ r.cp }}, {{ r.cpk }}, {{ r.olcum_listesi|tojson }})">
+                            🔍 İncele
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state"><div class="empty-icon">📉</div><h3>SPC kaydı bulunamadı</h3><p class="text-muted">Proses yeteneğini analiz etmek için ilk kartı oluşturun.</p></div>
+    {% endif %}
+</div>
+
+{# ── Yeni SPC Kartı Oluşturma Formu ───────────────────────────── #}
+{% if is_editor %}
+<div class="section-card">
+    <div class="section-header" style="border-bottom:1px solid var(--border);padding:12px 20px;"><span class="section-title">➕ Yeni SPC Analizi Başlat</span></div>
+    <div class="section-body" style="padding:20px;">
+        <form method="POST" action="{{ url_for('iatf_spc') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:16px; margin-bottom:16px;">
+                <div class="form-group">
+                    <label class="form-label">Parça No *</label>
+                    <input type="text" name="parca_no" class="form-control" required placeholder="Örn: PN-9827">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Karakteristik *</label>
+                    <input type="text" name="karakteristik" class="form-control" required placeholder="Örn: İç Çap (mm)">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Ölçüm Tarihi</label>
+                    <input type="date" name="olcum_tarihi" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Yorum / Not</label>
+                    <input type="text" name="yorum" class="form-control" placeholder="Proses durumu, hat vb.">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Alt Tolerans Sınırı (LSL) *</label>
+                    <input type="number" step="any" name="lsl" class="form-control" required placeholder="Örn: 9.80">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Üst Tolerans Sınırı (USL) *</label>
+                    <input type="number" step="any" name="usl" class="form-control" required placeholder="Örn: 10.20">
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label">Veri Giriş Türü *</label>
+                    <select name="olcum_turu" class="form-control" onchange="toggleOlcumInput(this.value)">
+                        <option value="auto">Otomatik 125 Değer Üret (Cpk ≥ 1.67 normal dağılımlı simülasyon)</option>
+                        <option value="manual">Manuel Ölçüm Girişi (En az 30 değer)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" id="manualInputSection" style="display:none;grid-column: span 4;">
+                    <label class="form-label">Ölçüm Değerleri (Sayıları boşluk, virgül veya satırla ayırarak kopyalayıp yapıştırın. En az 30 değer)*</label>
+                    <textarea name="olcumler_raw" class="form-control" rows="4" placeholder="Örn: 10.05, 9.98, 10.12, 10.01, 10.03, ..."></textarea>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary" style="padding:10px 24px;">📊 Analizi Hesapla ve Kaydet</button>
+        </form>
+    </div>
+</div>
+{% endif %}
+
+<script>
+function toggleOlcumInput(val) {
+    document.getElementById('manualInputSection').style.display = (val === 'manual') ? 'block' : 'none';
+}
+
+function showAnalysis(parca, karakter, lsl, usl, mean, std, cp, cpk, olcumler) {
+    document.getElementById('analysisTitle').textContent = '📈 Proses Yeterlilik Analizi — ' + parca + ' (' + karakter + ')';
+    document.getElementById('valMean').textContent = Number(mean).toFixed(4);
+    document.getElementById('valStd').textContent = Number(std).toFixed(4);
+    document.getElementById('valN').textContent = olcumler.length;
+    document.getElementById('valCp').textContent = Number(cp).toFixed(3);
+    
+    var cpkEl = document.getElementById('valCpk');
+    cpkEl.textContent = Number(cpk).toFixed(3);
+    cpkEl.style.color = cpk >= 1.33 ? '#16a34a' : (cpk >= 1.0 ? '#f59e0b' : '#dc2626');
+    
+    document.getElementById('valOlcumler').textContent = olcumler.join(', ');
+    
+    document.getElementById('spcAnalysisCard').style.display = 'block';
+    
+    // Canvas üzerine histogram çizimi
+    setTimeout(function() {
+        drawHistogram(olcumler, lsl, usl, mean, std);
+    }, 50);
+
+    document.getElementById('spcAnalysisCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function drawHistogram(data, lsl, usl, mu, sigma) {
+    var canvas = document.getElementById('spcCanvas');
+    var rect = canvas.parentElement.getBoundingClientRect();
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+    
+    var ctx = canvas.getContext('2d');
+    var W = rect.width;
+    var H = rect.height;
+    ctx.clearRect(0, 0, W, H);
+    
+    var ml = 45, mr = 15, mt = 20, mb = 35;
+    var cw = W - ml - mr;
+    var ch = H - mt - mb;
+    
+    var numBins = 12;
+    var dataMin = Math.min.apply(Math, data);
+    var dataMax = Math.max.apply(Math, data);
+    var histLo = Math.min(lsl, dataMin);
+    var histHi = Math.max(usl, dataMax);
+    var range = histHi - histLo || 1;
+    var binWidth = range / numBins;
+    
+    var bins = new Array(numBins).fill(0);
+    for (var i = 0; i < data.length; i++) {
+        var idx = Math.floor((data[i] - histLo) / binWidth);
+        if (idx >= numBins) idx = numBins - 1;
+        if (idx < 0) idx = 0;
+        bins[idx]++;
+    }
+    var maxFreq = Math.max.apply(Math, bins);
+    
+    var xScale = function(v) { return ml + ((v - histLo) / range) * cw; };
+    var yScale = function(v) { return mt + ch - (v / (maxFreq * 1.15)) * ch; };
+    
+    // Gridler
+    ctx.strokeStyle = 'rgba(99, 102, 241, 0.05)';
+    ctx.lineWidth = 1;
+    for (var i = 0; i <= 4; i++) {
+        var y = mt + (ch / 4) * i;
+        ctx.beginPath(); ctx.moveTo(ml, y); ctx.lineTo(ml + cw, y); ctx.stroke();
+    }
+    
+    // Barları çiz
+    for (var i = 0; i < numBins; i++) {
+        var x = xScale(histLo + i * binWidth);
+        var w = (cw / numBins) - 2;
+        var h = (bins[i] / (maxFreq * 1.15)) * ch;
+        var y = mt + ch - h;
+        
+        ctx.fillStyle = 'rgba(99, 102, 241, 0.5)';
+        ctx.fillRect(x, y, w, h);
+        ctx.strokeStyle = 'rgba(99, 102, 241, 0.8)';
+        ctx.strokeRect(x, y, w, h);
+    }
+    
+    // Normal dağılım eğrisi
+    ctx.strokeStyle = '#a78bfa';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    var steps = 150;
+    for (var i = 0; i <= steps; i++) {
+        var x_val = histLo + (range * i / steps);
+        var z = (x_val - mu) / sigma;
+        var pdf = Math.exp(-0.5 * z * z) / (sigma * Math.sqrt(2 * Math.PI));
+        var pdfScaled = pdf * data.length * binWidth;
+        var px = xScale(x_val);
+        var py = yScale(pdfScaled);
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+    
+    // LSL / USL limit çizgileri
+    ctx.strokeStyle = '#ef4444';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([5, 3]);
+    
+    var lslX = xScale(lsl);
+    ctx.beginPath(); ctx.moveTo(lslX, mt); ctx.lineTo(lslX, mt + ch); ctx.stroke();
+    
+    var uslX = xScale(usl);
+    ctx.beginPath(); ctx.moveTo(uslX, mt); ctx.lineTo(uslX, mt + ch); ctx.stroke();
+    ctx.setLineDash([]);
+    
+    // Limit etiketleri
+    ctx.fillStyle = '#ef4444';
+    ctx.font = 'bold 9px sans-serif';
+    ctx.fillText('LSL', lslX - 8, mt - 4);
+    ctx.fillText('USL', uslX - 8, mt - 4);
+    
+    // Ortalama çizgisi
+    var meanX = xScale(mu);
+    ctx.strokeStyle = '#10b981';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(meanX, mt); ctx.lineTo(meanX, mt + ch); ctx.stroke();
+    ctx.fillStyle = '#10b981';
+    ctx.fillText('x̄', meanX - 4, mt - 4);
+    
+    // Eksen Etiketleri
+    ctx.fillStyle = '#64748b';
+    ctx.font = '9px monospace';
+    ctx.fillText(histLo.toFixed(3), ml, mt + ch + 12);
+    ctx.fillText(histHi.toFixed(3), ml + cw - 30, mt + ch + 12);
+}
+</script>
+{% endblock %}

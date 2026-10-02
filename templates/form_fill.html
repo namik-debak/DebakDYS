@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+{% block title %}{{ t.form_kodu }} — Yeni Kayıt{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><a href="{{ request.script_root }}/forms">Formlar</a><span class="separator">›</span><a href="{{ request.script_root }}/forms/{{ t.id }}">{{ t.form_kodu }}</a><span class="separator">›</span><span>Yeni kayıt</span>{% endblock %}
+{% block content %}
+{% set hesapli = (alanlar|selectattr('tip', 'equalto', 'hesap')|list|length > 0) or (alanlar|selectattr('hesap_sutunlar')|list|length > 0) or (alanlar|selectattr('toplamlar')|list|length > 0) %}
+{% set ozet = alanlar|selectattr('ozet')|list %}
+<style>
+.dyn-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:4px 16px;}
+.dyn-grid .tam{grid-column:1/-1;}
+.birimli{display:flex;align-items:stretch;}
+.birimli .form-control{border-top-right-radius:0;border-bottom-right-radius:0;}
+.birimli .birim{display:flex;align-items:center;padding:0 10px;font-size:12px;border:1px solid var(--border);border-left:none;border-radius:0 6px 6px 0;background:var(--bg-secondary);color:var(--text-muted);white-space:nowrap;}
+.hesap-kutu{font-weight:700;font-family:monospace;background:var(--bg-secondary);border:1px dashed var(--color-primary);border-radius:6px 0 0 6px;padding:8px 10px;min-height:38px;flex:1;}
+.hesap-kutu.bos{color:var(--text-muted);font-weight:400;}
+.yardim{font-size:11px;color:var(--text-muted);margin-top:2px;}
+.ozet-panel{position:sticky;top:10px;z-index:20;margin-bottom:14px;border-left:4px solid var(--color-primary);}
+.ozet-panel .ozet-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;}
+.ozet-panel .ozet-grid div span{display:block;font-size:10px;text-transform:uppercase;color:var(--text-muted);}
+.ozet-panel .ozet-grid div b{font-size:18px;font-family:monospace;}
+.ozet-panel .ozet-grid div.ana b{color:var(--color-primary);font-size:22px;}
+</style>
+{% if ozet %}
+<div class="section-card ozet-panel"><div class="section-body" style="padding:10px 16px;">
+  <div class="ozet-grid">
+  {% for a in ozet %}<div class="{{ 'ana' if loop.last else '' }}"><span>{{ a.ad }}</span><b data-ozet="{{ a.kod }}">—</b> <small class="text-muted">{{ '%' if a.yuzde_goster else (a.birim or '') }}</small></div>{% endfor %}
+  </div>
+  <div class="yardim" style="margin-top:6px;">Değerler siz yazdıkça hesaplanır; kayıtta sunucu aynı formüllerle yeniden hesaplar. % alanlarına yüzde olarak yazın (5 = %5).</div>
+</div></div>
+{% endif %}
+<div class="section-card">
+  <div class="section-header"><span class="section-title">{{ t.form_kodu }} · {{ t.ad }} (Rev. {{ t.revizyon_no }})</span>
+  {% if t.kisitli %}<div class="alert alert-warning" style="margin:8px 12px;">🔒 Kısıtlı form (KVKK): bu kaydı yalnız siz, formun yetkilileri ve sistem yöneticisi görebilir. Yalnız gerekli kişisel veriyi girin.</div>{% endif %}
+    {% if kaynak %}<span class="text-muted" style="font-size:12px;"> · {{ kaynak.kayit_no }} kaydının değerleriyle başlatıldı</span>{% endif %}</div>
+  <div class="section-body">
+    <form method="POST" enctype="multipart/form-data" {% if hesapli %}id="hesapli-form"{% endif %}>
+      {% if t.document and t.document.dosya_adi %}<p class="text-muted" style="font-size:12px;margin-bottom:12px;">Form şablonu: <a href="{{ request.script_root }}/documents/{{ t.document.id }}">{{ t.document.dokuman_no }} {{ t.document.baslik }}</a> · <a href="{{ request.script_root }}/documents/{{ t.document.id }}/download">şablon dosyasını indir</a></p>{% endif %}
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="dyn-grid">
+      {% for a in alanlar %}{% set k = 'alan_' ~ loop.index0 %}{% set v = veri.get(a.ad, a.varsayilan if a.varsayilan is not none else '') %}{% set tip = a.tip or 'metin' %}
+      {% if tip == 'baslik' %}
+      </div>
+      <h3 style="font-size:14px;font-weight:700;margin:20px 0 10px;padding:6px 10px;background:var(--bg-tertiary,#eef2f8);border-radius:6px;">{{ a.ad }}{% if a.aciklama %} <span class="text-muted" style="font-weight:400;font-size:12px;">— {{ a.aciklama }}</span>{% endif %}</h3>
+      <div class="dyn-grid">
+      {% elif tip == 'hesap' %}
+      <div class="form-group" style="margin-bottom:8px;">
+        <label class="form-label">{{ a.ad }} <span class="text-muted" style="font-weight:400;font-size:11px;">(hesaplanır)</span></label>
+        <div class="birimli"><div class="hesap-kutu bos" data-hesap="{{ a.kod }}" data-formul="{{ a.formul }}" data-ondalik="{{ a.ondalik|default(4) }}" data-yuzde="{{ 1 if a.yuzde_goster else 0 }}">—</div>
+          <span class="birim">{{ '%' if a.yuzde_goster else (a.birim or '=') }}</span></div>
+        <div class="yardim" title="{{ a.formul }}">{{ a.aciklama or ('= ' ~ a.formul) }}</div>
+      </div>
+      {% elif tip == 'kontrol_listesi' %}
+      <div class="form-group tam" style="margin-bottom:16px;">
+        <label class="form-label">{{ a.ad }}{% if a.zorunlu %} <span style="color:#c0392b">*</span>{% endif %}</label>
+        {% set sec = a.secenekler or ['Uygun', 'Uygun Değil', 'Kapsam Dışı'] %}
+        <table class="data-table" style="font-size:13px;">
+          <thead><tr><th style="width:44px;">#</th><th>Madde</th>{% for s in sec %}<th style="width:92px;text-align:center;">{{ s }}</th>{% endfor %}<th style="width:28%;">Açıklama{% if a.aciklama_zorunlu %} <span class="text-muted" style="font-weight:400;font-size:11px;">({{ a.aciklama_zorunlu|join(', ') }} ise zorunlu)</span>{% endif %}</th></tr></thead>
+          <tbody>
+          {% for m in a.maddeler or [] %}{% set j = loop.index0 %}{% set onceki = (v[j] if v and v is not string and v|length > j else {}) %}
+          <tr>
+            <td class="text-muted">{{ loop.index }}</td>
+            <td>{{ m }}</td>
+            {% for s in sec %}<td style="text-align:center;"><input type="radio" name="{{ k }}__{{ j }}" value="{{ s }}" {% if onceki.sonuc == s %}checked{% endif %}></td>{% endfor %}
+            <td><input type="text" name="{{ k }}__{{ j }}__a" value="{{ onceki.aciklama or '' }}" class="form-control" style="padding:4px 8px;"></td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% elif tip == 'tablo' %}
+      <div class="form-group tam" style="margin-bottom:16px;">
+        <label class="form-label">{{ a.ad }}{% if a.zorunlu %} <span style="color:#c0392b">*</span>{% endif %}</label>
+        {% set sut = a.sutunlar or ['Değer'] %}{% set hs = a.hesap_sutunlar or {} %}{% set top = a.toplamlar or {} %}
+        {% set onceki_satirlar = v if (v and v is not string) else [] %}
+        <table class="data-table dyn-tablo" data-k="{{ k }}" data-n="{{ sut|length }}" {% if hs or top %}data-sut="{{ sut|tojson|forceescape }}" data-hs="{{ hs|tojson|forceescape }}" data-top="{{ top|tojson|forceescape }}"{% endif %} style="font-size:13px;">
+          <thead><tr><th style="width:36px;">#</th>{% for s in sut %}<th>{{ s }}{% if s in hs %} <span class="text-muted" style="font-weight:400;font-size:10px;" title="{{ hs[s] }}">= hesap</span>{% endif %}</th>{% endfor %}</tr></thead>
+          <tbody>
+          {% for r in range([(a.satir or 5)|int, onceki_satirlar|length]|max) %}{% set os_ = onceki_satirlar[r] if r < onceki_satirlar|length else {} %}
+          <tr><td class="text-muted">{{ r + 1 }}</td>{% for s in sut %}<td><input type="text" name="{{ k }}__r{{ r }}__c{{ loop.index0 }}" value="{{ os_.get(s, '') if os_ is mapping else '' }}" class="form-control{{ ' t-h' if s in hs else '' }}" {% if s in hs %}readonly tabindex="-1" style="padding:4px 6px;background:var(--bg-secondary);font-weight:700;font-family:monospace;"{% else %}style="padding:4px 6px;"{% endif %}></td>{% endfor %}</tr>
+          {% endfor %}
+          </tbody>
+          {% if top %}<tfoot><tr><td class="text-muted" style="font-size:11px;">Σ</td>{% for s in sut %}<td data-j="{{ loop.index0 }}" style="font-weight:700;font-family:monospace;">{{ '0' if s in top else '' }}</td>{% endfor %}</tr></tfoot>{% endif %}
+        </table>
+        {% for kol, kod in top.items() %}<input type="hidden" class="t-top" data-kod="{{ kod }}" data-yuzde="0" value="0">{% endfor %}
+        <button type="button" class="btn btn-sm btn-outline" onclick="dynSatirEkle(this)">＋ Satır ekle</button>
+      </div>
+      {% else %}
+      <div class="form-group {{ 'tam' if tip in ('uzun_metin', 'coklu_secim') else '' }}" style="margin-bottom:12px;">
+        <label class="form-label">{{ a.ad }}{% if a.zorunlu %} <span style="color:#c0392b">*</span>{% endif %}</label>
+        {% if tip == 'sayi' and (a.birim or a.yuzde or a.kod) %}
+          <div class="birimli"><input type="number" step="any" name="{{ k }}" value="{{ v }}" class="form-control" {% if a.kod %}data-kod="{{ a.kod }}" data-yuzde="{{ 1 if a.yuzde else 0 }}"{% endif %} {% if a.min is defined %}min="{{ a.min }}"{% endif %}>
+            <span class="birim">{{ '%' if a.yuzde else (a.birim or '') }}</span></div>
+          {% if a.aciklama %}<div class="yardim">{{ a.aciklama }}</div>{% endif %}
+        {% elif tip == 'uzun_metin' %}
+          <textarea name="{{ k }}" class="form-control" rows="{{ 6 if tip == 'tablo' else 3 }}" placeholder="{{ ('Her satıra bir kayıt; sütunlar: ' ~ (a.sutunlar|join(' | '))) if tip == 'tablo' and a.sutunlar else '' }}">{{ v }}</textarea>
+        {% elif tip == 'sayi' %}<input type="number" step="any" name="{{ k }}" value="{{ v }}" class="form-control">
+        {% elif tip == 'tarih' %}<input type="date" name="{{ k }}" value="{{ v }}" class="form-control">
+        {% elif tip == 'saat' %}<input type="time" name="{{ k }}" value="{{ v }}" class="form-control">
+        {% elif tip == 'secim' %}<select name="{{ k }}" class="form-control"><option value=""></option>{% for s in a.secenekler or [] %}<option {% if s == v %}selected{% endif %}>{{ s }}</option>{% endfor %}</select>
+        {% elif tip == 'coklu_secim' %}{% for s in a.secenekler or [] %}<label style="margin-right:12px;font-size:13px;"><input type="checkbox" name="{{ k }}" value="{{ s }}" {% if v and s in v %}checked{% endif %}> {{ s }}</label>{% endfor %}
+        {% elif tip == 'evet_hayir' %}<label><input type="checkbox" name="{{ k }}" value="1" {% if v == 'Evet' %}checked{% endif %}> Evet</label>
+        {% elif tip == 'kullanici' %}<select name="{{ k }}" class="form-control"><option value=""></option>{% for u in users %}<option {% if u.ad_soyad == v %}selected{% endif %}>{{ u.ad_soyad }}</option>{% endfor %}</select>
+        {% else %}<input type="text" name="{{ k }}" value="{{ v }}" class="form-control">
+        {% endif %}
+        {% if a.aciklama and not (tip == 'sayi' and (a.birim or a.yuzde or a.kod)) %}<div class="yardim">{{ a.aciklama }}</div>{% endif %}
+      </div>
+      {% endif %}
+      {% else %}
+      <p class="text-muted tam">Bu form için henüz alan tanımlanmamış. Form tanımı sayfasından alanları ekleyin.</p>
+      {% endfor %}
+      </div>
+      <div class="section-card" style="margin-top:14px;padding:10px 14px;background:var(--bg-tertiary,#f5f7fb);">
+        <label style="font-size:13px;font-weight:600;"><input type="checkbox" name="kagittan" value="1" onchange="document.getElementById('kagit-alan').style.display=this.checked?'flex':'none'"> Sahada kağıt formla doldurulduysa: kağıt formdan aktarılıyor</label>
+        <div id="kagit-alan" style="display:none;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap;">
+          <input name="cikti_no" class="form-control" style="max-width:280px;" placeholder="Kağıttaki çıktı no (ÇKT-…)">
+          <span class="text-muted" style="font-size:12px;">Taranmış / fotoğraflanmış kağıdı aşağıdan eklemek zorunludur. Alanları doldurmanız önerilir (raporlama için), zorunlu değildir.</span>
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:14px;">
+        <label class="form-label">Ek dosya(lar) — fotoğraf, ölçüm çıktısı, taranmış kağıt form vb.</label>
+        <input type="file" name="ekler" multiple class="form-control">
+      </div>
+      <div class="d-flex" style="gap:8px;margin-top:16px;">
+        <button class="btn btn-primary" type="submit">Kaydet ve onaya gönder</button>
+        <button class="btn btn-outline" type="submit" name="taslak" value="1">Taslak olarak kaydet</button>
+      </div>
+      <p class="text-muted" style="font-size:12px;margin-top:10px;">Bu form DYS üzerinde elektronik olarak doldurulur ve onaylanır. Kayıt ve onay bilgileri işlem kaydına (audit log) yazılır.</p>
+    </form>
+  </div>
+</div>
+<script>
+function dynSatirEkle(btn){
+  let t = btn.previousElementSibling; while (t && !(t.classList && t.classList.contains('dyn-tablo'))) t = t.previousElementSibling;
+  const k = t.dataset.k, n = +t.dataset.n, tb = t.querySelector('tbody'), r = tb.rows.length;
+  const sut = t.dataset.sut ? JSON.parse(t.dataset.sut) : [], hs = t.dataset.hs ? JSON.parse(t.dataset.hs) : {};
+  const tr = document.createElement('tr');
+  let h = '<td class="text-muted">' + (r + 1) + '</td>';
+  for (let c = 0; c < n; c++) {
+    const hes = sut[c] in hs;
+    h += '<td><input type="text" name="' + k + '__r' + r + '__c' + c + '" class="form-control' + (hes ? ' t-h" readonly tabindex="-1" style="padding:4px 6px;background:var(--bg-secondary);font-weight:700;font-family:monospace;"' : '" style="padding:4px 6px;"') + '></td>';
+  }
+  tr.innerHTML = h; tb.appendChild(tr);
+}
+// Tablo satır formülleri ([Sütun] adlarıyla) ve sütun toplamları; toplamlar gizli alanlarla form hesaplarına aktarılır
+function dynTabloHesapla(){
+  document.querySelectorAll('table.dyn-tablo[data-sut]').forEach(t => {
+    const TF = {min: Math.min, max: Math.max, abs: Math.abs, karekok: x => x < 0 ? NaN : Math.sqrt(x), round: (x, n) => { const p = Math.pow(10, n || 0); return Math.round(x * p) / p; }};
+    const sut = JSON.parse(t.dataset.sut), hs = JSON.parse(t.dataset.hs || '{}'), top = JSON.parse(t.dataset.top || '{}'), fn = {};
+    for (const [kol, f] of Object.entries(hs)) {
+      const i = sut.indexOf(kol); if (i < 0) continue;
+      const ex = String(f).replace(/\[([^\]]+)\]/g, (m, a) => { const j = sut.indexOf(a.trim()); return j < 0 ? 'NaN' : 'c' + j; });
+      if (/^[\sc0-9+\-*/().,NaN]*$/.test(ex.replace(/\b(min|max|abs|round|karekok)\(/g, '('))) { try { fn[i] = new Function('F', 'c', 'with(F){with(c){return (' + ex + ');}}'); } catch (e) {} }
+    }
+    const top_ = {};
+    t.querySelectorAll('tbody tr').forEach(tr => {
+      const inp = [...tr.querySelectorAll('input')], c = {};
+      inp.forEach((x, j) => { const v = parseFloat(String(x.value).replace(',', '.')); c['c' + j] = isNaN(v) ? 0 : v; });
+      const dolu = inp.some((x, j) => !(j in fn) && String(x.value).trim() !== '');
+      for (const i in fn) {
+        let v = null; try { v = fn[i](TF, c); } catch (e) {}
+        inp[i].value = (!dolu || v === null || !isFinite(v)) ? '' : String(Math.round(v * 10000) / 10000);
+        c['c' + i] = parseFloat(inp[i].value) || 0;
+      }
+      inp.forEach((x, j) => { const v = parseFloat(String(x.value).replace(',', '.')); if (!isNaN(v)) top_[j] = (top_[j] || 0) + v; });
+    });
+    for (const [kol, kod] of Object.entries(top)) {
+      const j = sut.indexOf(kol), s = Math.round((top_[j] || 0) * 10000) / 10000;
+      const hid = t.parentElement.querySelector('input.t-top[data-kod="' + kod + '"]'); if (hid) hid.value = s;
+      const cell = t.querySelector('tfoot td[data-j="' + j + '"]'); if (cell) cell.textContent = s.toLocaleString('tr-TR', {maximumFractionDigits: 4});
+    }
+  });
+}
+// Hesaplanan alanlar: formüller yalnız sayı, alan kodu, + - * / ( ) , ve min/max/round/abs/karekok/ilk içerebilir (sunucu da doğrular)
+(function(){
+  const form = document.getElementById('hesapli-form'); if (!form) return;
+  const IZIN = /^[\sa-z0-9_+\-*/().,]*$/;
+  const F = {min: Math.min, max: Math.max, abs: Math.abs, karekok: x => x < 0 ? NaN : Math.sqrt(x),
+             round: (x, n) => { const p = Math.pow(10, n || 0); return Math.round(x * p) / p; },
+             ilk: (...a) => { for (const x of a) if (x !== null && x !== 0 && !isNaN(x)) return x; return 0; }};
+  const hesaplar = [...form.querySelectorAll('[data-hesap]')];
+  const derle = {};
+  hesaplar.forEach(el => {
+    const f = el.dataset.formul || '0';
+    if (!IZIN.test(f)) { derle[el.dataset.hesap] = null; return; }
+    const adlar = (f.match(/[a-z_][a-z0-9_]*/g) || []).filter(n => !(n in F));
+    try { derle[el.dataset.hesap] = {adlar: [...new Set(adlar)], fn: new Function('F', 'd', 'with(F){with(d){return (' + f + ');}}')}; }
+    catch (e) { derle[el.dataset.hesap] = null; }
+  });
+  const bicim = (v, n) => (v === null || v === undefined || !isFinite(v)) ? '—' :
+    v.toLocaleString('tr-TR', {minimumFractionDigits: Math.min(n, 2), maximumFractionDigits: n});
+  function hesapla(){
+    dynTabloHesapla();
+    const d = {};
+    form.querySelectorAll('[data-kod]').forEach(i => {
+      let v = parseFloat(String(i.value).replace(',', '.')); if (isNaN(v)) v = 0;
+      d[i.dataset.kod] = i.dataset.yuzde === '1' ? v / 100 : v;
+    });
+    hesaplar.forEach(el => d[el.dataset.hesap] = null);
+    for (let tur = 0; tur <= hesaplar.length; tur++) {
+      let degisti = false;
+      hesaplar.forEach(el => {
+        const c = derle[el.dataset.hesap]; let v = null;
+        if (c && c.adlar.every(n => n in d)) {
+          if (!c.adlar.some(n => d[n] === null) || /ilk\(/.test(el.dataset.formul)) {
+            try { v = c.fn(F, d); } catch (e) { v = null; }
+            if (!isFinite(v)) v = null;   // sıfıra bölme → boş
+          }
+        }
+        if (v !== d[el.dataset.hesap]) { d[el.dataset.hesap] = v; degisti = true; }
+      });
+      if (!degisti) break;
+    }
+    hesaplar.forEach(el => {
+      const v = d[el.dataset.hesap], n = +el.dataset.ondalik, g = (v === null) ? null : (el.dataset.yuzde === '1' ? v * 100 : v);
+      el.textContent = bicim(g, n); el.classList.toggle('bos', g === null);
+      document.querySelectorAll('[data-ozet="' + el.dataset.hesap + '"]').forEach(o => o.textContent = bicim(g, n));
+    });
+  }
+  form.addEventListener('input', hesapla); hesapla();
+})();
+</script>
+{% endblock %}
+
+

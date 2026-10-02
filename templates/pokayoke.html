@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+{% block title %}Poka-Yoke — Hata Önleme{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><span>Poka-Yoke</span>{% endblock %}
+{% block content %}
+<div class="d-flex align-center justify-between mb-24" style="flex-wrap:wrap;gap:12px;">
+  <div>
+    <h2 style="font-size:20px;font-weight:700;">Poka-Yoke <span class="text-muted" style="font-size:13px;font-weight:400;">Hata Önleme Cihazları</span></h2>
+    <p class="text-muted" style="font-size:13px;">Toplam <strong>{{ devices|length }}</strong> cihaz{% if geciken %} · <span style="color:#dc2626;font-weight:600;">{{ geciken|length }} geciken test</span>{% endif %}</p>
+  </div>
+  {% if session.rol in ('Admin','Doküman Kontrol') %}
+  <button type="button" class="btn btn-primary" onclick="document.getElementById('addModal').style.display='flex'">
+    <span style="font-size:16px;">＋</span> Yeni Cihaz
+  </button>
+  {% endif %}
+</div>
+
+{# ── Geciken Test Uyarısı ─────────────────────────────────── #}
+{% if geciken %}
+<div class="section-card mb-16" style="border-left:4px solid #dc2626;padding:12px 16px;">
+  <div style="font-size:13px;font-weight:600;color:#dc2626;margin-bottom:4px;">⚠️ Geciken Periyodik Testler</div>
+  {% for d in geciken %}
+  <div style="font-size:12px;color:var(--text-secondary);">
+    <strong>{{ d.ad }}</strong> — {{ (d.kalan_gun|abs) }} gün gecikti
+    (son test: {{ d.son_test_tarihi or 'yok' }})
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{# ── Cihaz Tablosu ─────────────────────────────────────────── #}
+<div class="section-card">
+{% if devices %}
+<div class="data-table-wrapper">
+<table class="data-table">
+<thead>
+  <tr>
+    <th>Cihaz Adı</th>
+    <th>Tip</th>
+    <th>Konum / Makine</th>
+    <th style="text-align:center;">Durum</th>
+    <th style="text-align:center;">Son Test</th>
+    <th style="text-align:center;">Sonraki Test</th>
+    <th style="text-align:center;">Kalan</th>
+    <th style="text-align:center;">Test Sayısı</th>
+    <th></th>
+  </tr>
+</thead>
+<tbody>
+{% for d in devices %}
+{% set gecikti = d.test_gecikti %}
+<tr style="{{ 'background:rgba(220,38,38,0.05);' if gecikti }}">
+  <td><strong>{{ d.ad }}</strong></td>
+  <td>{{ d.tip }}</td>
+  <td>{{ d.konum or '—' }}{% if d.makine %} / {{ d.makine }}{% endif %}</td>
+  <td style="text-align:center;">
+    <span class="badge" style="font-size:11px;padding:2px 8px;border-radius:4px;
+      background:{{ '#16a34a' if d.durum == 'Aktif' else ('#dc2626' if d.durum == 'Test Başarısız' else '#94a3b8') }};color:#fff;">
+      {{ d.durum }}
+    </span>
+  </td>
+  <td style="text-align:center;">{{ d.son_test_tarihi or '—' }}</td>
+  <td style="text-align:center;{{ 'color:#dc2626;font-weight:600;' if gecikti }}">{{ d.sonraki_test_tarihi or '—' }}</td>
+  <td style="text-align:center;{{ 'color:#dc2626;font-weight:600;' if gecikti }}">
+    {% if d.kalan_gun is not none %}{{ d.kalan_gun }} gün{% else %}—{% endif %}
+  </td>
+  <td style="text-align:center;">{{ d.tests|length }}</td>
+  <td style="white-space:nowrap;">
+    {% if session.rol in ('Admin','Doküman Kontrol') %}
+    <form method="post" action="{{ url_for('pokayoke_test', device_id=d.id) }}" style="display:inline;">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="sonuc" value="Başarılı">
+      <button type="submit" class="btn btn-outline" style="padding:2px 8px;font-size:11px;color:#16a34a;" title="Başarılı Test Kaydet">✅</button>
+    </form>
+    <button type="button" class="btn btn-outline" style="padding:2px 8px;font-size:11px;color:#dc2626;" title="Başarısız Test"
+      onclick="openFailModal({{ d.id }}, '{{ d.ad|replace("'", "\\'") }}')">❌</button>
+    {% endif %}
+  </td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+{% else %}
+<div class="empty-state"><div class="empty-icon">🔧</div><h3>Cihaz yok</h3><p class="text-muted">Poka-Yoke cihazı eklemek için yukarıdaki butonu kullanın.</p></div>
+{% endif %}
+</div>
+
+{# ═══ Yeni Cihaz Modal ═══ #}
+<div id="addModal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;">
+  <div class="section-card" style="width:90%;max-width:600px;padding:24px;">
+    <div class="d-flex align-center justify-between mb-16">
+      <h3 style="font-size:16px;font-weight:700;margin:0;">🔧 Yeni Poka-Yoke Cihazı</h3>
+      <button type="button" onclick="document.getElementById('addModal').style.display='none'" style="background:none;border:none;font-size:20px;cursor:pointer;">✕</button>
+    </div>
+    <form method="post" action="{{ url_for('pokayoke_new') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="form-group" style="grid-column:span 2;">
+          <label class="form-label">Cihaz Adı *</label>
+          <input type="text" name="ad" class="form-control" required placeholder="Örn: Parça Algılama Sensörü">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tip</label>
+          <select name="tip" class="form-control">
+            {% for t in tipler %}<option value="{{ t }}">{{ t }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Test Periyodu (gün)</label>
+          <input type="number" name="test_periyodu_gun" class="form-control" value="30" min="1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Konum</label>
+          <input type="text" name="konum" class="form-control" placeholder="Hat / İstasyon">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Makine</label>
+          <input type="text" name="makine" class="form-control" placeholder="Makine adı">
+        </div>
+        <div class="form-group" style="grid-column:span 2;">
+          <label class="form-label">Açıklama</label>
+          <textarea name="aciklama" class="form-control" rows="2"></textarea>
+        </div>
+      </div>
+      <div class="d-flex justify-end" style="margin-top:16px;gap:8px;">
+        <button type="button" class="btn btn-outline" onclick="document.getElementById('addModal').style.display='none'">İptal</button>
+        <button type="submit" class="btn btn-primary">✓ Ekle</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{# ═══ Başarısız Test Modal ═══ #}
+<div id="failModal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;">
+  <div class="section-card" style="width:90%;max-width:500px;padding:24px;">
+    <div class="d-flex align-center justify-between mb-16">
+      <h3 style="font-size:16px;font-weight:700;margin:0;" id="failTitle">❌ Başarısız Test</h3>
+      <button type="button" onclick="document.getElementById('failModal').style.display='none'" style="background:none;border:none;font-size:20px;cursor:pointer;">✕</button>
+    </div>
+    <form id="failForm" method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="sonuc" value="Başarısız">
+      <div class="form-group">
+        <label class="form-label">Bulgu / Açıklama</label>
+        <textarea name="bulgu" class="form-control" rows="3" placeholder="Tespit edilen sorun..."></textarea>
+      </div>
+      <div class="d-flex justify-end" style="margin-top:16px;gap:8px;">
+        <button type="button" class="btn btn-outline" onclick="document.getElementById('failModal').style.display='none'">İptal</button>
+        <button type="submit" class="btn btn-primary" style="background:#dc2626;">❌ Kaydet</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+function openFailModal(deviceId, name) {
+  document.getElementById('failForm').action = '/iatf/pokayoke/' + deviceId + '/test';
+  document.getElementById('failTitle').textContent = '❌ Başarısız Test — ' + name;
+  document.getElementById('failModal').style.display = 'flex';
+}
+</script>
+{% endblock %}

@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% block title %}İSG Olay, Kaza ve Ramak Kala Kayıtları{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><span>İSG Olayları</span>{% endblock %}
+
+{% block content %}
+<div class="d-flex align-center justify-between mb-24" style="flex-wrap:wrap;gap:12px;">
+  <div>
+    <h2 style="font-size:20px;font-weight:700;">İSG Olay, Kaza ve Ramak Kala Kayıtları</h2>
+    <p class="text-muted" style="font-size:13px;">ISO 45001:2018 İş Kazaları, Ramak Kalalar, Meslek Hastalıkları ve Tehlikeli Durum Bildirimleri. Toplam <strong>{{ kayitlar|length }}</strong> kayıt.</p>
+  </div>
+</div>
+
+<!-- Olay Listesi Tablosu -->
+<div class="section-card mb-24">
+{% if kayitlar %}
+<div class="data-table-wrapper">
+<table class="data-table">
+<thead>
+    <tr>
+        <th>Olay No</th>
+        <th>Tür</th>
+        <th>Tarih</th>
+        <th>Yer / Bölüm</th>
+        <th>Etkilenen / Yaralanan</th>
+        <th>Olay Açıklaması</th>
+        <th>Kök Neden Özet</th>
+        <th style="text-align:center;">Kayıp Gün</th>
+        <th style="text-align:center;">SGK Bildirimi</th>
+        <th>DÖF Bağlantısı</th>
+    </tr>
+</thead>
+<tbody>
+{% for r in kayitlar %}
+<tr>
+    <td><code style="color:var(--text-accent); font-weight:700;">{{ r.olay_no or '—' }}</code></td>
+    <td><strong>{{ r.tur }}</strong></td>
+    <td style="font-size:12px; font-family:monospace;">{{ r.tarih.strftime('%Y-%m-%d') if r.tarih else '—' }}</td>
+    <td>{{ r.yer or '—' }}</td>
+    <td>{{ r.yaralanan or 'Kayıpsız / Ekipman' }}</td>
+    <td style="font-size:13px; max-width:200px;">{{ r.tanim }}</td>
+    <td style="font-size:12px;" class="text-muted">{{ r.kok_neden|truncate(60) if r.kok_neden else 'Değerlendirilmedi' }}</td>
+    <td class="text-center" style="font-family:monospace; font-weight:700; color:{{ '#ef4444' if (r.kayip_gun or 0) > 0 else 'var(--text-primary)' }};">
+        {{ r.kayip_gun or 0 }}
+    </td>
+    <td class="text-center">
+        <span class="badge" style="font-size:10px; font-weight:700; background:{{ '#d1fae5' if r.bildirim_yapildi else '#f3f4f6' }}; color:{{ '#065f46' if r.bildirim_yapildi else '#4b5563' }};">
+            {{ 'Yapıldı ✅' if r.bildirim_yapildi else 'Gerekmiyor / Yapılmadı' }}
+        </span>
+    </td>
+    <td>
+        {% if r.capa_id %}
+        <a href='{{ request.script_root }}/capa/{{ r.capa_id }}' class="btn btn-outline" style="padding:2px 8px; font-size:11px;">🔍 DÖF</a>
+        {% else %}
+        <span class="text-muted">—</span>
+        {% endif %}
+    </td>
+</tr>
+{% endfor %}
+</tbody></table>
+</div>
+{% else %}
+<div class="empty-state"><div class="empty-icon">🚑</div><h3>Kayıt yok</h3></div>
+{% endif %}
+</div>
+
+<!-- Yeni Olay Ekleme Formu -->
+{% if can_edit %}
+<div class="section-card">
+    <div class="section-header" style="border-bottom:1px solid var(--border); padding:12px 20px;">
+        <span class="section-title">➕ Yeni İSG Olayı / Kaza / Ramak Kala Kaydet</span>
+    </div>
+    <div class="section-body" style="padding:20px;">
+        <form method="POST" action="{{ url_for('ohs_incidents') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:16px; margin-bottom:16px;">
+                <div class="form-group">
+                    <label class="form-label">Olay / Kaza No</label>
+                    <input type="text" name="olay_no" class="form-control" placeholder="Örn: İSG-2026-03">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Olay Türü *</label>
+                    <select name="tur" class="form-control" required>
+                        {% for t in olay_turleri %}
+                        <option value="{{ t }}" {{ 'selected' if t=='Ramak Kala' }}>{{ t }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Olay Tarihi *</label>
+                    <input type="date" name="tarih" class="form-control" required value="{{ date_today }}">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Olayın Gerçekleştiği Yer *</label>
+                    <input type="text" name="yer" class="form-control" required placeholder="Örn: Preshane A Hattı, Malzeme Deposu">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Yaralanan / Etkilenen Personel</label>
+                    <input type="text" name="yaralanan" class="form-control" placeholder="Örn: Ahmet Yılmaz (Preshane Operatörü)">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">İş Günü Kaybı (Gün Sayısı)</label>
+                    <input type="number" name="kayip_gun" class="form-control" value="0" min="0">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Resmi Bildirim Yapıldı mı? (SGK)</label>
+                    <select name="bildirim_yapildi" class="form-control">
+                        <option value="0">Hayır / Gerekmiyor</option>
+                        <option value="1">Evet (3 İş Günü İçinde Yapıldı)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Sorumlu İSG Uzmanı / Temsilci</label>
+                    <select name="sorumlu_id" class="form-control">
+                        <option value="">— Seçiniz —</option>
+                        {% for u in users %}
+                        <option value="{{ u.id }}">{{ u.ad_soyad }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group" style="grid-column: span 4;">
+                    <label class="form-label">Olayın Açıklaması ve Tanımı *</label>
+                    <textarea name="tanim" class="form-control" rows="2" required placeholder="Olayın nasıl gerçekleştiğini, kullanılan ekipmanları ve oluşan maddi/fiziksel zararı açıklayınız..."></textarea>
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label">Saptanan Kök Neden (5 Neden Analizi Özet)</label>
+                    <textarea name="kok_neden" class="form-control" rows="2" placeholder="Örn: Koruyucu bariyer kilidinin arızalı olması, emniyet piminin takılmaması..."></textarea>
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label">İlişkili DÖF (Varsa)</label>
+                    <select name="capa_id" class="form-control" style="height: auto;">
+                        <option value="">— Seçiniz —</option>
+                        {% for c in capas %}
+                        <option value="{{ c.id }}">{{ c.dof_no or c.id }} {{ c.baslik|truncate(45) }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" style="padding:10px 24px;">💾 Kazayı Kaydet</button>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

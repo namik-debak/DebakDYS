@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}{{ _('Acil Durum Tatbikatı') }}{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><span>{{ _('Acil Durum Tatbikatı') }}</span>{% endblock %}
+
+{% set is_editor = session.get('rol') in ['Admin', 'Doküman Kontrol'] %}
+
+{% block content %}
+<div class="mb-24">
+    <h2 style="font-size: 20px; font-weight: 700;">{{ _('Acil Durum Tatbikatları') }}</h2>
+    <p class="text-muted" style="font-size: 13px;">{{ _('Planlanan ve gerçekleşen tatbikat kayıtları') }}.</p>
+</div>
+
+<div class="section-card mb-16">
+    {% if kayitlar %}
+    <div class="data-table-wrapper">
+        <table class="data-table">
+            <caption class="sr-only">{{ _('Acil Durum Tatbikatı') }}</caption>
+            <thead>
+                <tr>
+                    <th scope="col">{{ _('No') }}</th>
+                    <th scope="col">{{ _('Planlanan') }}</th>
+                    <th scope="col">{{ _('Gerçekleşen') }}</th>
+                    <th scope="col">{{ _('Senaryo') }}</th>
+                    <th scope="col">{{ _('Katılımcı') }}</th>
+                    <th scope="col">{{ _('Sonuç') }}</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in kayitlar %}
+                {% set ids = r.katilimci_id_listesi() %}
+                <tr>
+                    <td><code>{{ r.drill_no or '—' }}</code></td>
+                    <td>{{ r.planlanan_tarihi or '—' }}</td>
+                    <td>{{ r.gerceklesen_tarihi or '—' }}</td>
+                    <td style="font-size:12px;">{{ r.senaryo or '—' }}</td>
+                    <td style="font-size:12px;">
+                        {% if ids %}
+                            {{ ids|length }} {{ _('kişi') }}
+                            <div class="text-muted" style="font-size:11px; max-width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                {% for uid in ids[:3] %}{{ user_map.get(uid, uid) }}{% if not loop.last %}, {% endif %}{% endfor %}{% if ids|length > 3 %}…{% endif %}
+                            </div>
+                        {% elif r.katilimci_sayisi is not none %}
+                            {{ r.katilimci_sayisi }}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                    <td style="font-size:12px;">{{ r.etkinlik_sonucu or '—' }}</td>
+                    <td>
+                        <a href="{{ request.script_root }}/ohs/drills/{{ r.id }}" class="btn btn-sm btn-outline">{{ _('İncele') }}</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}<div class="empty-state"><div class="empty-icon">🧯</div><h3>{{ _('Tatbikat kaydı yok') }}</h3></div>{% endif %}
+</div>
+
+{% if is_editor %}
+<div class="section-card">
+    <div class="section-header"><span class="section-title">➕ {{ _('Yeni Tatbikat') }}</span></div>
+    <div class="section-body">
+        <form method="POST" action="{{ request.script_root }}/ohs/drills">
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px;">
+                <div class="form-group"><label class="form-label" for="drill_no">{{ _('No') }}</label><input name="drill_no" id="drill_no" class="form-control" placeholder="TAT-2026-0001"></div>
+                <div class="form-group"><label class="form-label" for="planlanan_tarihi">{{ _('Planlanan') }}</label><input type="date" name="planlanan_tarihi" id="planlanan_tarihi" class="form-control"></div>
+                <div class="form-group"><label class="form-label" for="gerceklesen_tarihi">{{ _('Gerçekleşen') }}</label><input type="date" name="gerceklesen_tarihi" id="gerceklesen_tarihi" class="form-control"></div>
+                <div class="form-group" style="grid-column: span 3;"><label class="form-label" for="senaryo">{{ _('Senaryo') }}</label><textarea name="senaryo" id="senaryo" class="form-control" rows="2"></textarea></div>
+                <div class="form-group" style="grid-column: span 3;">
+                    <label class="form-label" for="katilimci_ids">{{ _('Katılımcılar') }}</label>
+                    <p class="form-hint" style="margin:0 0 6px;">{{ _('Kullanıcı listesinden birden fazla kişi seçebilirsiniz (Ctrl / Cmd ile).') }}</p>
+                    <select name="katilimci_ids" id="katilimci_ids" class="form-control" multiple size="8" style="min-height:140px;">
+                        {% for u in users %}
+                        <option value="{{ u.id }}">{{ u.ad_soyad }}{% if u.departman %} — {{ u.departman }}{% endif %}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group" style="grid-column: span 2;"><label class="form-label" for="etkinlik_sonucu">{{ _('Etkinlik Sonucu') }}</label><textarea name="etkinlik_sonucu" id="etkinlik_sonucu" class="form-control" rows="2"></textarea></div>
+                <div class="form-group"><label class="form-label" for="aksiyon">{{ _('Aksiyon') }}</label><textarea name="aksiyon" id="aksiyon" class="form-control" rows="2"></textarea></div>
+                <div class="form-group">
+                    <label class="form-label" for="capa_id">{{ _('İlgili DÖF') }}</label>
+                    <select name="capa_id" id="capa_id" class="form-control">
+                        <option value="">—</option>
+                        {% for c in capalar %}<option value="{{ c.id }}">{{ c.dof_no }}</option>{% endfor %}
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">{{ _('Kaydet') }}</button>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

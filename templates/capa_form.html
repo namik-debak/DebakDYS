@@ -1,0 +1,321 @@
+{% extends "base.html" %}
+{% block title %}{{ 'DÖF Düzenle' if capa else 'Yeni DÖF' }}{% endblock %}
+
+{% block breadcrumb %}
+<span class="separator">›</span>
+<a href="{{ request.script_root }}/capa">DÖF</a>
+<span class="separator">›</span>
+<span>{{ 'Düzenle' if capa else 'Yeni' }}</span>
+{% endblock %}
+
+{% block content %}
+<div class="mb-24">
+    <h2 style="font-size: 20px; font-weight: 700;">{{ 'DÖF Düzenle: ' + capa.dof_no if capa else 'Yeni DÖF / Düzeltici Faaliyet' }}</h2>
+</div>
+
+<div class="section-card">
+    <div class="section-body" style="padding: 20px;">
+        <form method="POST" action="{{ (request.script_root + '/capa/' + capa.id|string + '/edit') if capa else (request.script_root + '/capa/new') }}">
+            <div class="form-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label">Başlık *</label>
+                    <input type="text" name="baslik" class="form-control" required value="{{ capa.baslik if capa else '' }}">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Kaynak Tipi</label>
+                    <select name="kaynak_tipi" class="form-control">
+                        {% for k in kaynaklar %}
+                        <option value="{{ k }}" {{ 'selected' if capa and capa.kaynak_tipi == k }}>{{ k|enum }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Durum</label>
+                    <select name="durum" class="form-control">
+                        {% for d in durumlar %}
+                        <option value="{{ d }}" {{ 'selected' if capa and capa.durum == d }}>{{ d|enum }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Sorumlu</label>
+                    <select name="sorumlu_id" class="form-control">
+                        <option value="">— Seçiniz —</option>
+                        {% for u in users %}
+                        <option value="{{ u.id }}" {{ 'selected' if capa and capa.sorumlu_id == u.id }}>{{ u.ad_soyad }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">İlgili Süreç</label>
+                    <select name="ilgili_surec_id" class="form-control">
+                        <option value="">— Yok —</option>
+                        {% for p in processes %}
+                        <option value="{{ p.id }}" {{ 'selected' if capa and capa.ilgili_surec_id == p.id }}>{{ p.kod }} - {{ p.ad }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">İlgili Doküman</label>
+                    <select name="ilgili_document_id" class="form-control">
+                        <option value="">— Yok —</option>
+                        {% for d in documents %}
+                        <option value="{{ d.id }}"
+                            {{ 'selected' if (capa and capa.ilgili_document_id == d.id) or (prefill_doc == d.id) }}>
+                            {{ d.dokuman_no }} - {{ d.baslik }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tespit Tarihi</label>
+                    <input type="date" name="tespit_tarihi" class="form-control"
+                           value="{{ capa.tespit_tarihi.isoformat() if capa and capa.tespit_tarihi else '' }}">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Planlanan Kapanış</label>
+                    <input type="date" name="planlanan_tarih" class="form-control"
+                           value="{{ capa.planlanan_tarih.isoformat() if capa and capa.planlanan_tarih else '' }}">
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label">Uygunsuzluk Tanımı</label>
+                    <textarea name="tanim" class="form-control" rows="2">{{ capa.tanim if capa else '' }}</textarea>
+                </div>
+
+                {# ── Müşteri Şikayeti / Saha İade / Garanti Ek Alanları ── #}
+                <div id="sikayetFields" style="grid-column:span 2;display:none;border:1px solid var(--border);border-radius:8px;padding:16px;background:var(--bg-secondary);">
+                    <div style="font-size:13px;font-weight:600;margin-bottom:12px;color:#6366f1;">📋 Müşteri Şikayeti / İade Bilgileri</div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                        <div class="form-group">
+                            <label class="form-label">Müşteri</label>
+                            <input type="text" name="sikayet_musteri" class="form-control" value="{{ capa.sikayet_musteri or '' if capa }}" placeholder="Müşteri adı">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Parça No</label>
+                            <input type="text" name="sikayet_parca_no" class="form-control" value="{{ capa.sikayet_parca_no or '' if capa }}" placeholder="Parça numarası">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Miktar</label>
+                            <input type="number" name="sikayet_miktar" class="form-control" min="0" value="{{ capa.sikayet_miktar or '' if capa }}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Aciliyet</label>
+                            <select name="sikayet_aciliyet" class="form-control">
+                                <option value="">— Seçiniz —</option>
+                                {% for a in ['Yüksek','Orta','Düşük'] %}
+                                <option value="{{ a }}" {{ 'selected' if capa and capa.sikayet_aciliyet == a }}>{{ a }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" style="display:flex;align-items:center;gap:8px;">
+                                <input type="checkbox" name="garanti_talebi_mi" value="1" {{ 'checked' if capa and capa.garanti_talebi_mi }}> Garanti Talebi
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" style="display:flex;align-items:center;gap:8px;">
+                                <input type="checkbox" name="saha_iade_mi" value="1" {{ 'checked' if capa and capa.saha_iade_mi }}> Saha İade
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                {# ── Ara Önlem (Containment) ── #}
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label">Ara Önlem (Containment) — IATF 16949 § 10.2.3</label>
+                    <textarea name="containment_aksiyonu" class="form-control" rows="2" placeholder="Acil ara önlem...">{{ capa.containment_aksiyonu if capa else '' }}</textarea>
+                </div>
+
+                {# ── Benzer Analiz ── #}
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label">Benzer Uygunsuzluk Analizi — "Bu hata başka nerede olabilir?"</label>
+                    <textarea name="benzer_analiz" class="form-control" rows="2" placeholder="Benzer proses/ürün/hatların değerlendirmesi...">{{ capa.benzer_analiz if capa else '' }}</textarea>
+                </div>
+
+                {# ── FMEA/CP Güncelleme ── #}
+                <div class="form-group">
+                    <label class="form-label" style="display:flex;align-items:center;gap:8px;">
+                        <input type="checkbox" name="fmea_guncellendi" value="1" {{ 'checked' if capa and capa.fmea_guncellendi }}> PFMEA Güncellendi
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" style="display:flex;align-items:center;gap:8px;">
+                        <input type="checkbox" name="cp_guncellendi" value="1" {{ 'checked' if capa and capa.cp_guncellendi }}> Kontrol Planı Güncellendi
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="kok_neden_yontemi">{{ _('Kök Neden Yöntemi') }}</label>
+                    <select name="kok_neden_yontemi" id="kok_neden_yontemi" class="form-control">
+                        <option value="">— {{ _('Seçiniz') }} —</option>
+                        {% for y in yontemler %}
+                        <option value="{{ y }}" {{ 'selected' if capa and capa.kok_neden_yontemi == y }}>{{ y }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="etkinlik_bekleme_gunu">{{ _('Etkinlik Bekleme (gün)') }}</label>
+                    <input type="number" name="etkinlik_bekleme_gunu" id="etkinlik_bekleme_gunu" class="form-control" min="0"
+                           value="{{ capa.etkinlik_bekleme_gunu if capa else 30 }}">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="duzeltici_faaliyet">{{ _('Düzeltici Faaliyet') }}</label>
+                    <textarea name="duzeltici_faaliyet" id="duzeltici_faaliyet" class="form-control" rows="2">{{ capa.duzeltici_faaliyet if capa else '' }}</textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="onleyici_faaliyet">{{ _('Önleyici Faaliyet') }}</label>
+                    <textarea name="onleyici_faaliyet" id="onleyici_faaliyet" class="form-control" rows="2">{{ capa.onleyici_faaliyet if capa else '' }}</textarea>
+                </div>
+                {% if capa %}
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label" for="etkinlik_kontrolu">{{ _('Etkinlik Kontrolü') }}</label>
+                    <textarea name="etkinlik_kontrolu" id="etkinlik_kontrolu" class="form-control" rows="2">{{ capa.etkinlik_kontrolu or '' }}</textarea>
+                </div>
+                {% endif %}
+            </div>
+
+            {# ── Kök Neden Analizi: yönteme göre şekillenen panel ── #}
+            <div class="section-card mt-16" id="kok-neden-panel">
+                <div class="section-header">
+                    <span class="section-title">{{ _('Kök Neden Analizi') }}</span>
+                    <span class="text-muted" id="kok-neden-method-label" style="font-size:12px; margin-left:8px;"></span>
+                </div>
+                <div class="section-body">
+                    <p id="kok-neden-placeholder" class="text-muted" style="margin:0; font-size:13px;">
+                        {{ _('Analiz alanlarını görmek için önce bir kök neden yöntemi seçin.') }}
+                    </p>
+
+                    {# 5 Neden #}
+                    <div class="kok-method-panel" data-method="5 Neden" hidden>
+                        <div class="form-group mb-16">
+                            <label class="form-label" for="five_why_problem">{{ _('Problem / Gözlem') }}</label>
+                            <textarea name="five_why_problem" id="five_why_problem" class="form-control" rows="2"
+                                      placeholder="{{ _('Analiz edilen problemi yazın') }}">{{ kok_analiz.five_why_problem }}</textarea>
+                        </div>
+                        <div class="five-why-chain">
+                            {% for i in range(1, 6) %}
+                            <div class="form-group five-why-step">
+                                <label class="form-label" for="five_why_{{ i }}">{{ i }}. {{ _('Neden?') }}</label>
+                                <textarea name="five_why_{{ i }}" id="five_why_{{ i }}" class="form-control" rows="2"
+                                          placeholder="{{ _('Neden oldu?') }}">{{ kok_analiz.five_whys[i-1] }}</textarea>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    {# Ishikawa #}
+                    <div class="kok-method-panel" data-method="Ishikawa (Balık Kılçığı)" hidden>
+                        <p class="form-hint mb-12">{{ _('6M kategorilerine göre olası nedenleri yazın.') }}</p>
+                        <div class="ishikawa-grid">
+                            {% for key, label in [
+                                ('insan', 'İnsan (Man)'),
+                                ('makine', 'Makine (Machine)'),
+                                ('malzeme', 'Malzeme (Material)'),
+                                ('yontem', 'Yöntem (Method)'),
+                                ('olcum', 'Ölçüm (Measurement)'),
+                                ('cevre', 'Çevre (Environment)')
+                            ] %}
+                            <div class="form-group">
+                                <label class="form-label" for="ishikawa_{{ key }}">{{ label }}</label>
+                                <textarea name="ishikawa_{{ key }}" id="ishikawa_{{ key }}" class="form-control" rows="3">{{ kok_analiz.ishikawa[key] }}</textarea>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    {# 8D #}
+                    <div class="kok-method-panel" data-method="8D" hidden>
+                        <div class="eight-d-grid">
+                            <div class="form-group"><label class="form-label" for="d1_team">D1 — {{ _('Takım') }}</label>
+                                <textarea name="d1_team" id="d1_team" class="form-control" rows="2">{{ capa.d1_team if capa else '' }}</textarea></div>
+                            <div class="form-group"><label class="form-label" for="d2_problem">D2 — {{ _('Problem') }}</label>
+                                <textarea name="d2_problem" id="d2_problem" class="form-control" rows="2">{{ capa.d2_problem if capa else '' }}</textarea></div>
+                            <div class="form-group"><label class="form-label" for="d3_containment">D3 — {{ _('Geçici Önlem') }}</label>
+                                <textarea name="d3_containment" id="d3_containment" class="form-control" rows="2">{{ capa.d3_containment if capa else '' }}</textarea></div>
+                            <div class="form-group"><label class="form-label" for="d4_root_cause">D4 — {{ _('Kök Neden') }}</label>
+                                <textarea name="d4_root_cause" id="d4_root_cause" class="form-control" rows="2">{{ capa.d4_root_cause if capa else '' }}</textarea></div>
+                            <div class="form-group"><label class="form-label" for="d5_corrective">D5 — {{ _('Kalıcı Aksiyon') }}</label>
+                                <textarea name="d5_corrective" id="d5_corrective" class="form-control" rows="2">{{ capa.d5_corrective if capa else '' }}</textarea></div>
+                            <div class="form-group"><label class="form-label" for="d6_implement">D6 — {{ _('Uygulama') }}</label>
+                                <textarea name="d6_implement" id="d6_implement" class="form-control" rows="2">{{ capa.d6_implement if capa else '' }}</textarea></div>
+                            <div class="form-group"><label class="form-label" for="d7_prevent">D7 — {{ _('Önleme') }}</label>
+                                <textarea name="d7_prevent" id="d7_prevent" class="form-control" rows="2">{{ capa.d7_prevent if capa else '' }}</textarea></div>
+                            <div class="form-group"><label class="form-label" for="d8_congratulate">D8 — {{ _('Takdir') }}</label>
+                                <textarea name="d8_congratulate" id="d8_congratulate" class="form-control" rows="2">{{ capa.d8_congratulate if capa else '' }}</textarea></div>
+                        </div>
+                    </div>
+
+                    {# A3 #}
+                    <div class="kok-method-panel" data-method="A3" hidden>
+                        <div class="a3-grid">
+                            {% for key, label in [
+                                ('background', 'Arka Plan'),
+                                ('current', 'Mevcut Durum'),
+                                ('target', 'Hedef'),
+                                ('analysis', 'Kök Neden Analizi'),
+                                ('countermeasures', 'Karşı Önlemler'),
+                                ('followup', 'Takip / Doğrulama')
+                            ] %}
+                            <div class="form-group">
+                                <label class="form-label" for="a3_{{ key }}">{{ _(label) }}</label>
+                                <textarea name="a3_{{ key }}" id="a3_{{ key }}" class="form-control" rows="3">{{ kok_analiz.a3[key] }}</textarea>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    {# Diğer #}
+                    <div class="kok-method-panel" data-method="Diğer" hidden>
+                        <div class="form-group" style="margin:0;">
+                            <label class="form-label" for="kok_neden">{{ _('Kök Neden Açıklaması') }}</label>
+                            <textarea name="kok_neden" id="kok_neden" class="form-control" rows="4"
+                                      placeholder="{{ _('Serbest metin kök neden analizi') }}">{{ kok_analiz.plain }}</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex gap-8 mt-16">
+                <button type="submit" class="btn btn-primary">💾 {{ _('Kaydet') }}</button>
+                <a href="{{ request.script_root }}/capa" class="btn btn-outline">{{ _('İptal') }}</a>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+(function () {
+  var sel = document.getElementById('kok_neden_yontemi');
+  var placeholder = document.getElementById('kok-neden-placeholder');
+  var label = document.getElementById('kok-neden-method-label');
+  var panels = document.querySelectorAll('.kok-method-panel');
+  if (!sel) return;
+
+  function sync() {
+    var method = sel.value || '';
+    var any = false;
+    panels.forEach(function (panel) {
+      var match = panel.getAttribute('data-method') === method;
+      panel.hidden = !match;
+      if (match) any = true;
+    });
+    if (placeholder) placeholder.hidden = any;
+    if (label) label.textContent = method ? '(' + method + ')' : '';
+  }
+  sel.addEventListener('change', sync);
+  sync();
+})();
+
+// Müşteri şikayeti / Saha İade / Garanti Talebi alanlarını göster/gizle
+(function() {
+  var kaynakSel = document.querySelector('select[name="kaynak_tipi"]');
+  var sikayetBox = document.getElementById('sikayetFields');
+  if (!kaynakSel || !sikayetBox) return;
+  var sikayetTipleri = ['Müşteri Şikayeti', 'Saha İade', 'Garanti Talebi'];
+  function toggleSikayet() {
+    var show = sikayetTipleri.indexOf(kaynakSel.value) > -1;
+    sikayetBox.style.display = show ? 'block' : 'none';
+  }
+  kaynakSel.addEventListener('change', toggleSikayet);
+  toggleSikayet();
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+{% block title %}Soru Listesi — {{ audit.tetkik_no }}{% endblock %}
+{% block breadcrumb %}
+<span class="separator">›</span><a href="{{ url_for('audit_list') }}">Tetkikler</a>
+<span class="separator">›</span><a href="{{ url_for('audit_detail', audit_id=audit.id) }}">{{ audit.tetkik_no }}</a>
+<span class="separator">›</span><span>Soru Listesi</span>
+{% endblock %}
+
+{% block content %}
+<style>
+.q{padding:16px 20px;border-bottom:1px solid var(--border);display:grid;grid-template-columns:minmax(0,2fr) minmax(220px,1fr);gap:18px;}
+.q:last-child{border-bottom:none;}
+.q.uygunsuz{border-left:4px solid var(--color-danger,#ef4444);} .q.kismen{border-left:4px solid var(--color-warning,#f59e0b);} .q.uygun{border-left:4px solid var(--color-success,#10b981);}
+.q-no{background:var(--color-primary);color:#fff;font-size:11px;font-weight:700;padding:2px 6px;border-radius:4px;font-family:monospace;}
+.q-meta{font-size:11px;color:var(--text-muted);margin-top:4px;}
+.q-ipucu{font-size:12px;color:var(--text-muted);margin-top:6px;background:var(--bg-secondary);padding:6px 10px;border-radius:6px;border-left:3px solid var(--border);white-space:pre-line;}
+.cev{display:flex;flex-wrap:wrap;gap:4px;}
+.cev label{font-size:12px;border:1px solid var(--border);border-radius:14px;padding:3px 9px;cursor:pointer;}
+.cev input{margin-right:3px;}
+@media (max-width:760px){.q{grid-template-columns:1fr;}}
+</style>
+<div class="mb-16 d-flex align-center justify-between" style="flex-wrap:wrap;gap:10px;">
+  <div>
+    <h2 style="font-size:20px;font-weight:700;">{{ audit.tetkik_no }} — {{ audit.baslik }}</h2>
+    <p class="text-muted" style="font-size:13px;">
+      Soru listesi: <strong>{{ checklist.kod ~ ' ' ~ checklist.ad if checklist else '—' }}</strong> ·
+      Plan: <strong>{{ audit.planlanan_tarih.strftime('%d.%m.%Y') if audit.planlanan_tarih else '—' }}</strong> ·
+      Durum: <strong>{{ audit.durum }}</strong>
+      {% if ekip %}<br>Ekip: {% for e in ekip %}<strong>{{ e.ad }}</strong> ({{ e.rol }}){{ ', ' if not loop.last }}{% endfor %}{% elif audit.tetkik_eden %}<br>Tetkikçi: <strong>{{ audit.tetkik_eden.ad_soyad }}</strong>{% endif %}
+    </p>
+  </div>
+  <div style="display:flex;gap:8px;">
+    <a href="{{ url_for('audit_checklist_print', audit_id=audit.id) }}" target="_blank" class="btn btn-outline">🖨️ Sahaya çıktı</a>
+    <a href="{{ url_for('audit_detail', audit_id=audit.id) }}" class="btn btn-outline">⬅️ Tetkik detayı</a>
+  </div>
+</div>
+
+{% if ek_goster %}
+<style>
+.ek-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;}
+.ek-kart{border:1px solid var(--border);border-radius:8px;padding:10px;background:var(--bg-primary);font-size:12px;display:flex;flex-direction:column;gap:4px;}
+.ek-kart img{width:100%;height:120px;object-fit:cover;border-radius:6px;background:var(--bg-secondary);}
+.ek-tip{display:inline-block;font-size:10px;font-weight:700;padding:1px 7px;border-radius:10px;background:var(--bg-secondary);border:1px solid var(--border);}
+.ek-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;align-items:end;margin-top:12px;padding-top:12px;border-top:1px dashed var(--border);}
+</style>
+<div class="section-card mb-16" id="ek-kanit">
+  <div class="section-header"><span class="section-title">📎 Ek Kanıt Dokümanları — {{ kategori }} denetimi</span><span class="text-muted" style="font-size:12px;">{{ ek_kanitlar|length }} kanıt</span></div>
+  <div class="section-body">
+    <p class="text-muted" style="font-size:12px;margin-bottom:10px;">Ölçüm raporu, kontrol planı, PFMEA, SPC / MSA, fotoğraf, etiket, malzeme sertifikası gibi kanıtları dosya olarak yükleyin ya da DYS'deki dokümana bağlayın. İsterseniz bir soruyla ilişkilendirin.</p>
+    {% if ek_kanitlar %}
+    <div class="ek-grid">
+      {% for e in ek_kanitlar %}{% set k = e.k %}
+      <div class="ek-kart">
+        {% if e.gorsel %}<a href="{{ url_for('audit_ek_kanit_dosya', kanit_id=k.id) }}" target="_blank"><img src="{{ url_for('audit_ek_kanit_dosya', kanit_id=k.id) }}" alt="{{ k.dosya_adi }}" loading="lazy"></a>{% endif %}
+        <div><span class="ek-tip">{{ k.kanit_tipi or 'Diğer' }}</span></div>
+        {% if k.dosya_yolu %}<div>{{ '🖼️' if e.gorsel else ('📕' if e.pdf else '📄') }} <a href="{{ url_for('audit_ek_kanit_dosya', kanit_id=k.id) }}" target="_blank" style="font-weight:600;word-break:break-all;">{{ k.dosya_adi }}</a>
+          {% if e.gorsel or e.pdf %}· <a href="{{ url_for('audit_ek_kanit_dosya', kanit_id=k.id, indir=1) }}" class="text-muted">indir</a>{% endif %}</div>{% endif %}
+        {% if e.dokuman %}<div>🔗 <a href="{{ url_for('document_detail', doc_id=e.dokuman.id) }}" style="font-weight:600;">{{ e.dokuman.dokuman_no }}</a> {{ e.dokuman.baslik }}</div>{% elif k.dokuman_id %}<div class="text-muted">🔗 doküman #{{ k.dokuman_id }} (bulunamadı)</div>{% endif %}
+        {% if k.aciklama %}<div>{{ k.aciklama }}</div>{% endif %}
+        {% if e.soru %}<div class="text-muted">Soru: <a href="#q-{{ e.soru.id }}">{{ e.soru.soru_no or e.soru.sira }}</a> {{ e.soru.soru_metin|truncate(60) }}</div>{% endif %}
+        <div class="text-muted" style="font-size:11px;">{{ e.yukleyen }} · {{ k.olusturma_tarihi.strftime('%d.%m.%Y %H:%M') if k.olusturma_tarihi else '' }}</div>
+        {% if can_edit and (audit.durum not in ['Tamamlandı', 'Kapatıldı'] or session.get('rol') == 'Admin') %}
+        <form method="POST" action="{{ url_for('audit_checklist_run', audit_id=audit.id) }}" onsubmit="return confirm('Bu kanıt kaldırılsın mı?');" style="margin-top:2px;">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="ek_kanit_sil"><input type="hidden" name="kanit_id" value="{{ k.id }}">
+          <button class="btn btn-outline" type="submit" style="padding:1px 8px;font-size:11px;">Kaldır</button></form>{% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}<p class="text-muted" style="font-size:13px;">Henüz ek kanıt yok.</p>{% endif %}
+    {% if can_edit %}
+    <form method="POST" enctype="multipart/form-data" action="{{ url_for('audit_checklist_run', audit_id=audit.id) }}" class="ek-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="ek_kanit">
+      <div class="form-group" style="margin:0;"><label class="form-label">Dosya(lar)</label><input type="file" name="ek_dosyalar" multiple class="form-control" style="font-size:12px;"></div>
+      <div class="form-group" style="margin:0;"><label class="form-label">veya DYS dokümanı</label><input name="dokuman_no" list="ek-dok" class="form-control" placeholder="ör. M02 F12 — kontrol planı" autocomplete="off">
+        <datalist id="ek-dok">{% for d in dok_secenek %}<option value="{{ d }}">{% endfor %}</datalist></div>
+      <div class="form-group" style="margin:0;"><label class="form-label">Kanıt türü</label><select name="kanit_tipi" class="form-control">{% for t in ek_kanit_tipleri %}<option>{{ t }}</option>{% endfor %}</select></div>
+      {% if checklist %}<div class="form-group" style="margin:0;"><label class="form-label">İlgili soru (isteğe bağlı)</label><select name="question_id" class="form-control"><option value="">— Genel —</option>
+        {% for b, sorular in bolumler %}<optgroup label="{{ b }}">{% for q in sorular %}<option value="{{ q.id }}">{{ q.soru_no or q.sira }} — {{ q.soru_metin|truncate(70) }}</option>{% endfor %}</optgroup>{% endfor %}</select></div>{% endif %}
+      <div class="form-group" style="margin:0;grid-column:1/-1;"><label class="form-label">Açıklama</label><input name="aciklama" maxlength="300" class="form-control" placeholder="ör. KM-25 · 3. vardiya ölçüm sonucu, lot 2610-14"></div>
+      <div><button class="btn btn-primary" type="submit">📎 Kanıt ekle</button></div>
+    </form>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+
+{% if not checklist %}
+<div class="section-card mb-16"><div class="section-body">
+  <p>Bu tetkike bağlı soru listesi yok{% if audit.denetim_tipi == 'Sistem Denetimi' and not audit.denetlenen_surec %} (denetlenen süreç seçilmemiş){% endif %}. Saha denetimlerinde bulguları tetkik detayından ekleyin.</p>
+  {% if can_edit and listeler %}
+  <form method="POST" class="filters-bar" style="gap:8px;"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="liste_sec">
+    <select name="checklist_id" class="filter-select">{% for l in listeler %}<option value="{{ l.id }}">{{ l.kod }} — {{ l.ad }}</option>{% endfor %}</select>
+    <button class="btn btn-primary" type="submit">Soru listesini bağla</button></form>
+  {% endif %}
+</div></div>
+{% else %}
+
+<div class="section-card mb-16" style="padding:16px;border-left:4px solid var(--color-primary);">
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;text-align:center;">
+    <div><div class="text-muted" style="font-size:11px;">TOPLAM SORU</div><div style="font-size:22px;font-weight:800;">{{ stats.toplam }}</div></div>
+    <div><div class="text-muted" style="font-size:11px;">CEVAPLANAN</div><div style="font-size:22px;font-weight:800;color:var(--color-primary);">{{ stats.cevapli }}</div></div>
+    <div><div class="text-muted" style="font-size:11px;">UYGUNSUZ / KISMEN</div><div style="font-size:22px;font-weight:800;color:var(--color-danger,#ef4444);">{{ stats.uygunsuz }} / {{ stats.kismen }}</div></div>
+    <div><div class="text-muted" style="font-size:11px;">KANIT</div><div style="font-size:22px;font-weight:800;color:var(--color-success,#10b981);">{{ stats.kanit }}</div></div>
+  </div>
+  {% set progress = ((stats.cevapli / stats.toplam * 100)|round|int) if stats.toplam > 0 else 0 %}
+  <div style="margin-top:12px;background:var(--bg-secondary);height:8px;border-radius:4px;overflow:hidden;"><div style="background:var(--color-primary);width:{{ progress }}%;height:100%;"></div></div>
+  <div class="text-muted" style="font-size:11px;margin-top:4px;">İlerleme %{{ progress }} — "Uygunsuz" ve "Kısmen Uygun" cevaplar kaydedildiğinde otomatik bulgu olur.</div>
+</div>
+
+<form method="POST" id="ana-form" action="{{ url_for('audit_checklist_run', audit_id=audit.id) }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <input type="hidden" name="action" value="save">
+  {% for bolum, sorular in bolumler %}
+  <div class="section-card mb-16">
+    <div class="section-header" style="background:var(--bg-secondary);"><span class="section-title" style="font-size:14px;">📂 {{ bolum }}</span><span class="text-muted" style="font-size:12px;">{{ sorular|length }} soru</span></div>
+    <div class="section-body" style="padding:0;">
+      {% for q in sorular %}{% set ans = answers.get(q.id) %}{% set s = ans.sonuc if ans else 'Değerlendirilmedi' %}
+      <div id="q-{{ q.id }}" class="q {{ {'Uygunsuz':'uygunsuz','Kısmen Uygun':'kismen','Uygun':'uygun'}.get(s, '') }}">
+        <div>
+          <div style="display:flex;gap:10px;align-items:flex-start;"><span class="q-no">{{ q.sira }}</span>
+            <div style="font-weight:600;font-size:14px;line-height:1.4;">{{ q.soru_metin|kodlari_bagla }}</div></div>
+          <div class="q-meta">{% if q.sart_no %}Şart: <strong>{{ q.sart_no }}</strong>{% endif %}{% if q.kime %} · Kime: <strong>{{ q.kime }}</strong>{% endif %}</div>
+          {% if q.ipucu %}<details class="q-ipucu"><summary style="cursor:pointer;">💡 Kaynak / önceki denetim</summary>{{ q.ipucu }}</details>{% endif %}
+          <textarea name="gozlem_{{ q.id }}" class="form-control" rows="2" style="margin-top:8px;font-size:13px;" placeholder="Gözlem / objektif delil (doküman no, kayıt no, görüşülen kişi)…" {% if not can_edit %}readonly{% endif %}>{{ ans.gozlem if ans and ans.gozlem else '' }}</textarea>
+        </div>
+        <div>
+          <div class="cev">
+            {% for c in cevaplar %}<label><input type="radio" name="sonuc_{{ q.id }}" value="{{ c }}" {% if s == c %}checked{% endif %} {% if not can_edit %}disabled{% endif %}>{{ {'Uygun':'🟢','Uygunsuz':'🔴','Kısmen Uygun':'🟡','N/A':'⚪','Değerlendirilmedi':'·'}.get(c, '') }} {{ c }}</label>{% endfor %}
+          </div>
+          <div style="margin-top:8px;"><label class="text-muted" style="font-size:11px;">Bulgu derecesi (uygunsuz / kısmen ise)</label>
+            <select name="derece_{{ q.id }}" class="form-control" style="font-size:12px;" {% if not can_edit %}disabled{% endif %}>
+              <option value="">Otomatik (Uygunsuz → Minör, Kısmen → Gözlem)</option>
+              {% for b in bulgu_tipleri %}<option {% if ans and ans.bulgu_derecesi == b %}selected{% endif %}>{{ b }}</option>{% endfor %}
+            </select></div>
+          <div style="margin-top:10px;font-size:11px;">
+            {% if ans and ans.evidences %}{% for ev in ans.evidences %}<div>📄 <a href="{{ url_for('audit_evidence_download', ev_id=ev.id) }}">{{ ev.dosya_adi }}</a></div>{% endfor %}{% endif %}
+            {% if can_edit %}<div style="margin-top:4px;display:flex;gap:4px;align-items:center;">
+              <input type="file" name="dosya" form="ev-{{ q.id }}" style="font-size:11px;max-width:170px;">
+              <button type="submit" form="ev-{{ q.id }}" class="btn btn-outline" style="padding:2px 8px;font-size:11px;">Kanıt yükle</button></div>{% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+  {% if can_edit %}
+  <div style="position:sticky;bottom:16px;z-index:50;background:var(--bg-primary);padding:12px 16px;border-radius:8px;border:1px solid var(--border);box-shadow:0 4px 12px rgba(0,0,0,.1);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
+    <span style="font-size:12px;" class="text-muted">Cevaplar kaydedilince bulgular kendiliğinden güncellenir.</span>
+    <button type="submit" class="btn btn-primary" style="padding:10px 28px;font-weight:700;">💾 Kaydet</button>
+  </div>
+  {% endif %}
+</form>
+{% for bolum, sorular in bolumler %}{% for q in sorular %}
+<form id="ev-{{ q.id }}" method="POST" enctype="multipart/form-data" action="{{ url_for('audit_checklist_run', audit_id=audit.id) }}" style="display:none;">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="evidence"><input type="hidden" name="question_id" value="{{ q.id }}"><input type="hidden" name="kanit_tipi" value="Diğer">
+</form>
+{% endfor %}{% endfor %}
+{% endif %}
+
+{% if can_edit and audit.durum not in ['Tamamlandı', 'Kapatıldı'] %}
+<div class="section-card mt-16"><div class="section-header"><span class="section-title">✅ Denetimi tamamla</span></div>
+<div class="section-body">
+  <form method="POST" action="{{ url_for('audit_checklist_run', audit_id=audit.id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="tamamla">
+    <div style="display:grid;grid-template-columns:200px 1fr;gap:12px;">
+      <div class="form-group"><label class="form-label">Gerçekleşen tarih</label><input type="date" name="gerceklesen_tarih" class="form-control" value="{{ (audit.gerceklesen_tarih or today).isoformat() }}"></div>
+      <div class="form-group"><label class="form-label">Sonuç özeti *</label><textarea name="sonuc_ozeti" class="form-control" rows="3" required placeholder="Güçlü yönler, uygunsuzluklar, iyileştirme fırsatları, genel değerlendirme">{{ audit.sonuc_ozeti or '' }}</textarea></div>
+    </div>
+    {% if stats and stats.toplam and stats.cevapli < stats.toplam %}<p style="font-size:12px;color:var(--color-warning,#f59e0b);">⚠ {{ stats.toplam - stats.cevapli }} soru değerlendirilmedi. Uygulanmayan sorular için "N/A" seçmeniz önerilir.</p>{% endif %}
+    <p class="text-muted" style="font-size:12px;">Tamamlandığında {{ 'uygunsuzluk bulguları için DÖF otomatik açılır' if dof_otomatik else 'uygunsuzluklar için DÖF, tetkik detayından açılmalıdır (otomatik DÖF kapalı)' }}.</p>
+    <button class="btn btn-primary" type="submit">Denetimi tamamla</button>
+  </form>
+</div></div>
+{% endif %}
+{% endblock %}

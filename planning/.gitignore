@@ -1,0 +1,15 @@
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*~
+
+# Local / cache
+*.log
+.pytest_cache/
+__pycache__/

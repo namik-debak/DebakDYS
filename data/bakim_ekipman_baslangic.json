@@ -1,0 +1,360 @@
+{
+ "_aciklama": "Başlangıç ekipman listesi (D03 F03 + bakım kartları) — Bakım Formu ekranında 'Başlangıç listesini yükle' ile eklenir; mevcut koda dokunmaz.",
+ "ekipmanlar": [
+  {
+   "kod": "K6",
+   "ad": "Enjeksiyon K6",
+   "tur": "Enjeksiyon Makinesi",
+   "marka": "Krauss Maffei",
+   "bolum": "Üretim",
+   "not": "D03 F03 kritik ekipman listesi"
+  },
+  {
+   "kod": "K7",
+   "ad": "Enjeksiyon K7",
+   "tur": "Enjeksiyon Makinesi",
+   "marka": "Krauss Maffei",
+   "bolum": "Üretim",
+   "not": "D03 F03 kritik ekipman listesi"
+  },
+  {
+   "kod": "K8",
+   "ad": "Enjeksiyon K8",
+   "tur": "Enjeksiyon Makinesi",
+   "marka": "Krauss Maffei",
+   "bolum": "Üretim",
+   "not": "D03 F03 kritik ekipman listesi"
+  },
+  {
+   "kod": "K10",
+   "ad": "Enjeksiyon K10",
+   "tur": "Enjeksiyon Makinesi",
+   "marka": "Krauss Maffei",
+   "bolum": "Üretim",
+   "not": "D03 F03 kritik ekipman listesi"
+  },
+  {
+   "kod": "K11",
+   "ad": "Enjeksiyon K11",
+   "tur": "Enjeksiyon Makinesi",
+   "marka": "Krauss Maffei",
+   "bolum": "Üretim",
+   "not": "D03 F03 kritik ekipman listesi"
+  },
+  {
+   "kod": "K12",
+   "ad": "Enjeksiyon K12",
+   "tur": "Enjeksiyon Makinesi",
+   "marka": "Krauss Maffei",
+   "bolum": "Üretim",
+   "not": "D03 F03 kritik ekipman listesi"
+  },
+  {
+   "kod": "K13",
+   "ad": "Enjeksiyon K13",
+   "tur": "Enjeksiyon Makinesi",
+   "marka": "Krauss Maffei",
+   "bolum": "Üretim",
+   "not": "D03 F03 kritik ekipman listesi"
+  },
+  {
+   "kod": "K14",
+   "ad": "Enjeksiyon K14",
+   "tur": "Enjeksiyon Makinesi",
+   "marka": "Krauss Maffei",
+   "bolum": "Üretim",
+   "not": "D03 F03 kritik ekipman listesi"
+  },
+  {
+   "kod": "K15",
+   "ad": "Enjeksiyon K15",
+   "tur": "Enjeksiyon Makinesi",
+   "marka": "Krauss Maffei",
+   "bolum": "Üretim",
+   "not": "D03 F03 kritik ekipman listesi"
+  },
+  {
+   "kod": "K16",
+   "ad": "Enjeksiyon K16",
+   "tur": "Enjeksiyon Makinesi",
+   "marka": "Krauss Maffei",
+   "bolum": "Üretim",
+   "not": "D03 F03 kritik ekipman listesi"
+  },
+  {
+   "kod": "K17",
+   "ad": "Enjeksiyon K17",
+   "tur": "Enjeksiyon Makinesi",
+   "marka": "Krauss Maffei",
+   "bolum": "Üretim",
+   "not": "D03 F03 kritik ekipman listesi"
+  },
+  {
+   "kod": "K18",
+   "ad": "Enjeksiyon K18",
+   "tur": "Enjeksiyon Makinesi",
+   "marka": "Krauss Maffei",
+   "bolum": "Üretim",
+   "not": "D03 F03 kritik ekipman listesi"
+  },
+  {
+   "kod": "K19",
+   "ad": "Enjeksiyon K19",
+   "tur": "Enjeksiyon Makinesi",
+   "marka": "Krauss Maffei",
+   "bolum": "Üretim",
+   "not": "D03 F03 kritik ekipman listesi"
+  },
+  {
+   "kod": "K21",
+   "ad": "Enjeksiyon K21",
+   "tur": "Enjeksiyon Makinesi",
+   "marka": "Krauss Maffei",
+   "bolum": "Üretim",
+   "not": "D03 F03 kritik ekipman listesi"
+  },
+  {
+   "kod": "K23",
+   "ad": "Enjeksiyon K23",
+   "tur": "Enjeksiyon Makinesi",
+   "marka": "Krauss Maffei",
+   "bolum": "Üretim",
+   "not": "D03 F03 kritik ekipman listesi"
+  },
+  {
+   "kod": "K25",
+   "ad": "Enjeksiyon K25",
+   "tur": "Enjeksiyon Makinesi",
+   "marka": "Krauss Maffei",
+   "bolum": "Üretim",
+   "not": "D03 F03 kritik ekipman listesi"
+  },
+  {
+   "kod": "K20",
+   "ad": "Enjeksiyon K20",
+   "tur": "Enjeksiyon Makinesi",
+   "marka": "",
+   "bolum": "Üretim",
+   "not": "D03 F03 helezon mili sayfası — marka doğrulanmalı"
+  },
+  {
+   "kod": "K22",
+   "ad": "Enjeksiyon K22",
+   "tur": "Enjeksiyon Makinesi",
+   "marka": "",
+   "bolum": "Üretim",
+   "not": "D03 F03 helezon mili sayfası — marka doğrulanmalı"
+  },
+  {
+   "kod": "K24",
+   "ad": "Enjeksiyon K24",
+   "tur": "Enjeksiyon Makinesi",
+   "marka": "",
+   "bolum": "Üretim",
+   "not": "D03 F03 helezon mili sayfası — marka doğrulanmalı"
+  },
+  {
+   "kod": "K26",
+   "ad": "Enjeksiyon K26",
+   "tur": "Enjeksiyon Makinesi",
+   "marka": "",
+   "bolum": "Üretim",
+   "not": "D03 F03 helezon mili sayfası — marka doğrulanmalı"
+  },
+  {
+   "kod": "K27",
+   "ad": "Enjeksiyon K27",
+   "tur": "Enjeksiyon Makinesi",
+   "marka": "",
+   "bolum": "Üretim",
+   "not": "D03 F03 helezon mili sayfası — marka doğrulanmalı"
+  },
+  {
+   "kod": "K28",
+   "ad": "Enjeksiyon K28",
+   "tur": "Enjeksiyon Makinesi",
+   "marka": "",
+   "bolum": "Üretim",
+   "not": "D03 F03 helezon mili sayfası — marka doğrulanmalı"
+  },
+  {
+   "kod": "K29",
+   "ad": "Enjeksiyon K29",
+   "tur": "Enjeksiyon Makinesi",
+   "marka": "",
+   "bolum": "Üretim",
+   "not": "D03 F03 helezon mili sayfası — marka doğrulanmalı"
+  },
+  {
+   "kod": "K30",
+   "ad": "Enjeksiyon K30",
+   "tur": "Enjeksiyon Makinesi",
+   "marka": "",
+   "bolum": "Üretim",
+   "not": "D03 F03 helezon mili sayfası — marka doğrulanmalı"
+  },
+  {
+   "kod": "K31",
+   "ad": "Enjeksiyon K31",
+   "tur": "Enjeksiyon Makinesi",
+   "marka": "",
+   "bolum": "Üretim",
+   "not": "D03 F03 helezon mili sayfası — marka doğrulanmalı"
+  },
+  {
+   "kod": "K32",
+   "ad": "Enjeksiyon K32",
+   "tur": "Enjeksiyon Makinesi",
+   "marka": "",
+   "bolum": "Üretim",
+   "not": "D03 F03 helezon mili sayfası — marka doğrulanmalı"
+  },
+  {
+   "kod": "AP1",
+   "ad": "Enjeksiyon AP1",
+   "tur": "Enjeksiyon Makinesi",
+   "marka": "Arburg",
+   "bolum": "Üretim",
+   "not": "D03 F03 kritik ekipman listesi"
+  },
+  {
+   "kod": "AP2",
+   "ad": "Enjeksiyon AP2",
+   "tur": "Enjeksiyon Makinesi",
+   "marka": "Arburg",
+   "bolum": "Üretim",
+   "not": "D03 F03 kritik ekipman listesi"
+  },
+  {
+   "kod": "AP3",
+   "ad": "Enjeksiyon AP3",
+   "tur": "Enjeksiyon Makinesi",
+   "marka": "Arburg",
+   "bolum": "Üretim",
+   "not": "D03 F03 kritik ekipman listesi"
+  },
+  {
+   "kod": "AP4",
+   "ad": "Enjeksiyon AP4",
+   "tur": "Enjeksiyon Makinesi",
+   "marka": "Arburg",
+   "bolum": "Üretim",
+   "not": "D03 F03 kritik ekipman listesi"
+  },
+  {
+   "kod": "AP5",
+   "ad": "Enjeksiyon AP5",
+   "tur": "Enjeksiyon Makinesi",
+   "marka": "Arburg",
+   "bolum": "Üretim",
+   "not": "D03 F03 kritik ekipman listesi"
+  },
+  {
+   "kod": "AP6",
+   "ad": "Enjeksiyon AP6",
+   "tur": "Enjeksiyon Makinesi",
+   "marka": "Arburg",
+   "bolum": "Üretim",
+   "not": "D03 F03 kritik ekipman listesi"
+  },
+  {
+   "kod": "ELEKTRO-EROZYON",
+   "ad": "Elektro Erozyon",
+   "tur": "Elektro Erozyon",
+   "marka": "",
+   "model": "AJAN - 50 AS 200",
+   "bolum": "Kalıphane",
+   "not": "D03 F28 bakım kartı"
+  },
+  {
+   "kod": "EROZYON",
+   "ad": "Erozyon Tezgahı",
+   "tur": "Erozyon Tezgahı",
+   "marka": "",
+   "model": "",
+   "bolum": "Kalıphane",
+   "not": "D03 F29 bakım kartı"
+  },
+  {
+   "kod": "FREZE",
+   "ad": "Freze",
+   "tur": "Freze",
+   "marka": "",
+   "model": "First / LC - 20 VSG",
+   "bolum": "Kalıphane",
+   "not": "D03 F30 bakım kartı"
+  },
+  {
+   "kod": "PLANYA",
+   "ad": "Planya",
+   "tur": "Planya",
+   "marka": "",
+   "model": "SH – 425 - C",
+   "bolum": "Kalıphane",
+   "not": "D03 F31 bakım kartı"
+  },
+  {
+   "kod": "MATKAP",
+   "ad": "Sütunlu Matkap",
+   "tur": "Sütunlu Matkap",
+   "marka": "",
+   "model": "Plank D 4790",
+   "bolum": "Kalıphane",
+   "not": "D03 F32 bakım kartı"
+  },
+  {
+   "kod": "TORNA-B",
+   "ad": "Torna (büyük)",
+   "tur": "Torna",
+   "marka": "",
+   "model": "TOS TRENCİN – SN",
+   "bolum": "Kalıphane",
+   "not": "D03 F34 bakım kartı"
+  },
+  {
+   "kod": "TORNA-K",
+   "ad": "Torna (küçük)",
+   "tur": "Torna",
+   "marka": "",
+   "model": "TEZSAN - MAS165 S",
+   "bolum": "Kalıphane",
+   "not": "D03 F35 bakım kartı"
+  },
+  {
+   "kod": "YUZEY-TASLAMA",
+   "ad": "Yüzey Taşlama",
+   "tur": "Yüzey Taşlama",
+   "marka": "",
+   "model": "KRASNY BORETS / OSH - 550",
+   "bolum": "Kalıphane",
+   "not": "D03 F36 bakım kartı"
+  },
+  {
+   "kod": "TRAFO",
+   "ad": "Trafo",
+   "tur": "Trafo",
+   "marka": "",
+   "model": "",
+   "bolum": "Kalıphane",
+   "not": "D03 F51 bakım kartı"
+  },
+  {
+   "kod": "CNC-TORNA",
+   "ad": "CNC Torna",
+   "tur": "CNC Torna",
+   "marka": "",
+   "model": "MAZAK CNC TORNA",
+   "bolum": "Kalıphane",
+   "not": "D03 F19"
+  },
+  {
+   "kod": "DALMA-EROZYON",
+   "ad": "Dalma Erozyon",
+   "tur": "Dalma Erozyon",
+   "marka": "",
+   "model": "GF AgieCharmilles Form 20",
+   "bolum": "Kalıphane",
+   "not": "D03 F20"
+  }
+ ]
+}

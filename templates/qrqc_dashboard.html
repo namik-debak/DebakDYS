@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+{% block title %}{{ _('QRQC Panosu — Hızlı Yanıt Kalite Kontrolü') }}{% endblock %}
+
+{% block breadcrumb %}
+<span class="separator">›</span>
+<a href="{{ request.script_root }}/qrqc">{{ _('Kalite Sistemi') }}</a>
+<span class="separator">›</span>
+<span>{{ _('QRQC (Hızlı Yanıt)') }}</span>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex align-center justify-between mb-24" style="flex-wrap:wrap; gap:12px;">
+    <div>
+        <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 4px;">⚡ {{ _('QRQC Panosu (Hızlı Yanıt Kalite Kontrolü)') }}</h2>
+        <p class="text-muted" style="font-size: 13px;">
+            {{ _('Saha/Hat seviyesinde 24 saatlik acil müdahale, problem tespiti ve DÖF entegrasyonu') }}
+        </p>
+    </div>
+    <div class="d-flex gap-8" style="flex-wrap:wrap;">
+        <a href="{{ request.script_root }}/qrqc/list" class="btn btn-outline">📋 {{ _('Tüm QRQC Listesi') }}</a>
+        <a href="{{ request.script_root }}/capa" class="btn btn-outline">🛠️ {{ _('DÖF Paneli') }}</a>
+        <a href="{{ request.script_root }}/qrqc/new" class="btn btn-primary">➕ {{ _('Yeni QRQC Kaydı') }}</a>
+    </div>
+</div>
+
+<div class="stats-grid mb-24">
+    <div class="stat-card">
+        <div class="stat-icon blue">⚡</div>
+        <div class="stat-value">{{ stats.toplam }}</div>
+        <div class="stat-label">{{ _('Toplam QRQC') }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon yellow">📂</div>
+        <div class="stat-value">{{ stats.acik }}</div>
+        <div class="stat-label">{{ _('Açık Olaylar') }}</div>
+    </div>
+    <div class="stat-card {{ 'stat-card-alert' if stats.mudahele_asimi else '' }}">
+        <div class="stat-icon red">🚨</div>
+        <div class="stat-value">{{ stats.mudahele_asimi }}</div>
+        <div class="stat-label">{{ _('24s Müdahale Gecikmesi') }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon purple">🔗</div>
+        <div class="stat-value">{{ stats.dof_tetiklenen }}</div>
+        <div class="stat-label">{{ _('DÖF Tetiklenen') }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon green">✅</div>
+        <div class="stat-value">{{ stats.kapatilan }}</div>
+        <div class="stat-label">{{ _('Kapatılan') }}</div>
+    </div>
+</div>
+
+<div class="grid-2 mb-24" style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+    <div class="section-card">
+        <div class="section-header" style="padding:12px 16px;"><span class="section-title">📊 {{ _('Kategori Dağılımı') }}</span></div>
+        <div class="section-body" style="padding:16px; min-height:220px;">
+            <canvas id="qrqcKategoriChart" aria-label="{{ _('Kategori grafiği') }}"></canvas>
+        </div>
+    </div>
+    <div class="section-card">
+        <div class="section-header" style="padding:12px 16px;"><span class="section-title">🎯 {{ _('Seviye Dağılımı') }}</span></div>
+        <div class="section-body" style="padding:16px; min-height:220px;">
+            <canvas id="qrqcSeviyeChart" aria-label="{{ _('Seviye grafiği') }}"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="section-card mb-24">
+    <div class="section-header d-flex justify-between align-center" style="padding:12px 16px;">
+        <span class="section-title">🚨 {{ _('Acil Müdahale Bekleyen Açık QRQC Olayları') }}</span>
+        <a href="{{ request.script_root }}/qrqc/list?durum=Açık" class="text-muted" style="font-size:12px;">{{ _('Tüm Açıkları Gör') }} →</a>
+    </div>
+    <div class="section-body" style="padding:0;">
+        {% if acik_list %}
+        <div class="data-table-wrapper">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>{{ _('QRQC No') }}</th>
+                        <th>{{ _('Başlık') }}</th>
+                        <th>{{ _('Kategori / Seviye') }}</th>
+                        <th>{{ _('Hat / Vardiya') }}</th>
+                        <th>{{ _('Tespit Tarihi') }}</th>
+                        <th>{{ _('Durum') }}</th>
+                        <th>{{ _('DÖF Entegrasyonu') }}</th>
+                        <th>{{ _('İşlem') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for q in acik_list %}
+                    <tr>
+                        <td>
+                            <a href="{{ request.script_root }}/qrqc/{{ q.id }}" style="font-weight:700;">{{ q.qrqc_no }}</a>
+                        </td>
+                        <td>
+                            <div>{{ q.baslik }}</div>
+                            {% if q.etkilenen_miktar %}
+                            <small class="text-muted">{{ _('Etkilenen') }}: {{ q.etkilenen_miktar }} {{ _('adet') }}</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge badge-info">{{ q.kategori }}</span>
+                            <small class="text-muted d-block">{{ q.seviye }}</small>
+                        </td>
+                        <td>
+                            <div>{{ q.hat_istasyon or '-' }}</div>
+                            <small class="text-muted">{{ q.vardiya or '' }}</small>
+                        </td>
+                        <td>{{ q.tespit_tarihi.strftime('%d.%m.%Y %H:%M') if q.tespit_tarihi else '-' }}</td>
+                        <td>
+                            {% if q.durum == 'Açık' %}
+                                {% if q.mudahele_suresi_astimi %}
+                                <span class="badge badge-danger">🚨 {{ _('Açık (24s Gecikti)') }}</span>
+                                {% else %}
+                                <span class="badge badge-warning">⚡ {{ _('Açık') }}</span>
+                                {% endif %}
+                            {% elif q.durum == 'Geçici Aksiyonda' %}
+                                <span class="badge badge-info">🛠️ {{ _('Geçici Aksiyonda') }}</span>
+                            {% elif q.durum == 'DÖF Tetiklendi' %}
+                                <span class="badge badge-purple">🔗 {{ _('DÖF Tetiklendi') }}</span>
+                            {% elif q.durum == 'Kapatıldı' %}
+                                <span class="badge badge-success">✅ {{ _('Kapatıldı') }}</span>
+                            {% else %}
+                                <span class="badge badge-secondary">{{ q.durum }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if q.dof %}
+                            <a href="{{ request.script_root }}/capa/{{ q.dof.id }}" class="badge badge-purple" style="text-decoration:none;">
+                                🛠️ {{ q.dof.dof_no }}
+                            </a>
+                            {% else %}
+                            <form method="POST" action="{{ request.script_root }}/qrqc/{{ q.id }}/trigger-dof" style="display:inline;">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-xs btn-outline-purple"
+                                        onclick="return confirm('{{ _('Bu QRQC kaydından yeni bir DÖF oluşturulacak. Devam edilsin mi?') }}');">
+                                    ➕ {{ _('DÖF Tetikle') }}
+                                </button>
+                            </form>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ request.script_root }}/qrqc/{{ q.id }}" class="btn btn-xs btn-outline">{{ _('İncele') }}</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div style="padding:24px; text-align:center;" class="text-muted">
+            ✅ {{ _('Şu an acil müdahale bekleyen açık QRQC kaydı bulunmamaktadır.') }}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const kategoriCtx = document.getElementById('qrqcKategoriChart');
+    if (kategoriCtx) {
+        new Chart(kategoriCtx, {
+            type: 'doughnut',
+            data: {
+                labels: {{ kategori_labels | tojson }},
+                datasets: [{
+                    data: {{ kategori_values | tojson }},
+                    backgroundColor: ['#2563eb', '#dc2626', '#d97706', '#059669', '#7c3aed', '#64748b']
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+    }
+
+    const seviyeCtx = document.getElementById('qrqcSeviyeChart');
+    if (seviyeCtx) {
+        new Chart(seviyeCtx, {
+            type: 'bar',
+            data: {
+                labels: {{ seviye_labels | tojson }},
+                datasets: [{
+                    label: '{{ _("Kayıt Sayısı") }}',
+                    data: {{ seviye_values | tojson }},
+                    backgroundColor: '#3b82f6'
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+        });
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,2513 @@
+{
+ "_aciklama": "D03 bakım formları → tek Bakım Formu ekranı şablonları (_calisma/bakim_formlari_hazirla.py, 01.10.2026). Ekipman seçilince türüne / markasına uyan şablonlar listelenir.",
+ "ekipman_turleri": [
+  "Enjeksiyon Makinesi",
+  "Hidrolik Pres",
+  "CNC Freze / İşlem Merkezi",
+  "CNC Torna",
+  "Dalma Erozyon",
+  "Tel Erozyon",
+  "Elektro Erozyon",
+  "Erozyon Tezgahı",
+  "Hızlı Delik Delme",
+  "Taşlama",
+  "Yüzey Taşlama",
+  "Freze",
+  "Torna",
+  "Planya",
+  "Sütunlu Matkap",
+  "Kaynak Makinesi",
+  "Punta Kaynak Makinesi",
+  "Konveyör",
+  "Robot",
+  "Termoregülatör",
+  "Trafo",
+  "Kalıp",
+  "Diğer"
+ ],
+ "markalar": [
+  "Arburg",
+  "Engel",
+  "Krauss Maffei",
+  "Hidromode",
+  "Sepro",
+  "Staubli"
+ ],
+ "sablon_olmayanlar": {
+  "D03 F03": "Kritik ekipman ve yedek parça listesi (liste)",
+  "D03 F37": "Kalıp bağlama / bakım sorumluları listesi",
+  "D03 F38": "Kalıp bakım talimatı (talimat niteliğinde — D03 T olarak numaralandırılması önerilir)",
+  "D03 F40": "Kalıp kritik ölçüler / bakım ölçü kriterleri listesi",
+  "D03 F55": "Yedek malzeme stok listesi"
+ },
+ "sablonlar": [
+  {
+   "kod": "D03 F01",
+   "ad": "1. Seviye Kalıp Periyodik Bakım Formu",
+   "ekipman_turleri": [
+    "Kalıp"
+   ],
+   "marka": null,
+   "periyot": {
+    "tip": "yok",
+    "deger": null,
+    "ad": "Periyodik (1. seviye)"
+   },
+   "kategori": "Kalıp bakımı",
+   "not": "",
+   "kalip": true,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "Kalıp ve kalıp elemanları aşınma kontrolü (yolluk, kolon mili,merkezleme milleri,gaz kanalları,itici pimler vs.)"
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "Yağ - giriş çıkış kanallarını & rekorlarında kaçak kontrolü?"
+    },
+    {
+     "no": "3a",
+     "grup": "Sıcak yolluk",
+     "madde": "Rezistans sağlamlığını kontrol et, uygun mu?"
+    },
+    {
+     "no": "3b",
+     "grup": "Sıcak yolluk",
+     "madde": "Sıcak yolluk malzeme kaçağı var mı, kontrol et?"
+    },
+    {
+     "no": "3c",
+     "grup": "Sıcak yolluk",
+     "madde": "Uç kısımlarda aşınma&yapışma var mı kontrol et?"
+    },
+    {
+     "no": "4",
+     "grup": "",
+     "madde": "Rezistans sağlamlığını kontrol et, uygun mu?"
+    },
+    {
+     "no": "5",
+     "grup": "",
+     "madde": "Hidrolik pistonlarda pistonda yağ kaçağını gözle kontrol et"
+    }
+   ]
+  },
+  {
+   "kod": "D03 F02",
+   "ad": "Makine Günlük Bakım Kontrol Listesi",
+   "ekipman_turleri": [
+    "Enjeksiyon Makinesi",
+    "Hidrolik Pres"
+   ],
+   "marka": null,
+   "periyot": {
+    "tip": "gun",
+    "deger": 1,
+    "ad": "Günlük"
+   },
+   "kategori": "Günlük kontrol",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "Acil Stop Butonu Fonksiyon Kontrolü"
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "Koruyucu Kapakların Fonksiyon Kontrolü"
+    },
+    {
+     "no": "3",
+     "grup": "",
+     "madde": "Esnek Hidrolik Boru Sistemlerinin yıpranma / bağlantı görsel kontrolü"
+    },
+    {
+     "no": "4",
+     "grup": "",
+     "madde": "Hidrolik Yağ Deposu Seviye Kontrolü"
+    },
+    {
+     "no": "5",
+     "grup": "",
+     "madde": "Termoregülatör Sıcaklık Kontrolü"
+    },
+    {
+     "no": "6",
+     "grup": "",
+     "madde": "Diğer Kontroller ( Robot, griper ve konveyor fonksiyonlarının kontrolü )"
+    }
+   ]
+  },
+  {
+   "kod": "D03 F04",
+   "ad": "2. Seviye Kalıp Periyodik Bakım Formu",
+   "ekipman_turleri": [
+    "Kalıp"
+   ],
+   "marka": null,
+   "periyot": {
+    "tip": "baski",
+    "deger": null,
+    "ad": "Baskı sayısına göre"
+   },
+   "kategori": "Kalıp bakımı",
+   "not": "Kaynak: son sürüm sayfası",
+   "kalip": true,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1a",
+     "grup": "Bağlantı elemanları",
+     "madde": "Cıvataların dişlerini kontrol et"
+    },
+    {
+     "no": "1b",
+     "grup": "Bağlantı elemanları",
+     "madde": "Mapa dişerini, eğriliğini ve mapa yuvası dişlerini kontrol et"
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "Merkezleme elemanlarını kontrol et, aşınma var mı?"
+    },
+    {
+     "no": "3",
+     "grup": "",
+     "madde": "Merkezleme elemanı yuvalarını kontrol et, aşınma var mı?"
+    },
+    {
+     "no": "4",
+     "grup": "",
+     "madde": "Kolon mili ve burçları kontrol et, aşınma var mı?"
+    },
+    {
+     "no": "5",
+     "grup": "",
+     "madde": "Kalıp ısı yalıtım plakalarını kontrol et, kırılma, bozulma var mı?"
+    },
+    {
+     "no": "6",
+     "grup": "",
+     "madde": "İtici pimleri kontrol et, temiz mi? Kalıp temizleme solventi veya pas sökücü sprey ile temizle. Kırılma, aşınma, eğrilik var mı kontrol et."
+    },
+    {
+     "no": "7",
+     "grup": "",
+     "madde": "İtici yuvasını kontrol et; aşınma, kırılma var mı?"
+    },
+    {
+     "no": "8a",
+     "grup": "Maça bölgesi",
+     "madde": "Maça, maça dayaması ve/veya maça kilidini kontrol et, aşınma var mı?"
+    },
+    {
+     "no": "8b",
+     "grup": "Maça bölgesi",
+     "madde": "Kılavuz pimini kontrol et, aşınma var mı?"
+    },
+    {
+     "no": "8c",
+     "grup": "Maça bölgesi",
+     "madde": "Maça kızaklarını kontrol et, aşınma var mı?"
+    },
+    {
+     "no": "8d",
+     "grup": "Maça bölgesi",
+     "madde": "Maça çalışma boşluğunu kontrol et."
+    },
+    {
+     "no": "8e",
+     "grup": "Maça bölgesi",
+     "madde": "Maça geri konum yayı var mı? Uygun mu? Kontrol et."
+    },
+    {
+     "no": "8f",
+     "grup": "Maça bölgesi",
+     "madde": "Maça stoper bilye, setiskur ve yuvası uygun mu?"
+    },
+    {
+     "no": "8g",
+     "grup": "Maça bölgesi",
+     "madde": "Maça stoper dayamalarında aşınma kontrolü ( Not: Bakım sonrası 1 baskı parça üzerinden ilgili ölçüler kontrol edilmelidir. İlgili ölçülerin doğruluğu parça üzerinden sağlanacktır.)"
+    },
+    {
+     "no": "8h",
+     "grup": "Maça bölgesi",
+     "madde": "Maçada bulunan insertlerin ölçülerini kontrol et."
+    },
+    {
+     "no": "9",
+     "grup": "",
+     "madde": "Kalıptaki geçme insertleri ölç, aşınma var mı?Değişim var ise ölçüleri parça üzerinde onaylat? (Not: Çapak durumu parça üzerinden visio ile kontrol edildiğinde max 0.3 olmalıdır)"
+    },
+    {
+     "no": "10",
+     "grup": "",
+     "madde": "Parçaya göre, erkek - dişi çelik kaçıklığını kontrol et."
+    },
+    {
+     "no": "11",
+     "grup": "",
+     "madde": "Yağ - giriş çıkış kanallarını & rekorlarını kontrol et,uygun mu?"
+    },
+    {
+     "no": "12a",
+     "grup": "Sıcak yolluk",
+     "madde": "Rezistans sağlamlığını kontrol et, uygun mu?"
+    },
+    {
+     "no": "12b",
+     "grup": "Sıcak yolluk",
+     "madde": "Sıcak yolluk malzeme kaçağı var mı, kontrol et?"
+    },
+    {
+     "no": "12c",
+     "grup": "Sıcak yolluk",
+     "madde": "Uç kısımlarda aşınma&yapışma var mı kontrol et?"
+    },
+    {
+     "no": "13",
+     "grup": "",
+     "madde": "Rezistans sağlamlığını kontrol et, uygun mu?"
+    },
+    {
+     "no": "14",
+     "grup": "",
+     "madde": "Gaz çıkış kanallarını kontrol et, temiz mi?"
+    },
+    {
+     "no": "15a",
+     "grup": "Hidrolik pistonlar",
+     "madde": "Switchleri kontrol et, uygun mu? Kontakları ölç."
+    },
+    {
+     "no": "15b",
+     "grup": "Hidrolik pistonlar",
+     "madde": "Pistonda yağ kaçağını gözle kontrol et"
+    },
+    {
+     "no": "15c",
+     "grup": "Hidrolik pistonlar",
+     "madde": "Switch bağlantı soketleri uygun mu? Kontakları ölç."
+    },
+    {
+     "no": "15d",
+     "grup": "Hidrolik pistonlar",
+     "madde": "Hidrolik bağlantı rakorları uygun mu?"
+    },
+    {
+     "no": "16a",
+     "grup": "Temizlik",
+     "madde": "Kalıp dış yüzeyini bez ve kalıp temizlik solventi ile temizle"
+    },
+    {
+     "no": "16b",
+     "grup": "Temizlik",
+     "madde": "Hamil yüzeyin kombine gaz taşı ve kalıp temizlik solventi ile temizle"
+    },
+    {
+     "no": "17a",
+     "grup": "Yüzey Kontrol",
+     "madde": "Kalıp birleşim yüzeylerinde deformasyon veya dönüklük var mı?"
+    },
+    {
+     "no": "17b",
+     "grup": "Yüzey Kontrol",
+     "madde": "Yolluk girişlerinde ve gaz kanallarında deformasyon var mı?"
+    },
+    {
+     "no": "17c",
+     "grup": "Yüzey Kontrol",
+     "madde": "Parçada çapaklanma ve/veya kalıp yüzeyinde deformasyon var mı?"
+    },
+    {
+     "no": "17d",
+     "grup": "Yüzey Kontrol",
+     "madde": "Kalıp kaplamasında aşınma var mı?"
+    },
+    {
+     "no": "17e",
+     "grup": "Yüzey Kontrol",
+     "madde": "Kavite yüzeyin ve/veya deseninde çizik ve/veya aşınma var mı?"
+    },
+    {
+     "no": "17e",
+     "grup": "Yüzey Kontrol",
+     "madde": "Kalıp geçme insertlerinde deformasyon var mı ?"
+    },
+    {
+     "no": "18",
+     "grup": "",
+     "madde": "Kalıptaki geçme insertlerinin konumunu ölç, aşınma var mı?"
+    },
+    {
+     "no": "19",
+     "grup": "",
+     "madde": "Kalıp baskı ömrü %80 tamamladıktan sonra kalıp periyodik bakımı sıkılaştırılarak her 15.000 baskıda gerçekleştirilecektir."
+    },
+    {
+     "no": "20",
+     "grup": "",
+     "madde": "Kalıp robot ile çalışıyor ise robot&gripper(tutucular) varsa konveyor kontrol edildi & temizlendi mi? Değişen parça var mı?"
+    }
+   ]
+  },
+  {
+   "kod": "D03 F05",
+   "ad": "Arburg 1500 Saat Bakımı",
+   "ekipman_turleri": [
+    "Enjeksiyon Makinesi"
+   ],
+   "marka": "Arburg",
+   "periyot": {
+    "tip": "saat",
+    "deger": 1500,
+    "ad": "1500 saat"
+   },
+   "kategori": "Periyodik bakım",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "Hidrolik hortum kontrolü"
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "Hidrolik sistemde sızıntı kontrolü yap"
+    },
+    {
+     "no": "3",
+     "grup": "",
+     "madde": "Makina kurulumunu kontrol et, gerekli ise merkezlemeyi yeniden ayarla"
+    },
+    {
+     "no": "4",
+     "grup": "",
+     "madde": "Nozzle konum kontrolü yapılacak."
+    }
+   ]
+  },
+  {
+   "kod": "D03 F06",
+   "ad": "Engel 1500 Saat Bakımı",
+   "ekipman_turleri": [
+    "Enjeksiyon Makinesi"
+   ],
+   "marka": "Engel",
+   "periyot": {
+    "tip": "saat",
+    "deger": 1500,
+    "ad": "1500 saat"
+   },
+   "kategori": "Periyodik bakım",
+   "not": "Kaynak dosyanın başlığında 'ARBURG' yazıyor (kopya hatası)",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "Hidrolik hortum kontrolü"
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "Hidrolik sistemde sızıntı kontrolü yap"
+    },
+    {
+     "no": "3",
+     "grup": "",
+     "madde": "Makina kurulumunu kontrol et, gerekli ise merkezlemeyi yeniden ayarla"
+    },
+    {
+     "no": "4",
+     "grup": "",
+     "madde": "Nozzle konum kontrolü yapılacak."
+    }
+   ]
+  },
+  {
+   "kod": "D03 F07",
+   "ad": "Arburg 200 Saat Bakımı",
+   "ekipman_turleri": [
+    "Enjeksiyon Makinesi"
+   ],
+   "marka": "Arburg",
+   "periyot": {
+    "tip": "saat",
+    "deger": 200,
+    "ad": "200 saat"
+   },
+   "kategori": "Periyodik bakım",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "Kolonları temizle ve ince bir tabaka gresle yağla."
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "Rulmanları ve rulman yataklarını ince bir tabak gresle yağla."
+    }
+   ]
+  },
+  {
+   "kod": "D03 F08",
+   "ad": "Engel 200 Saat Bakımı",
+   "ekipman_turleri": [
+    "Enjeksiyon Makinesi"
+   ],
+   "marka": "Engel",
+   "periyot": {
+    "tip": "saat",
+    "deger": 200,
+    "ad": "200 saat"
+   },
+   "kategori": "Periyodik bakım",
+   "not": "Kaynak dosyanın başlığında 'ARBURG' yazıyor (kopya hatası)",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "Kolonları temizle ve ince bir tabaka gresle yağla."
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "Rulmanları ve rulman yataklarını ince bir tabak gresle yağla."
+    }
+   ]
+  },
+  {
+   "kod": "D03 F09",
+   "ad": "Arburg 3000 Saat Bakımı",
+   "ekipman_turleri": [
+    "Enjeksiyon Makinesi"
+   ],
+   "marka": "Arburg",
+   "periyot": {
+    "tip": "saat",
+    "deger": 3000,
+    "ad": "3000 saat"
+   },
+   "kategori": "Periyodik bakım",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "Kontrol kabini içindeki soğutma deposu sızıntı kontrolü yap, su akışını kontrol et. Gerekli ise temizle."
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "Dişli milini temizle ve ince bir tabaka gres sür. Hidrolik sistemde sızıntı kontrolü yap"
+    }
+   ]
+  },
+  {
+   "kod": "D03 F10",
+   "ad": "Engel 3000 Saat Bakımı",
+   "ekipman_turleri": [
+    "Enjeksiyon Makinesi"
+   ],
+   "marka": "Engel",
+   "periyot": {
+    "tip": "saat",
+    "deger": 3000,
+    "ad": "3000 saat"
+   },
+   "kategori": "Periyodik bakım",
+   "not": "Kaynak dosyanın başlığında 'ARBURG' yazıyor (kopya hatası)",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "Kontrol kabini içindeki soğutma deposu sızıntı kontrolü yap, su akışını kontrol et. Gerekli ise temizle."
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "Dişli milini temizle ve ince bir tabaka gres sür. Hidrolik sistemde sızıntı kontrolü yap"
+    }
+   ]
+  },
+  {
+   "kod": "D03 F11",
+   "ad": "Arburg 500 Saat Bakımı",
+   "ekipman_turleri": [
+    "Enjeksiyon Makinesi"
+   ],
+   "marka": "Arburg",
+   "periyot": {
+    "tip": "saat",
+    "deger": 500,
+    "ad": "500 saat"
+   },
+   "kategori": "Periyodik bakım",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "Kolonları temizle ve ince bir tabaka gresle yağla."
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "Rulmanları ve rulman yataklarını ince bir tabak gresle yağla."
+    },
+    {
+     "no": "3",
+     "grup": "",
+     "madde": "Nozzle konum kontrolü yapılacak."
+    }
+   ]
+  },
+  {
+   "kod": "D03 F12",
+   "ad": "Arburg 5000 Saat Bakımı",
+   "ekipman_turleri": [
+    "Enjeksiyon Makinesi"
+   ],
+   "marka": "Arburg",
+   "periyot": {
+    "tip": "saat",
+    "deger": 5000,
+    "ad": "5000 saat"
+   },
+   "kategori": "Periyodik bakım",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "Yağ filtresini değiştir."
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "Yağ soğutucusunun kirecini temizle."
+    },
+    {
+     "no": "3",
+     "grup": "",
+     "madde": "tank kapağı hava filtresini temizle ve gerekli ise yenile."
+    },
+    {
+     "no": "4",
+     "grup": "",
+     "madde": "MOOG valfi filtresini temizle."
+    },
+    {
+     "no": "5",
+     "grup": "",
+     "madde": "hidrolik hortumların sağlamlık kontrolünü yap."
+    }
+   ]
+  },
+  {
+   "kod": "D03 F13",
+   "ad": "Engel 5000 Saat Bakımı",
+   "ekipman_turleri": [
+    "Enjeksiyon Makinesi"
+   ],
+   "marka": "Engel",
+   "periyot": {
+    "tip": "saat",
+    "deger": 5000,
+    "ad": "5000 saat"
+   },
+   "kategori": "Periyodik bakım",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "Yağ filtresini değiştir."
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "Yağ soğutucusunun kirecini temizle."
+    },
+    {
+     "no": "3",
+     "grup": "",
+     "madde": "tank kapağı hava filtresini temizle ve gerekli ise yenile."
+    },
+    {
+     "no": "4",
+     "grup": "",
+     "madde": "MOOG valfi filtresini temizle."
+    },
+    {
+     "no": "5",
+     "grup": "",
+     "madde": "hidrolik hortumların sağlamlık kontrolünü yap."
+    }
+   ]
+  },
+  {
+   "kod": "D03 F14",
+   "ad": "Arburg 6 Yıllık Bakım",
+   "ekipman_turleri": [
+    "Enjeksiyon Makinesi"
+   ],
+   "marka": "Arburg",
+   "periyot": {
+    "tip": "gun",
+    "deger": 2190,
+    "ad": "6 yıl"
+   },
+   "kategori": "Periyodik bakım",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "HİDROLİK HORTUMLARI KONTROL Et VE YENİLE. MAKSİMUM ÖMÜR 6 YILDIR."
+    }
+   ]
+  },
+  {
+   "kod": "D03 F15",
+   "ad": "Engel 6 Yıllık Bakım",
+   "ekipman_turleri": [
+    "Enjeksiyon Makinesi"
+   ],
+   "marka": "Engel",
+   "periyot": {
+    "tip": "gun",
+    "deger": 2190,
+    "ad": "6 yıl"
+   },
+   "kategori": "Periyodik bakım",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "HİDROLİK HORTUMLARI KONTROL Et VE YENİLE. MAKSİMUM ÖMÜR 6 YILDIR."
+    }
+   ]
+  },
+  {
+   "kod": "D03 F16",
+   "ad": "Arburg 6000 Saat Bakımı",
+   "ekipman_turleri": [
+    "Enjeksiyon Makinesi"
+   ],
+   "marka": "Arburg",
+   "periyot": {
+    "tip": "saat",
+    "deger": 6000,
+    "ad": "6000 saat"
+   },
+   "kategori": "Periyodik bakım",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "BASINÇ AKÜMÜLATÖRÜNÜN GAZ SEVİYESİNİ KONTROL ET"
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "KONTROL KABİNLERİ FİLTRESİNİ TEMİZLE VE GEREKİRSE YENİLE."
+    }
+   ]
+  },
+  {
+   "kod": "D03 F17",
+   "ad": "Engel 6000 Saat Bakımı",
+   "ekipman_turleri": [
+    "Enjeksiyon Makinesi"
+   ],
+   "marka": "Engel",
+   "periyot": {
+    "tip": "saat",
+    "deger": 6000,
+    "ad": "6000 saat"
+   },
+   "kategori": "Periyodik bakım",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "BASINÇ AKÜMÜLATÖRÜNÜN GAZ SEVİYESİNİ KONTROL ET"
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "KONTROL KABİNLERİ FİLTRESİNİ TEMİZLE VE GEREKİRSE YENİLE."
+    }
+   ]
+  },
+  {
+   "kod": "D03 F18",
+   "ad": "CNC Tezgahları Günlük Bakım Kontrol Listesi",
+   "ekipman_turleri": [
+    "CNC Freze / İşlem Merkezi"
+   ],
+   "marka": null,
+   "periyot": {
+    "tip": "gun",
+    "deger": 1,
+    "ad": "Günlük"
+   },
+   "kategori": "Günlük kontrol",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "Acil Stop Butonu Fonksiyon Kontrolü"
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "Koruyucu Kapakların Fonksiyon Kontrolü"
+    },
+    {
+     "no": "3",
+     "grup": "",
+     "madde": "Hidrolik Yağ Deposu Seviye Kontrolü"
+    },
+    {
+     "no": "4",
+     "grup": "",
+     "madde": "Ölçüm Probu kalibrasyon kontrolü ( her operasyon öncesi)"
+    }
+   ]
+  },
+  {
+   "kod": "D03 F19",
+   "ad": "CNC Torna Günlük Bakım Kontrol Listesi",
+   "ekipman_turleri": [
+    "CNC Torna"
+   ],
+   "marka": null,
+   "periyot": {
+    "tip": "gun",
+    "deger": 1,
+    "ad": "Günlük"
+   },
+   "kategori": "Günlük kontrol",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "Acil Stop Butonu Fonksiyon Kontrolü"
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "Hidrolik yağı ve körüklü yağı kontrolü"
+    },
+    {
+     "no": "3",
+     "grup": "",
+     "madde": "Kapı switchlerinin kontrolü"
+    }
+   ]
+  },
+  {
+   "kod": "D03 F20",
+   "ad": "Dalma Erozyon Günlük Bakım Kontrol Listesi",
+   "ekipman_turleri": [
+    "Dalma Erozyon"
+   ],
+   "marka": null,
+   "periyot": {
+    "tip": "gun",
+    "deger": 1,
+    "ad": "Günlük"
+   },
+   "kategori": "Günlük kontrol",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "Acil Stop Butonu Fonksiyon Kontrolü"
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "Kapı Switchlerinin Kontrolü"
+    },
+    {
+     "no": "3",
+     "grup": "",
+     "madde": "Yağ Seviyesi Kontrolü"
+    }
+   ]
+  },
+  {
+   "kod": "D03 F21",
+   "ad": "Engel 500 Saat Bakımı",
+   "ekipman_turleri": [
+    "Enjeksiyon Makinesi"
+   ],
+   "marka": "Engel",
+   "periyot": {
+    "tip": "saat",
+    "deger": 500,
+    "ad": "500 saat"
+   },
+   "kategori": "Periyodik bakım",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "Kolonları temizle ve ince bir tabaka gresle yağla."
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "Rulmanları ve rulman yataklarını ince bir tabak gresle yağla."
+    },
+    {
+     "no": "3",
+     "grup": "",
+     "madde": "Nozzle konum kontrolü yapılacak."
+    }
+   ]
+  },
+  {
+   "kod": "D03 F22",
+   "ad": "Hidromode 6 Aylık Bakım",
+   "ekipman_turleri": [
+    "Hidrolik Pres"
+   ],
+   "marka": "Hidromode",
+   "periyot": {
+    "tip": "gun",
+    "deger": 182,
+    "ad": "6 aylık"
+   },
+   "kategori": "Periyodik bakım",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "İş güvenliği ile ilgili fonksiyonel acil durdurma butonunun ve kapak emniyetlerinin kontrolü"
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "Hidrolik yağ kaçaklarının uygun ekipman ile tamir edilmesi."
+    },
+    {
+     "no": "3",
+     "grup": "",
+     "madde": "Kauçuk hortumlarda eğim noktalarında çatlama ve yırtılma kontrolünün yapılması, bağlantı noktalarında rijitlik kontrolünün yapılması. Gerekli ise değişimi."
+    },
+    {
+     "no": "4",
+     "grup": "",
+     "madde": "100 cl yağ örneği alınarak çökeltme testinin yapılması gerekli görülürse analize gönderilmesi, analiz veya tespit sonucu yağın değiştirilmesi (Shell Tellus 48)"
+    },
+    {
+     "no": "5",
+     "grup": "",
+     "madde": "Motor rulmanlarının kontrol edilmesi, kaplin boşluğunun kontrol edilmesi,"
+    },
+    {
+     "no": "6",
+     "grup": "",
+     "madde": "Hidrolik akünün şarj basıncının kontrol edilmesi, eksikse gaz doldurulması, fonksiyonelliğinin test edilmesi"
+    },
+    {
+     "no": "7",
+     "grup": "",
+     "madde": "Presin iç kaçaklardan dolayı koç kaymasının mevcut olup olmadığının kontrolü"
+    },
+    {
+     "no": "8",
+     "grup": "",
+     "madde": "Pano içerisinde bişon ve otomatik sigortaların işlevselliğinin kontrolünün yapılması."
+    },
+    {
+     "no": "9",
+     "grup": "",
+     "madde": "Ampermetre ve ana besleme kablolarında izolasyon hataları ve yıpranmaların kontrolü değişmesi."
+    },
+    {
+     "no": "10",
+     "grup": "",
+     "madde": "Kumanda ile ilgili butonların fonksiyon testlerinin yapılması. Çalışmayanların yenisi ile değiştirilmesi."
+    },
+    {
+     "no": "11",
+     "grup": "",
+     "madde": "Pano ve motor kapaklarının sağlamlık ve fonksiyonellik kontrolü. Temizliği ve soğutmanın kontrolü."
+    },
+    {
+     "no": "12",
+     "grup": "",
+     "madde": "Elektrik motorlarında titreşim ve vibrasyon kontrolünün yapılması, soğutma kanallarının temizliği yapılması"
+    },
+    {
+     "no": "13",
+     "grup": "",
+     "madde": "Isıtıcı panolarında fişlerin ve bağlantıların güvenlik ve izolasyon kontrolünün yapılması"
+    },
+    {
+     "no": "14",
+     "grup": "",
+     "madde": "Koç, ve atıcı enjeksiyon cetvellerinin işlevsel kontrolü ve kalibrasyonların kontrolü"
+    },
+    {
+     "no": "15",
+     "grup": "",
+     "madde": "Triacların elektrik kısa devre kontrolünün ve işlevselliğinin kontrolü"
+    },
+    {
+     "no": "16",
+     "grup": "",
+     "madde": "Tüm kaçaklar bakımlar esnasında giderilmelidir."
+    }
+   ]
+  },
+  {
+   "kod": "D03 F23",
+   "ad": "Hidromode Aylık Bakım",
+   "ekipman_turleri": [
+    "Hidrolik Pres"
+   ],
+   "marka": "Hidromode",
+   "periyot": {
+    "tip": "gun",
+    "deger": 30,
+    "ad": "Aylık"
+   },
+   "kategori": "Periyodik bakım",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "İş güvenliği ile ilgili fonksiyonel acil durdurma butonunun ve kapak emniyetlerinin kontrolü"
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "Hidrolik yağ kaçaklarının uygun ekipman ile tamir edilmesi"
+    },
+    {
+     "no": "3",
+     "grup": "",
+     "madde": "Kauçuk hortumlarda eğim noktalarında çatlama ve yırtılma kontrolünün yapılması, bağlantı noktalarında rijitlik kontrolünün yapılması. Gerekli ise değişimi."
+    },
+    {
+     "no": "4",
+     "grup": "",
+     "madde": "Yağ soğutma eşanjör girişindeki pislik tutucu filtreyi temizle, kontrol et."
+    },
+    {
+     "no": "5",
+     "grup": "",
+     "madde": "Sirkülasyon pompasında ses, ısınma kontrolü."
+    },
+    {
+     "no": "6",
+     "grup": "",
+     "madde": "Triacların elektrik kısa devre kontrolünün ve işlevselliğinin kontrolü."
+    }
+   ]
+  },
+  {
+   "kod": "D03 F24",
+   "ad": "Hidromode Yıllık Bakım",
+   "ekipman_turleri": [
+    "Hidrolik Pres"
+   ],
+   "marka": "Hidromode",
+   "periyot": {
+    "tip": "gun",
+    "deger": 365,
+    "ad": "Yıllık"
+   },
+   "kategori": "Periyodik bakım",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "İş güvenliği ile ilgili fonksiyonel acil durdurma butonunun ve kapak emniyetlerinin kontrolü"
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "Makine topraklamasının gövdenin en az 2 yerinden kontrol edilmesi, etiket yoksa , etiketlendirilmesi"
+    },
+    {
+     "no": "3",
+     "grup": "",
+     "madde": "Hidrolik yağ kaçaklarının uygun ekipman ile tamir edilmesi."
+    },
+    {
+     "no": "4",
+     "grup": "",
+     "madde": "Kauçuk hortumlarda eğim noktalarında çatlama ve yırtılma kontrolünün yapılması, bağlantı noktalarında rijitlik kontrolünün yapılması. Gerekli ise değişimi."
+    },
+    {
+     "no": "5",
+     "grup": "",
+     "madde": "Yağ pompasının çıkış borusunun standart kullanılan kalıp ile sıcaklığının ölçülmesi, aynı zamanda hava sıcaklığının ölçülmesi. Ölçüm metal yüzeyde tekrarlanır"
+    },
+    {
+     "no": "6",
+     "grup": "",
+     "madde": "100 cl yağ örneği alınarak çökeltme testinin yapılması gerekli görülürse analize gönderilmesi, analiz veya tespit sonucu yağın değiştirilmesi (Shell Tellus 48)"
+    },
+    {
+     "no": "7",
+     "grup": "",
+     "madde": "Motor rulmanlarının kontrol edilmesi, kaplin boşluğunun kontrol edilmesi,"
+    },
+    {
+     "no": "8",
+     "grup": "",
+     "madde": "Basınç ayarlama yeteneği ve relief valflerin çalışabilirliğinin kontrol edilmesi"
+    },
+    {
+     "no": "9",
+     "grup": "",
+     "madde": "Hidrolik akünün şarj basıncının kontrol edilmesi, eksikse gaz doldurulması, fonksiyonelliğinin test edilmesi"
+    },
+    {
+     "no": "10",
+     "grup": "",
+     "madde": "Hidrolik yağın >10 micron filtre ile temizlenmesi"
+    },
+    {
+     "no": "11",
+     "grup": "",
+     "madde": "Emiş filtresinin temizlenmesi, tesisat filtresinin yenisi ile değiştirilmesi, tank havalandırma filtresinin temizlenmesi"
+    },
+    {
+     "no": "12",
+     "grup": "",
+     "madde": "Makine çevresel aydınlatmasının kontrolü"
+    },
+    {
+     "no": "13",
+     "grup": "",
+     "madde": "Makinenın korozyona müsait yerlerinin avadanlık boyası ile boyanması"
+    },
+    {
+     "no": "14",
+     "grup": "",
+     "madde": "Presin iç kaçaklardan dolayı koç kaymasının mevcut olup olmadığının kontrolü"
+    },
+    {
+     "no": "15",
+     "grup": "",
+     "madde": "Makine plakaları gaz taşı ile temizlenmeli, Plaka paralelliği kontol edilmeli"
+    },
+    {
+     "no": "16",
+     "grup": "",
+     "madde": "Makine kolonlarının sıkılığının kontrolünün yapılması."
+    },
+    {
+     "no": "17",
+     "grup": "",
+     "madde": "PLC pilinin kontrolünün yapılması değiştirilme tarihinde değiştirilmesi."
+    },
+    {
+     "no": "18",
+     "grup": "",
+     "madde": "Pano içerisinde bişon ve otomatik sigortaların işlevselliğinin kontrolünün yapılması."
+    },
+    {
+     "no": "19",
+     "grup": "",
+     "madde": "Ampermetre ve ana besleme kablolarında izolasyon hataları ve yıpranmaların kontrolü değişmesi."
+    },
+    {
+     "no": "20",
+     "grup": "",
+     "madde": "Kumanda ile ilgili butonların fonksiyon testlerinin yapılması. Çalışmayanların yenisi ile değiştirilmesi."
+    },
+    {
+     "no": "21",
+     "grup": "",
+     "madde": "Pano ve motor kapaklarının sağlamlık ve fonksiyonellik kontrolü. Temizliği ve soğutmanın kontrolü."
+    },
+    {
+     "no": "22",
+     "grup": "",
+     "madde": "Elektrik motorlarında titreşim ve vibrasyon kontrolünün yapılması, soğutma kanallarının temizliği yapılması"
+    },
+    {
+     "no": "23",
+     "grup": "",
+     "madde": "Isıtıcı panolarında fişlerin ve bağlantıların güvenlik ve izolasyon kontrolünün yapılması"
+    },
+    {
+     "no": "24",
+     "grup": "",
+     "madde": "Koç, ve atıcı enjeksiyon cetvellerinin işlevsel kontrolü ve kalibrasyonların kontrolü"
+    },
+    {
+     "no": "25",
+     "grup": "",
+     "madde": "Triacların elektrik kısa devre kontrolünün ve işlevselliğinin kontrolü"
+    },
+    {
+     "no": "26",
+     "grup": "",
+     "madde": "Kullanıcı dökümantasyonu makinede erişebilir alanda mı?"
+    },
+    {
+     "no": "27",
+     "grup": "",
+     "madde": "Bakım dökümanları (elektrik hidrolik) makinenin panosunda özel ayrılmış alanda mı?"
+    },
+    {
+     "no": "28",
+     "grup": "",
+     "madde": "Seri numarası, tip veya fabrika işareti mevcut mu?"
+    },
+    {
+     "no": "29",
+     "grup": "",
+     "madde": "Tüm kaçaklar bakımlar esnasında giderilmelidir."
+    },
+    {
+     "no": "30",
+     "grup": "",
+     "madde": "Makine Elektrik enerjisi BOŞTA çevrimde ölçülmesi.Standartlaştırılan belirlenen tip üretimde ölçülebilir"
+    },
+    {
+     "no": "31",
+     "grup": "",
+     "madde": "Makinede ısı yalıtımlarının kontrolü, varsa hasarın giderilmesi, Mevcut kalıplarda yalıtım plaka kontrolü"
+    }
+   ]
+  },
+  {
+   "kod": "D03 F25",
+   "ad": "Hızlı Delik Delme Günlük Bakım Kontrol Listesi",
+   "ekipman_turleri": [
+    "Hızlı Delik Delme"
+   ],
+   "marka": null,
+   "periyot": {
+    "tip": "gun",
+    "deger": 1,
+    "ad": "Günlük"
+   },
+   "kategori": "Günlük kontrol",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "Acil Stop Butonu Fonksiyon Kontrolü"
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "Makine yağ seviyesi kontrolü"
+    }
+   ]
+  },
+  {
+   "kod": "D03 F26",
+   "ad": "CNC Tezgahlar 3 Aylık Bakım",
+   "ekipman_turleri": [
+    "CNC Freze / İşlem Merkezi"
+   ],
+   "marka": null,
+   "periyot": {
+    "tip": "gun",
+    "deger": 91,
+    "ad": "3 aylık"
+   },
+   "kategori": "Periyodik bakım",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "Kılavuzu temizle ve gres yağı ile yağla"
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "Alet muhafazasını temizleyin"
+    },
+    {
+     "no": "3",
+     "grup": "",
+     "madde": "Aktif karbon Filtreleri değiştirin"
+    },
+    {
+     "no": "4",
+     "grup": "",
+     "madde": "Bağlama takımını sızdırmazlık açısından kontrol edin"
+    }
+   ]
+  },
+  {
+   "kod": "D03 F27",
+   "ad": "Dalma Erozyon 6 Aylık Bakım",
+   "ekipman_turleri": [
+    "Dalma Erozyon"
+   ],
+   "marka": null,
+   "periyot": {
+    "tip": "gun",
+    "deger": 182,
+    "ad": "6 aylık"
+   },
+   "kategori": "Periyodik bakım",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "Jeneratör kabini temizliğini kontrol et"
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "Dielektrik haznenin temizliğini kontrol edin"
+    },
+    {
+     "no": "3",
+     "grup": "",
+     "madde": "Filtreleri değiştirin"
+    }
+   ]
+  },
+  {
+   "kod": "D03 F28",
+   "ad": "Elektro Erozyon Bakım Kartı",
+   "ekipman_turleri": [
+    "Elektro Erozyon"
+   ],
+   "marka": null,
+   "periyot": {
+    "tip": "yok",
+    "deger": null,
+    "ad": "Periyodik (kart)"
+   },
+   "kategori": "Bakım kartı",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "Kesme Yağı Temizlik Kontrolü"
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "Gaz Deposu ve Filtre Temizliği"
+    },
+    {
+     "no": "3",
+     "grup": "",
+     "madde": "Kızakların Temizlik ve Çizilme Kontrolü & Yağlanması"
+    }
+   ]
+  },
+  {
+   "kod": "D03 F29",
+   "ad": "Erozyon Tezgahı Bakım Kartı",
+   "ekipman_turleri": [
+    "Erozyon Tezgahı"
+   ],
+   "marka": null,
+   "periyot": {
+    "tip": "yok",
+    "deger": null,
+    "ad": "Periyodik (kart)"
+   },
+   "kategori": "Bakım kartı",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "Kesme Yağı Temizlik Kontrolü"
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "Gaz Deposu ve Filtre Temizliği"
+    },
+    {
+     "no": "3",
+     "grup": "",
+     "madde": "Kızakların Temizlik ve Çizilme Kontrolü & Yağlanması"
+    }
+   ]
+  },
+  {
+   "kod": "D03 F30",
+   "ad": "Freze Bakım Kartı",
+   "ekipman_turleri": [
+    "Freze"
+   ],
+   "marka": null,
+   "periyot": {
+    "tip": "yok",
+    "deger": null,
+    "ad": "Periyodik (kart)"
+   },
+   "kategori": "Bakım kartı",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "Yağ Seviyesi Kontrolü"
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "Kızak Temizliği ve Çizik Kontrolü & Kızağın Yağlanması"
+    },
+    {
+     "no": "3",
+     "grup": "",
+     "madde": "Fren Fonksiyonları ve Kayış Sağlamlık Kontrol"
+    }
+   ]
+  },
+  {
+   "kod": "D03 F31",
+   "ad": "Planya Bakım Kartı",
+   "ekipman_turleri": [
+    "Planya"
+   ],
+   "marka": null,
+   "periyot": {
+    "tip": "yok",
+    "deger": null,
+    "ad": "Periyodik (kart)"
+   },
+   "kategori": "Bakım kartı",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "Kızak Otomatik Yağlayıcısı ve Yağ Tankı Kontrolü"
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "Motor Kayışı Kontrolü"
+    }
+   ]
+  },
+  {
+   "kod": "D03 F32",
+   "ad": "Sütunlu Matkap Bakım Kartı",
+   "ekipman_turleri": [
+    "Sütunlu Matkap"
+   ],
+   "marka": null,
+   "periyot": {
+    "tip": "yok",
+    "deger": null,
+    "ad": "Periyodik (kart)"
+   },
+   "kategori": "Bakım kartı",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "Triger Kayış Kontrolü"
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "Tutucu Pens Kontrolü"
+    }
+   ]
+  },
+  {
+   "kod": "D03 F33",
+   "ad": "Tel Erozyon 6 Aylık Bakım",
+   "ekipman_turleri": [
+    "Tel Erozyon"
+   ],
+   "marka": null,
+   "periyot": {
+    "tip": "gun",
+    "deger": 182,
+    "ad": "6 aylık"
+   },
+   "kategori": "Periyodik bakım",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "Üst tel klavuzunu kontrol et ve temizle"
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "Alt tel klavuzunu kontrol et ve temizle"
+    },
+    {
+     "no": "3",
+     "grup": "",
+     "madde": "Basınçlı hava filtrelerinin değiştirilmesi"
+    },
+    {
+     "no": "4",
+     "grup": "",
+     "madde": "Tel besleme makaralarını kontrol et kayışta aşınma var mı kontrol et"
+    }
+   ]
+  },
+  {
+   "kod": "D03 F34",
+   "ad": "Torna (Büyük) Bakım Kartı",
+   "ekipman_turleri": [
+    "Torna"
+   ],
+   "marka": null,
+   "periyot": {
+    "tip": "yok",
+    "deger": null,
+    "ad": "Periyodik (kart)"
+   },
+   "kategori": "Bakım kartı",
+   "not": "Torna — büyük (TOS)",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "Yağ Seviyesi Kontrolü"
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "Kızakların Temizlik ve Çizilme Kontrolü"
+    },
+    {
+     "no": "3",
+     "grup": "",
+     "madde": "Kızakların Yağlanması"
+    },
+    {
+     "no": "4",
+     "grup": "",
+     "madde": "Motor Kayış Kontrolü"
+    }
+   ]
+  },
+  {
+   "kod": "D03 F35",
+   "ad": "Torna (Küçük) Bakım Kartı",
+   "ekipman_turleri": [
+    "Torna"
+   ],
+   "marka": null,
+   "periyot": {
+    "tip": "yok",
+    "deger": null,
+    "ad": "Periyodik (kart)"
+   },
+   "kategori": "Bakım kartı",
+   "not": "Torna — küçük (TEZSAN)",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "Yağ Seviyesi Kontrolü"
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "Kızakların Temizlik ve Çizilme Kontrolü"
+    },
+    {
+     "no": "3",
+     "grup": "",
+     "madde": "Kızakların Yağlanması"
+    },
+    {
+     "no": "4",
+     "grup": "",
+     "madde": "Motor Kayış Kontrolü"
+    }
+   ]
+  },
+  {
+   "kod": "D03 F36",
+   "ad": "Yüzey Taşlama Bakım Kartı",
+   "ekipman_turleri": [
+    "Yüzey Taşlama"
+   ],
+   "marka": null,
+   "periyot": {
+    "tip": "yok",
+    "deger": null,
+    "ad": "Periyodik (kart)"
+   },
+   "kategori": "Bakım kartı",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "Yağ Seviyesi Kontrolü"
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "Taşlama Taşı Aşınma ve Balans Kontrolü"
+    },
+    {
+     "no": "3",
+     "grup": "",
+     "madde": "Su Motoru Kontrolü"
+    },
+    {
+     "no": "4",
+     "grup": "",
+     "madde": "Elektrik Panosu Kontrolü"
+    },
+    {
+     "no": "5",
+     "grup": "",
+     "madde": "Tabla Mıknatıs Kontrolü"
+    }
+   ]
+  },
+  {
+   "kod": "D03 F39",
+   "ad": "Kalıp Güçlendirilmiş Periyodik Bakım Formu",
+   "ekipman_turleri": [
+    "Kalıp"
+   ],
+   "marka": null,
+   "periyot": {
+    "tip": "baski",
+    "deger": null,
+    "ad": "Sıkılaştırılmış (baskı)"
+   },
+   "kategori": "Kalıp bakımı",
+   "not": "Ölçüm değeri / kabul kriteri alanlı",
+   "kalip": true,
+   "olcumlu": true,
+   "maddeler": [
+    {
+     "no": "1a",
+     "grup": "Bağlantı elemanları",
+     "madde": "Cıvata dişleri kontrolü",
+     "yontem": "Gözle kontrol",
+     "kritiklik": "Orta",
+     "birim": "",
+     "kabul": "Dişlerde bozulma, sıyırma ve gevşeklik olmayacak"
+    },
+    {
+     "no": "1b",
+     "grup": "Bağlantı elemanları",
+     "madde": "Mapa dişleri, eğrilik ve mapa yuvası kontrolü",
+     "yontem": "Gözle kontrol / ölçüm",
+     "kritiklik": "Orta",
+     "birim": "",
+     "kabul": "Hasar, eğrilik ve diş bozulması olmayacak"
+    },
+    {
+     "no": "2",
+     "grup": "Merkezleme",
+     "madde": "Merkezleme elemanlarında aşınma kontrolü",
+     "yontem": "Gözle kontrol / ölçüm",
+     "kritiklik": "Yüksek",
+     "birim": "mm",
+     "kabul": "Aşırı aşınma/oynama olmayacak"
+    },
+    {
+     "no": "3",
+     "grup": "Merkezleme",
+     "madde": "Merkezleme elemanı yuvalarında aşınma kontrolü",
+     "yontem": "Gözle kontrol / ölçüm",
+     "kritiklik": "Yüksek",
+     "birim": "mm",
+     "kabul": "Yuva bozulması ve boşluk artışı olmayacak"
+    },
+    {
+     "no": "4",
+     "grup": "Kolon & Burç",
+     "madde": "Kolon mili ve burç aşınma kontrolü",
+     "yontem": "Gözle kontrol / ölçüm",
+     "kritiklik": "Yüksek",
+     "birim": "mm",
+     "kabul": "Aşınma, çizik, sıkışma olmayacak"
+    },
+    {
+     "no": "5",
+     "grup": "Isı yalıtımı",
+     "madde": "Kalıp ısı yalıtım plakaları kırılma/bozulma kontrolü",
+     "yontem": "Gözle kontrol",
+     "kritiklik": "Orta",
+     "birim": "",
+     "kabul": "Kırık, çatlak, ezilme ve bozulma olmayacak"
+    },
+    {
+     "no": "6",
+     "grup": "İtici sistemi",
+     "madde": "İtici pimleri temizlik, kırılma, aşınma, eğrilik kontrolü",
+     "yontem": "Temizlik + gözle kontrol",
+     "kritiklik": "Yüksek",
+     "birim": "",
+     "kabul": "Pimler temiz, serbest ve hasarsız olacak"
+    },
+    {
+     "no": "7",
+     "grup": "İtici sistemi",
+     "madde": "İtici yuvası aşınma / kırılma kontrolü",
+     "yontem": "Gözle kontrol",
+     "kritiklik": "Yüksek",
+     "birim": "",
+     "kabul": "Aşınma, çatlak, kırılma olmayacak"
+    },
+    {
+     "no": "8a",
+     "grup": "Maça bölgesi",
+     "madde": "Maça, maça dayaması ve/veya maça kilidi aşınma kontrolü",
+     "yontem": "Gözle kontrol / fonksiyon testi",
+     "kritiklik": "Yüksek",
+     "birim": "",
+     "kabul": "Aşınma ve kaçıklık olmayacak"
+    },
+    {
+     "no": "8b",
+     "grup": "Maça bölgesi",
+     "madde": "Kılavuz pimi aşınma kontrolü",
+     "yontem": "Gözle kontrol / ölçüm",
+     "kritiklik": "Yüksek",
+     "birim": "mm",
+     "kabul": "Aşırı aşınma ve boşluk olmayacak"
+    },
+    {
+     "no": "8c",
+     "grup": "Maça bölgesi",
+     "madde": "Maça kızaklarında aşınma kontrolü",
+     "yontem": "Gözle kontrol / ölçüm",
+     "kritiklik": "Yüksek",
+     "birim": "mm",
+     "kabul": "Kızak yüzeyinde aşınma ve sıkışma olmayacak"
+    },
+    {
+     "no": "8d",
+     "grup": "Maça bölgesi",
+     "madde": "Maça çalışma boşluğu kontrolü",
+     "yontem": "Ölçüm",
+     "kritiklik": "Yüksek",
+     "birim": "mm",
+     "kabul": "Maça çalışma boşluğu kumpasla kontrol edilecek."
+    },
+    {
+     "no": "8e",
+     "grup": "Maça bölgesi",
+     "madde": "Maça geri konum yayı varlığı ve uygunluk kontrolü",
+     "yontem": "Gözle kontrol / fonksiyon testi",
+     "kritiklik": "Orta",
+     "birim": "",
+     "kabul": "Yay mevcut ve çalışır durumda olacak"
+    },
+    {
+     "no": "8f",
+     "grup": "Maça bölgesi",
+     "madde": "Maça stoper bilye, setiskur ve yuva uygunluk kontrolü",
+     "yontem": "Gözle kontrol",
+     "kritiklik": "Orta",
+     "birim": "",
+     "kabul": "Hasar ve gevşeklik olmayacak"
+    },
+    {
+     "no": "8g",
+     "grup": "Maça bölgesi",
+     "madde": "Maça stoper dayamalarında aşınma kontrolü",
+     "yontem": "Gözle kontrol / parça doğrulama",
+     "kritiklik": "Yüksek",
+     "birim": "",
+     "kabul": "Bakım sonrası 1 baskı parça ile ilgili ölçüler doğrulanacak"
+    },
+    {
+     "no": "8h",
+     "grup": "Maça bölgesi",
+     "madde": "Maçada bulunan insertlerin ölçülerini kontrol et.",
+     "yontem": "Ölçüm",
+     "kritiklik": "Yüksek",
+     "birim": "mm",
+     "kabul": "Bakım sonrası 1 baskı parça ile ilgili ölçüler doğrulanacak"
+    },
+    {
+     "no": "9",
+     "grup": "Insert",
+     "madde": "Geçme insertlerinde aşınma ve değişim sonrası parça onayı",
+     "yontem": "Ölçüm / parça kontrolü",
+     "kritiklik": "Yüksek",
+     "birim": "mm",
+     "kabul": "Değişim varsa parça üzerinden onay verilecek"
+    },
+    {
+     "no": "10",
+     "grup": "Geometri",
+     "madde": "Erkek-dişi çelik kaçıklığı kontrolü",
+     "yontem": "Ölçüm / mastar / boya izi",
+     "kritiklik": "Yüksek",
+     "birim": "mm",
+     "kabul": "Kaçıklık parça üzerinden kontrol edilecek."
+    },
+    {
+     "no": "11",
+     "grup": "Yağ devresi",
+     "madde": "Yağ giriş-çıkış kanalları ve rekorları kontrolü",
+     "yontem": "Gözle kontrol / akış testi",
+     "kritiklik": "Orta",
+     "birim": "",
+     "kabul": "Kanal açık, rekor sağlam ve kaçaksız olacak"
+    },
+    {
+     "no": "12a",
+     "grup": "Sıcak yolluk",
+     "madde": "Rezistans sağlamlık kontrolü (sıcak yolluk)",
+     "yontem": "Ölçüm",
+     "kritiklik": "Yüksek",
+     "birim": "Ohm",
+     "kabul": "Elektriksel süreklilik ve direnç değeri uygun olacak"
+    },
+    {
+     "no": "12b",
+     "grup": "Sıcak yolluk",
+     "madde": "Sıcak yollukta malzeme kaçağı kontrolü",
+     "yontem": "Gözle kontrol",
+     "kritiklik": "Yüksek",
+     "birim": "",
+     "kabul": "Malzeme kaçağı olmayacak"
+    },
+    {
+     "no": "12c",
+     "grup": "Sıcak yolluk",
+     "madde": "Uç kısımlarda aşınma / yapışma kontrolü",
+     "yontem": "Gözle kontrol",
+     "kritiklik": "Yüksek",
+     "birim": "",
+     "kabul": "Aşınma, birikme ve yapışma olmayacak"
+    },
+    {
+     "no": "13",
+     "grup": "Isıtma sistemi",
+     "madde": "Rezistans sağlamlık kontrolü (kalıp ısıtma)",
+     "yontem": "Ölçüm",
+     "kritiklik": "Yüksek",
+     "birim": "Ohm",
+     "kabul": "Elektriksel süreklilik ve direnç değeri uygun olacak"
+    },
+    {
+     "no": "14",
+     "grup": "Gaz tahliye",
+     "madde": "Gaz çıkış kanalları temizlik kontrolü",
+     "yontem": "Gözle kontrol",
+     "kritiklik": "Yüksek",
+     "birim": "",
+     "kabul": "Kanallar açık ve temiz olacak"
+    },
+    {
+     "no": "15a",
+     "grup": "Hidrolik piston",
+     "madde": "Switch uygunluğu ve kontak ölçümü",
+     "yontem": "Fonksiyon testi / ölçüm",
+     "kritiklik": "Yüksek",
+     "birim": "",
+     "kabul": "Switch çalışır durumda ve kontaklar uygun olacak"
+    },
+    {
+     "no": "15b",
+     "grup": "Hidrolik piston",
+     "madde": "Pistonda yağ kaçağı kontrolü",
+     "yontem": "Gözle kontrol",
+     "kritiklik": "Yüksek",
+     "birim": "",
+     "kabul": "Yağ kaçağı olmayacak"
+    },
+    {
+     "no": "15c",
+     "grup": "Hidrolik piston",
+     "madde": "Switch bağlantı soketleri ve kontak kontrolü",
+     "yontem": "Gözle kontrol / ölçüm",
+     "kritiklik": "Orta",
+     "birim": "",
+     "kabul": "Soket sağlam, temas ve kontak değeri uygun olacak"
+    },
+    {
+     "no": "15d",
+     "grup": "Hidrolik piston",
+     "madde": "Hidrolik bağlantı rakorları uygunluk kontrolü",
+     "yontem": "Gözle kontrol",
+     "kritiklik": "Yüksek",
+     "birim": "",
+     "kabul": "Rakorlar sağlam ve sızdırmaz olacak"
+    },
+    {
+     "no": "16a",
+     "grup": "Temizlik",
+     "madde": "Kalıp dış yüzeyi temizlik kontrolü",
+     "yontem": "Temizlik + gözle kontrol",
+     "kritiklik": "Orta",
+     "birim": "",
+     "kabul": "Dış yüzey temiz, pas ve kirden arındırılmış olacak"
+    },
+    {
+     "no": "16b",
+     "grup": "Temizlik",
+     "madde": "Hamil yüzey temizliği kontrolü",
+     "yontem": "Temizlik + gözle kontrol",
+     "kritiklik": "Orta",
+     "birim": "",
+     "kabul": "Hamil yüzey temiz ve düzgün olacak"
+    },
+    {
+     "no": "17a",
+     "grup": "Yüzey kontrol",
+     "madde": "Kalıp birleşim yüzeylerinde deformasyon / dönüklük kontrolü",
+     "yontem": "Gözle kontrol / mastar",
+     "kritiklik": "Yüksek",
+     "birim": "",
+     "kabul": "Deformasyon, dönüklük ve hasar olmayacak"
+    },
+    {
+     "no": "17b",
+     "grup": "Yüzey kontrol",
+     "madde": "Yolluk girişleri ve gaz kanallarında deformasyon kontrolü",
+     "yontem": "Gözle kontrol",
+     "kritiklik": "Yüksek",
+     "birim": "",
+     "kabul": "Deformasyon ve tıkanıklık olmayacak"
+    },
+    {
+     "no": "17c",
+     "grup": "Yüzey kontrol",
+     "madde": "Parçada çapaklanma ve/veya kalıp yüzeyinde deformasyon kontrolü",
+     "yontem": "Parça kontrolü / gözle kontrol",
+     "kritiklik": "Yüksek",
+     "birim": "mm",
+     "kabul": "Parçada çapak kabul içinde olacak; kalıp yüzeyinde deformasyon olmayacak"
+    },
+    {
+     "no": "17d",
+     "grup": "Yüzey kontrol",
+     "madde": "Kalıp kaplamasında aşınma kontrolü",
+     "yontem": "Gözle kontrol",
+     "kritiklik": "Orta",
+     "birim": "",
+     "kabul": "Kaplamada soyulma ve aşınma olmayacak"
+    },
+    {
+     "no": "17e",
+     "grup": "Yüzey kontrol",
+     "madde": "Kavite yüzeyi ve/veya desende çizik-aşınma kontrolü",
+     "yontem": "Gözle kontrol",
+     "kritiklik": "Yüksek",
+     "birim": "",
+     "kabul": "Çizik, lokal aşınma ve desen kaybı olmayacak"
+    },
+    {
+     "no": "17f",
+     "grup": "Yüzey kontrol",
+     "madde": "Geçme insertlerinde deformasyon kontrolü",
+     "yontem": "Gözle kontrol / ölçüm",
+     "kritiklik": "Yüksek",
+     "birim": "",
+     "kabul": "Deformasyon ve oturma problemi olmayacak"
+    },
+    {
+     "no": "18",
+     "grup": "Insert",
+     "madde": "Geçme insert konum ölçümü ve aşınma kontrolü",
+     "yontem": "Ölçüm",
+     "kritiklik": "Yüksek",
+     "birim": "mm",
+     "kabul": "Parça üzerinden kontrol edilecektir."
+    },
+    {
+     "no": "19",
+     "grup": "Periyot kuralı",
+     "madde": "Kalıp ömrü %80 sonrası bakım sıklığı kontrolü",
+     "yontem": "Kayıt kontrolü",
+     "kritiklik": "Orta",
+     "birim": "Baskı",
+     "kabul": "%80 sonrası bakım her 20.000 baskıda yapılmış olacak"
+    },
+    {
+     "no": "20",
+     "grup": "Robot / otomasyon",
+     "madde": "Robot, gripper ve konveyör kontrolü/temizliği (varsa)",
+     "yontem": "Gözle kontrol / fonksiyon testi",
+     "kritiklik": "Orta",
+     "birim": "",
+     "kabul": "Ekipman temiz, çalışır ve hasarsız olacak"
+    }
+   ]
+  },
+  {
+   "kod": "D03 F41",
+   "ad": "Punta Kaynak Makinesi Bakımı",
+   "ekipman_turleri": [
+    "Punta Kaynak Makinesi"
+   ],
+   "marka": null,
+   "periyot": {
+    "tip": "yok",
+    "deger": null,
+    "ad": "Periyodik"
+   },
+   "kategori": "Periyodik bakım",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "İş güvenliği ile ilgili fonksiyonel acil durdurma butonunun ve parmak koruma emniyet kontrolü"
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "Elektrik kaynağının kabloları kontrol edilir."
+    },
+    {
+     "no": "3",
+     "grup": "",
+     "madde": "Elektrik kaçağı olup olmadığı kontrol edilir."
+    }
+   ]
+  },
+  {
+   "kod": "D03 F42",
+   "ad": "Kaynak Makinesi Bakımı",
+   "ekipman_turleri": [
+    "Kaynak Makinesi"
+   ],
+   "marka": null,
+   "periyot": {
+    "tip": "yok",
+    "deger": null,
+    "ad": "Periyodik"
+   },
+   "kategori": "Periyodik bakım",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "İş güvenliği ile ilgili fonksiyonel acil durdurma butonunun emniyet kontrolü"
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "Elektrik kaynağının kabloları kontrol edilir."
+    },
+    {
+     "no": "3",
+     "grup": "",
+     "madde": "Elektrik kaçağı olup olmadığı kontrol edilir."
+    }
+   ]
+  },
+  {
+   "kod": "D03 F43",
+   "ad": "Konveyör Bakım Kartı",
+   "ekipman_turleri": [
+    "Konveyör"
+   ],
+   "marka": null,
+   "periyot": {
+    "tip": "yok",
+    "deger": null,
+    "ad": "Periyodik"
+   },
+   "kategori": "Periyodik bakım",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "Konveyör bandı kontrol edilecek deforme olan bölge var ise bildirilecek"
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "elektrik motor temizliği yapılacak"
+    }
+   ]
+  },
+  {
+   "kod": "D03 F44",
+   "ad": "Krauss Maffei 10000 Saat Bakımı",
+   "ekipman_turleri": [
+    "Enjeksiyon Makinesi"
+   ],
+   "marka": "Krauss Maffei",
+   "periyot": {
+    "tip": "saat",
+    "deger": 10000,
+    "ad": "10000 saat"
+   },
+   "kategori": "Periyodik bakım",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "Alın dişlisi yassı transmiyonunun yağ değişimi"
+    }
+   ]
+  },
+  {
+   "kod": "D03 F45",
+   "ad": "Krauss Maffei 3000 Saat Bakımı",
+   "ekipman_turleri": [
+    "Enjeksiyon Makinesi"
+   ],
+   "marka": "Krauss Maffei",
+   "periyot": {
+    "tip": "saat",
+    "deger": 3000,
+    "ad": "3000 saat"
+   },
+   "kategori": "Periyodik bakım",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "Kurulum ve konum ayarı"
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "Hidrolik yağ deposunda havalandırma ve hava boşaltma filtresinin değiştirilmesi"
+    },
+    {
+     "no": "3",
+     "grup": "",
+     "madde": "Yağ temizlik kontrolü"
+    },
+    {
+     "no": "4",
+     "grup": "",
+     "madde": "Meme merkezinin ayarlanması"
+    },
+    {
+     "no": "5",
+     "grup": "",
+     "madde": "Sıfır nokta ayarı"
+    },
+    {
+     "no": "6",
+     "grup": "",
+     "madde": "Geri akım kapatma mandalının temizlenmesi"
+    },
+    {
+     "no": "7",
+     "grup": "",
+     "madde": "Silindir kafasının temizlenmesi"
+    },
+    {
+     "no": "8",
+     "grup": "",
+     "madde": "Dişli silindirinin temizlenmesi"
+    },
+    {
+     "no": "9",
+     "grup": "",
+     "madde": "AZOT TANKI BASINÇ KONTROLÜ (not:Makina motoru durdurulur, basınç ibresinin yavaşça düşerken ani düşme noktası dolum basıncı olmalıdır.(80 -110 bar arası)"
+    }
+   ]
+  },
+  {
+   "kod": "D03 F46",
+   "ad": "Krauss Maffei 500 Saat Bakımı",
+   "ekipman_turleri": [
+    "Enjeksiyon Makinesi"
+   ],
+   "marka": "Krauss Maffei",
+   "periyot": {
+    "tip": "saat",
+    "deger": 500,
+    "ad": "500 saat"
+   },
+   "kategori": "Periyodik bakım",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "profil rayı klavuzlarının yağlanması"
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "Hidrolik boru görsellik kontrolü"
+    },
+    {
+     "no": "3",
+     "grup": "",
+     "madde": "NOZZLE KONUM KONTROLÜ YAPILACAK."
+    }
+   ]
+  },
+  {
+   "kod": "D03 F47",
+   "ad": "Krauss Maffei 8000 Saat Bakımı",
+   "ekipman_turleri": [
+    "Enjeksiyon Makinesi"
+   ],
+   "marka": "Krauss Maffei",
+   "periyot": {
+    "tip": "saat",
+    "deger": 8000,
+    "ad": "8000 saat"
+   },
+   "kategori": "Periyodik bakım",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "Hidrolik yağın değiştirilmesi & hidrolik tankın temizlenmesi"
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "Yan akım filtresinin değiştirilmesi"
+    },
+    {
+     "no": "3",
+     "grup": "",
+     "madde": "Sanayi tipi PC bataryanın değişimi"
+    }
+   ]
+  },
+  {
+   "kod": "D03 F48",
+   "ad": "Makine Rezistans Kontrol Formu",
+   "ekipman_turleri": [
+    "Enjeksiyon Makinesi",
+    "Hidrolik Pres"
+   ],
+   "marka": null,
+   "periyot": {
+    "tip": "yok",
+    "deger": null,
+    "ad": "Gerektiğinde"
+   },
+   "kategori": "Kontrol",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "Rezistans kontrolü (ürün adı ve saat açıklamaya yazılır)"
+    }
+   ]
+  },
+  {
+   "kod": "D03 F49",
+   "ad": "Sepro Robot Bakım Kartı",
+   "ekipman_turleri": [
+    "Robot"
+   ],
+   "marka": "Sepro",
+   "periyot": {
+    "tip": "yok",
+    "deger": null,
+    "ad": "Periyodik"
+   },
+   "kategori": "Periyodik bakım",
+   "not": "Krauss Maffei Sepro robotları",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "Eksen yağları kontrol edilecek."
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "eksen kayışlarında yıpranma var mı ? kontrol edilecek"
+    }
+   ]
+  },
+  {
+   "kod": "D03 F50",
+   "ad": "Staubli Robot Bakım Kontrol Kartı",
+   "ekipman_turleri": [
+    "Robot"
+   ],
+   "marka": "Staubli",
+   "periyot": {
+    "tip": "yok",
+    "deger": null,
+    "ad": "Periyodik"
+   },
+   "kategori": "Periyodik bakım",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "Pnömatik hortum ve tutucu kontrolü"
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "genel temizlik"
+    }
+   ]
+  },
+  {
+   "kod": "D03 F51",
+   "ad": "Trafo Bakım Kartı",
+   "ekipman_turleri": [
+    "Trafo"
+   ],
+   "marka": null,
+   "periyot": {
+    "tip": "yok",
+    "deger": null,
+    "ad": "Periyodik (kart)"
+   },
+   "kategori": "Bakım kartı",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "Bağlantılar kontrol edilecek"
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "Genel temizlik yapılacak"
+    }
+   ]
+  },
+  {
+   "kod": "D03 F52",
+   "ad": "Taşlama Günlük Bakım Kontrol Listesi",
+   "ekipman_turleri": [
+    "Taşlama"
+   ],
+   "marka": null,
+   "periyot": {
+    "tip": "gun",
+    "deger": 1,
+    "ad": "Günlük"
+   },
+   "kategori": "Günlük kontrol",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "Acil Stop Butonu Fonksiyon Kontrolü"
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "Soğutma Sıvı Seviyesi Kontrolü"
+    },
+    {
+     "no": "3",
+     "grup": "",
+     "madde": "AtıkTaşaş Temizlik kontrolü"
+    }
+   ]
+  },
+  {
+   "kod": "D03 F53",
+   "ad": "Tel Erozyon Günlük Bakım Kontrol Listesi",
+   "ekipman_turleri": [
+    "Tel Erozyon"
+   ],
+   "marka": null,
+   "periyot": {
+    "tip": "gun",
+    "deger": 1,
+    "ad": "Günlük"
+   },
+   "kategori": "Günlük kontrol",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "Acil Stop Butonu Fonksiyon Kontrolü"
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "Makara sistemini kontrolü"
+    },
+    {
+     "no": "3",
+     "grup": "",
+     "madde": "Makine sıcaklık ve deionization değerlerini yazınız."
+    }
+   ]
+  },
+  {
+   "kod": "D03 F54",
+   "ad": "Termoregülatör 6 Aylık Bakım",
+   "ekipman_turleri": [
+    "Termoregülatör"
+   ],
+   "marka": null,
+   "periyot": {
+    "tip": "gun",
+    "deger": 182,
+    "ad": "6 aylık"
+   },
+   "kategori": "Periyodik bakım",
+   "not": "",
+   "kalip": false,
+   "olcumlu": false,
+   "maddeler": [
+    {
+     "no": "1",
+     "grup": "",
+     "madde": "Yağ kalitesi kontrolü"
+    },
+    {
+     "no": "2",
+     "grup": "",
+     "madde": "Rezistans sağlamlık kontrolü"
+    },
+    {
+     "no": "3",
+     "grup": "",
+     "madde": "Motor sızdırmazlık kontrolü"
+    },
+    {
+     "no": "4",
+     "grup": "",
+     "madde": "Salmastra değişimi"
+    }
+   ]
+  }
+ ]
+}

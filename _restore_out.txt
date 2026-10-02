@@ -1,0 +1,13 @@
+﻿ÍNCE:
+  durum             = Kapat²ld²
+  kapanis_tarihi    = 2026-08-07 08:48:56.919256
+  guncelleme_tarihi = 2026-08-07 08:48:56.927421
+  dof_id            = 16
+
+SONRA:
+  durum             = DÍF Tetiklendi
+  kapanis_tarihi    = None
+  guncelleme_tarihi = 2026-07-22 09:15:18.984026
+  dof_id            = 16
+
+Denetim izine d³zeltme kayd² eklendi.

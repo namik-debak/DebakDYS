@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% block title %}APQP Proje Yönetimi (İleri Ürün Kalite Planlaması){% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><span>APQP</span>{% endblock %}
+
+{% block content %}
+<div class="d-flex align-center justify-between mb-24" style="flex-wrap:wrap;gap:12px;">
+  <div>
+    <h2 style="font-size:20px;font-weight:700;">APQP Projeleri</h2>
+    <p class="text-muted" style="font-size:13px;">IATF 16949 § 8.1.1 İleri Ürün Kalite Planlaması ve Faz Takip Listesi. Toplam <strong>{{ kayitlar|length }}</strong> kayıt.</p>
+  </div>
+</div>
+
+<!-- Proje Listesi Tablosu -->
+<div class="section-card mb-24">
+{% if kayitlar %}
+<div class="data-table-wrapper">
+<table class="data-table">
+<thead>
+    <tr>
+        <th>Proje No</th>
+        <th>Proje Adı</th>
+        <th>Müşteri</th>
+        <th>Parça No</th>
+        <th style="text-align:center;">Aktif Faz</th>
+        <th>Sorumlu</th>
+        <th>Başlangıç Tarihi</th>
+        <th>Hedef Tarih</th>
+        <th style="text-align:center;">Durum</th>
+    </tr>
+</thead>
+<tbody>
+{% for r in kayitlar %}
+<tr>
+    <td><code style="color:var(--text-accent); font-weight:700;">{{ r.proje_no }}</code></td>
+    <td><strong>{{ r.ad }}</strong></td>
+    <td>{{ r.musteri or '—' }}</td>
+    <td><code>{{ r.parca_no or '—' }}</code></td>
+    <td class="text-center">
+        <span class="badge" style="font-size:11px; font-weight:700; background:var(--bg-secondary); color:var(--color-primary);">
+            Faz {{ r.faz }} / 5
+        </span>
+    </td>
+    <td><span style="font-size:12px;">{{ r.sorumlu.ad_soyad if r.sorumlu else '—' }}</span></td>
+    <td style="font-size:12px; font-family:monospace;">{{ r.baslangic_tarihi.strftime('%Y-%m-%d') if r.baslangic_tarihi else '—' }}</td>
+    <td style="font-size:12px; font-family:monospace; font-weight:700; color:var(--color-primary);">{{ r.hedef_tarih.strftime('%Y-%m-%d') if r.hedef_tarih else '—' }}</td>
+    <td class="text-center">
+        <span class='status-badge {{ r.durum|slug }}'>{{ r.durum|enum }}</span>
+    </td>
+</tr>
+{% endfor %}
+</tbody></table>
+</div>
+{% else %}
+<div class="empty-state"><div class="empty-icon">📋</div><h3>Kayıt yok</h3></div>
+{% endif %}
+</div>
+
+<!-- Yeni Proje Ekleme Formu -->
+{% if can_edit %}
+<div class="section-card">
+    <div class="section-header" style="border-bottom:1px solid var(--border); padding:12px 20px;">
+        <span class="section-title">➕ Yeni APQP Projesi Ekle</span>
+    </div>
+    <div class="section-body" style="padding:20px;">
+        <form method="POST" action="{{ url_for('iatf_apqp') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:16px; margin-bottom:16px;">
+                <div class="form-group">
+                    <label class="form-label">Proje No *</label>
+                    <input type="text" name="proje_no" class="form-control" required placeholder="Örn: PRJ-2026-03">
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label">Proje Adı *</label>
+                    <input type="text" name="ad" class="form-control" required placeholder="Örn: X OEM Ön Tampon Kalıbı Devreye Alma">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Müşteri / Proje Sahibi</label>
+                    <input type="text" name="musteri" class="form-control" placeholder="Örn: Ford, Renault, Tofaş">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Parça No Referansı</label>
+                    <input type="text" name="parca_no" class="form-control" placeholder="Örn: 52012345-AB">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Aktif APQP Fazı *</label>
+                    <select name="faz" class="form-control" required>
+                        <option value="1">Faz 1 - Planlama & Tanımlama</option>
+                        <option value="2">Faz 2 - Ürün Tasarım & Geliştirme</option>
+                        <option value="3">Faz 3 - Süreç Tasarım & Geliştirme</option>
+                        <option value="4">Faz 4 - Ürün & Süreç Geçerliliği</option>
+                        <option value="5">Faz 5 - Değerlendirme & Geri Bildirim</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Başlangıç Tarihi</label>
+                    <input type="date" name="baslangic_tarihi" class="form-control" value="{{ date_today }}">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Hedef / Bitiş Tarihi</label>
+                    <input type="date" name="hedef_tarih" class="form-control">
+                </div>
+                
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label">Proje Açıklaması / Detaylar</label>
+                    <input type="text" name="aciklama" class="form-control" placeholder="Proje kapsamı veya ek notlar...">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Proje Sorumlusu (Lider)</label>
+                    <select name="sorumlu_id" class="form-control">
+                        <option value="">— Seçiniz —</option>
+                        {% for u in users %}
+                        <option value="{{ u.id }}">{{ u.ad_soyad }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Durum</label>
+                    <select name="durum" class="form-control">
+                        <option value="Planlandı" selected>Planlandı</option>
+                        <option value="Devam Ediyor">Devam Ediyor</option>
+                        <option value="Onaylandı">Onaylandı / Seri Üretim</option>
+                        <option value="Askıda">Askıda / Ertelendi</option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" style="padding:10px 24px;">💾 Projeyi Kaydet</button>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

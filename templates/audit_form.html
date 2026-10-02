@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block title %}Yeni Tetkik{% endblock %}
+
+{% block breadcrumb %}
+<span class="separator">›</span>
+<a href="{{ request.script_root }}/audits">İç Tetkik</a>
+<span class="separator">›</span>
+<span>Yeni</span>
+{% endblock %}
+
+{% block content %}
+<div class="mb-24">
+    <h2 style="font-size: 20px; font-weight: 700;">Yeni İç Tetkik</h2>
+    <p class="text-muted" style="font-size: 13px;">Sistem, proses veya ürün denetimi planlayın.</p>
+</div>
+
+<div class="section-card">
+    <div class="section-body" style="padding: 20px;">
+        <form method="POST" action="{{ request.script_root }}/audits/new" id="auditForm">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label">Denetim Tipi *</label>
+                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                        {% for t in tipler %}
+                        <label class="btn btn-outline" style="cursor:pointer; {% if (form.denetim_tipi if form else 'Sistem Denetimi') == t %}border-color:var(--color-primary);{% endif %}">
+                            <input type="radio" name="denetim_tipi" value="{{ t }}"
+                                   {{ 'checked' if (form.denetim_tipi if form else 'Sistem Denetimi') == t }}
+                                   style="margin-right:6px;" onchange="toggleAuditFields()">
+                            {{ t|enum }}
+                        </label>
+                        {% endfor %}
+                    </div>
+                    <p class="form-hint" id="tipHint" style="margin-top:8px;"></p>
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label">Başlık *</label>
+                    <input type="text" name="baslik" class="form-control" required
+                           value="{{ form.baslik if form else '' }}"
+                           placeholder="ör. M04 Proses Denetimi / IATF Sistem Denetimi / Parça XYZ Ürün Denetimi">
+                </div>
+                <div class="form-group" id="fldSurec">
+                    <label class="form-label">Denetlenen Süreç <span id="surecReq" class="text-muted"></span></label>
+                    <select name="denetlenen_surec_id" class="form-control" id="denetlenen_surec_id">
+                        <option value="">— Seçiniz —</option>
+                        {% for p in processes %}
+                        <option value="{{ p.id }}" {{ 'selected' if form and form.denetlenen_surec_id|string == p.id|string }}>{{ p.kod }} - {{ p.ad }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group" id="fldUrun" style="display:none;">
+                    <label class="form-label">Ürün / Parça *</label>
+                    <input type="text" name="urun_adi" class="form-control" id="urun_adi"
+                           value="{{ form.urun_adi if form else '' }}"
+                           placeholder="ör. Valeo bracket P/N 12345">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tetkiki Yapan</label>
+                    <select name="tetkik_eden_id" class="form-control">
+                        <option value="">— Seçiniz —</option>
+                        {% for u in users %}
+                        <option value="{{ u.id }}" {{ 'selected' if form and form.tetkik_eden_id|string == u.id|string }}>{{ u.ad_soyad }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">İlgili Standart</label>
+                    <select name="ilgili_standart" class="form-control">
+                        <option value="">— Yok —</option>
+                        {% for s in standartlar %}
+                        <option value="{{ s }}" {{ 'selected' if form and form.ilgili_standart == s }}>{{ s }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Vardiya — IATF 16949 § 9.2.2.3</label>
+                    <select name="vardiya" class="form-control">
+                        <option value="">— Tüm Vardiyalar —</option>
+                        <option value="1. Vardiya" {{ 'selected' if form and form.vardiya == '1. Vardiya' }}>1. Vardiya</option>
+                        <option value="2. Vardiya" {{ 'selected' if form and form.vardiya == '2. Vardiya' }}>2. Vardiya</option>
+                        <option value="3. Vardiya" {{ 'selected' if form and form.vardiya == '3. Vardiya' }}>3. Vardiya</option>
+                        <option value="Tüm Vardiyalar" {{ 'selected' if form and form.vardiya == 'Tüm Vardiyalar' }}>Tüm Vardiyalar</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Durum</label>
+                    <select name="durum" class="form-control">
+                        {% for d in durumlar %}<option value="{{ d }}" {{ 'selected' if form and form.durum == d }}>{{ d|enum }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Planlanan Tarih</label>
+                    <input type="date" name="planlanan_tarih" class="form-control" value="{{ form.planlanan_tarih if form else '' }}">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Gerçekleşen Tarih</label>
+                    <input type="date" name="gerceklesen_tarih" class="form-control" value="{{ form.gerceklesen_tarih if form else '' }}">
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label">Kapsam</label>
+                    <textarea name="kapsam" class="form-control" rows="3" placeholder="Denetim kapsamı, kontrol noktaları, referans dokümanlar...">{{ form.kapsam if form else '' }}</textarea>
+                </div>
+            </div>
+            <div class="d-flex gap-8 mt-16">
+                <button type="submit" class="btn btn-primary">💾 Kaydet</button>
+                <a href="{{ request.script_root }}/audits" class="btn btn-outline">İptal</a>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+function toggleAuditFields() {
+  const tip = (document.querySelector('input[name="denetim_tipi"]:checked') || {}).value || '';
+  const urun = document.getElementById('fldUrun');
+  const surecReq = document.getElementById('surecReq');
+  const hint = document.getElementById('tipHint');
+  urun.style.display = tip === 'Ürün Denetimi' ? '' : 'none';
+  surecReq.textContent = tip === 'Proses Denetimi' ? '*' : '';
+  const hints = {
+    'Sistem Denetimi': 'Yönetim sistemi / standart maddelerine yönelik tetkik.',
+    'Proses Denetimi': 'Belirli bir sürecin etkinliğini ve uygulama uygunluğunu denetler (süreç zorunlu).',
+    'Ürün Denetimi': 'Ürün / parça özelliklerine göre uygunluk denetimi (ürün adı zorunlu).'
+  };
+  hint.textContent = hints[tip] || '';
+}
+toggleAuditFields();
+</script>
+{% endblock %}

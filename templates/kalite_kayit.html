@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+{% block title %}{{ k.no }} — {{ ad }}{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><span>Kalite</span><span class="separator">›</span><a href="{{ url_for('kalite_liste', tur=tur) }}">{{ ad }}</a><span class="separator">›</span><span>{{ k.no }}</span>{% endblock %}
+{% block content %}
+<style>
+.kk-bolum{margin-bottom:12px;} .kk-bolum .section-header{padding:8px 12px;}
+.kk-bolum .en{font-weight:400;color:var(--text-secondary);font-size:12px;margin-left:6px;}
+.kk-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px 14px;padding:12px;}
+.kk-grid label{display:flex;flex-direction:column;gap:3px;font-size:12.5px;font-weight:600;}
+.kk-grid label .en{font-weight:400;font-style:italic;font-size:11px;color:var(--text-secondary);}
+.kk-grid .g1{grid-column:span 1;} .kk-grid .g2{grid-column:span 2;} .kk-grid .g3{grid-column:1/-1;}
+@media (max-width:900px){.kk-grid{grid-template-columns:repeat(2,minmax(0,1fr));} .kk-grid .g2{grid-column:1/-1;}}
+@media (max-width:560px){.kk-grid{grid-template-columns:1fr;} .kk-grid .g1{grid-column:1/-1;}}
+.kk-grid input,.kk-grid select,.kk-grid textarea{font-weight:400;}
+.kk-tb{width:100%;border-collapse:collapse;} .kk-tb th,.kk-tb td{border:1px solid var(--border-color);padding:3px 4px;font-size:12px;} .kk-tb th{background:var(--bg-secondary);font-weight:600;}
+.kk-tb input{width:100%;border:0;background:transparent;color:inherit;font-size:12px;padding:3px;}
+.kk-drop{border:2px dashed var(--border-color);border-radius:10px;padding:14px;text-align:center;color:var(--text-secondary);font-size:13px;cursor:pointer;}
+.kk-drop.aktif{border-color:var(--color-primary);background:var(--bg-secondary);}
+.kk-foto{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;margin-top:12px;}
+.kk-foto .f{border:1px solid var(--border-color);border-radius:10px;overflow:hidden;background:var(--bg-secondary);}
+.kk-foto img{width:100%;height:160px;object-fit:contain;background:#fff;cursor:zoom-in;display:block;}
+.kk-foto .alt{padding:7px 8px;font-size:12px;display:flex;flex-direction:column;gap:5px;}
+.kk-foto .alt select,.kk-foto .alt input[type=text]{font-size:12px;padding:3px 5px;}
+.et-NOK{color:#b91c1c;font-weight:700;} .et-OK{color:#15803d;font-weight:700;}
+.kk-bar{position:sticky;top:0;z-index:5;background:var(--bg-primary);padding:8px 0;margin-bottom:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border-color);}
+#kk-cizim{position:fixed;inset:0;background:rgba(15,23,42,.82);z-index:1000;display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;}
+#kk-cizim canvas{max-width:94vw;max-height:78vh;background:#fff;border-radius:6px;cursor:crosshair;touch-action:none;}
+#kk-cizim .arac{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;} #kk-cizim .arac button.sec{outline:3px solid #fbbf24;}
+#kk-buyuk{position:fixed;inset:0;background:rgba(15,23,42,.88);z-index:999;display:none;align-items:center;justify-content:center;cursor:zoom-out;} #kk-buyuk img{max-width:95vw;max-height:92vh;}
+</style>
+<form method="POST" id="kk-form">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<div class="kk-bar">
+  <div><h2 style="font-size:19px;font-weight:700;margin:0;">{{ '🏭' if tk == 'TU' else '📣' }} {{ spec.baslik[0] }} <span class="text-muted" style="font-size:12.5px;font-weight:400;">/ {{ spec.baslik[1] }}</span></h2>
+    <div class="text-muted" style="font-size:12.5px;">{{ spec.kod }} · <strong>{{ k.no }}</strong> · {{ k.durum }}{% if gecikmis %} · <span style="color:#b91c1c;font-weight:700;">⚠ termin geçti</span>{% endif %}{% if k.gonderim_tarihi %} · ✉ gönderildi {{ k.gonderim_tarihi.strftime('%d.%m.%Y') }}{% endif %}</div></div>
+  <div class="d-flex gap-8" style="flex-wrap:wrap;">
+    {% if k.id %}<a class="btn btn-outline" target="_blank" href="{{ url_for('kalite_pdf', tur=tur, kid=k.id) }}">📄 PDF görüntüle</a>
+    <a class="btn btn-outline" href="{{ url_for('kalite_pdf', tur=tur, kid=k.id, indir=1) }}">⬇ PDF indir</a>{% endif %}
+    {% if yazabilir %}<button class="btn btn-primary" type="submit">💾 Kaydet</button>{% endif %}
+  </div>
+</div>
+<fieldset {{ 'disabled' if not yazabilir }} style="border:0;padding:0;margin:0;">
+{% for b in spec.bolumler %}{% set bi = loop.index0 %}
+<div class="section-card kk-bolum">
+  <div class="section-header"><span class="section-title">{{ loop.index }}. {{ b[0] }}<span class="en">/ {{ b[1] }}</span></span></div>
+  <div class="kk-grid">
+  {% for a in b[2] %}{% set key, tr, en, tip, sec, w = a %}{% set v = deger(k, key) %}
+    {% if tip == 'tablo' %}
+    <div class="g3"><div style="font-size:12.5px;font-weight:600;margin-bottom:4px;">{{ tr }} <span class="text-muted" style="font-weight:400;font-style:italic;font-size:11px;">/ {{ en }}</span>
+      {% if yazabilir %}<button type="button" class="btn btn-sm btn-outline" style="margin-left:8px;" onclick="kkSatir('{{ key }}')">➕ Satır</button>{% endif %}</div>
+      {% set satirlar = k.veri.get(key) or [] %}
+      <table class="kk-tb" id="tb-{{ key }}" data-sut='{{ sec|tojson }}'><tr>{% for c in sec %}<th>{{ c }}</th>{% endfor %}</tr>
+      {% for r in satirlar %}{% set i = loop.index0 %}<tr>{% for c in sec %}<td><input name="{{ key }}__{{ i }}__{{ loop.index0 }}" value="{{ r.get(c, '') }}"></td>{% endfor %}</tr>{% endfor %}
+      </table><input type="hidden" name="{{ key }}__say" id="say-{{ key }}" value="{{ satirlar|length }}"></div>
+    {% else %}
+    <label class="g{{ 3 if tip in ('uzun', 'coklu') else w }}">{{ tr }} <span class="en">{{ en }}</span>
+    {% if tip == 'salt' %}<input class="form-control" value="{{ v or '' }}" readonly>
+    {% elif tip == 'tarih' %}<input type="date" class="form-control" name="{{ key }}" value="{{ (v.isoformat() if v is not string else v) if v else '' }}" {{ 'required' if key == 'tarih' }}>
+    {% elif tip == 'sayi' %}<input class="form-control" name="{{ key }}" inputmode="decimal" value="{{ ('%g'|format(v)) if v is number else (v or '') }}">
+    {% elif tip == 'uzun' %}<textarea class="form-control" name="{{ key }}" rows="3">{{ v or '' }}</textarea>
+    {% elif tip == 'secim' %}<select class="form-control" name="{{ key }}"><option value="">—</option>{% for s_tr, s_en in sec %}<option value="{{ s_tr }}" {{ 'selected' if v == s_tr }}>{{ s_tr }} / {{ s_en }}</option>{% endfor %}</select>
+    {% elif tip == 'coklu' %}<span style="display:flex;flex-wrap:wrap;gap:4px 14px;font-weight:400;">{% for s_tr, s_en in sec %}<span><input type="checkbox" name="{{ key }}" value="{{ s_tr }}" {{ 'checked' if s_tr in (v or []) }}> {{ s_tr }}{% if s_en != s_tr %} / <i>{{ s_en }}</i>{% endif %}</span>{% endfor %}</span>
+    {% elif tip == 'durum' %}<select class="form-control" name="durum">{% for d in spec.durumlar %}<option {{ 'selected' if d == (v or 'Açık') }}>{{ d }}</option>{% endfor %}</select>
+    {% elif tip == 'kullanici' %}<select class="form-control" name="{{ key }}"><option value="">—</option>{% for u in kullanicilar %}<option value="{{ u.id }}" {{ 'selected' if u.id == v }}>{{ u.ad_soyad }}</option>{% endfor %}</select>
+    {% elif tip == 'tedarikci' %}<select class="form-control" name="tedarikci_id" onchange="document.getElementById('ted-ad').style.display=this.value?'none':''"><option value="">— listede yok, adı yazın —</option>{% for s in tedarikciler %}<option value="{{ s.id }}" {{ 'selected' if s.id == v }}>{{ s.ad }}{% if s.kod %} ({{ s.kod }}){% endif %}</option>{% endfor %}</select>
+      <input id="ted-ad" class="form-control" name="tedarikci_ad" value="{{ k.tedarikci_ad or '' }}" placeholder="Tedarikçi adı" style="{{ 'display:none;' if v }}">
+    {% elif tip == 'musteri' %}<input class="form-control" name="{{ key }}" value="{{ v or '' }}" list="musteri-listesi" required><datalist id="musteri-listesi">{% for m in musteriler %}<option value="{{ m }}">{% endfor %}</datalist>
+    {% else %}<input class="form-control" name="{{ key }}" value="{{ v or '' }}">{% endif %}
+    </label>
+    {% endif %}
+  {% endfor %}
+  </div>
+</div>
+{% endfor %}
+</fieldset>
+</form>
+
+{% if k.id %}
+<div class="section-card kk-bolum" id="gorseller">
+  <div class="section-header"><span class="section-title">📷 Görseller<span class="en">/ Images — hatalı parça, referans (OK) parça, etiket, ambalaj; "Rapora ekle" işaretli olanlar PDF'e girer</span></span></div>
+  <div style="padding:12px;">
+  {% if yazabilir %}
+  <form method="POST" enctype="multipart/form-data" action="{{ url_for('kalite_gorsel_yukle', tur=tur, kid=k.id) }}" id="kk-yukle" class="d-flex gap-8" style="flex-wrap:wrap;align-items:flex-end;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label style="font-size:12.5px;display:flex;flex-direction:column;gap:3px;">Etiket / Label<select name="etiket" id="kk-etiket" class="form-control">{% for e_tr, e_en in etiketler %}<option value="{{ e_tr }}">{{ e_tr }} / {{ e_en }}</option>{% endfor %}</select></label>
+    <label style="font-size:12.5px;display:flex;flex-direction:column;gap:3px;flex:1;min-width:220px;">Açıklama / Description<input name="aciklama" id="kk-aciklama" class="form-control" placeholder="ör. yüzeyde çapak, 3 adet"></label>
+    <input type="file" name="gorsel" id="kk-dosya" accept="image/*" multiple style="display:none;" onchange="this.form.submit()">
+    <div class="kk-drop" id="kk-drop" style="flex-basis:100%;" onclick="document.getElementById('kk-dosya').click()">📥 Görselleri buraya sürükleyin, <b>tıklayıp seçin</b> ya da ekran görüntüsünü <b>Ctrl + V</b> ile yapıştırın (telefonda kamera açılır)</div>
+  </form>
+  {% endif %}
+  <div class="kk-foto">
+  {% for g in gorseller %}
+    <div class="f"><img src="{{ url_for('kalite_gorsel', gid=g.id) }}" alt="{{ g.aciklama or g.etiket }}" onclick="kkBuyut(this.src)">
+      <form method="POST" action="{{ url_for('kalite_gorsel_duzenle', gid=g.id) }}" class="alt">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <span class="{{ 'et-NOK' if (g.etiket or '').startswith('Hatalı') else ('et-OK' if (g.etiket or '').startswith('Referans') else '') }}">{{ loop.index }}. {{ g.etiket }}</span>
+        {% if yazabilir %}
+        <select name="etiket">{% for e_tr, e_en in etiketler %}<option value="{{ e_tr }}" {{ 'selected' if e_tr == g.etiket }}>{{ e_tr }}</option>{% endfor %}</select>
+        <input type="text" name="aciklama" value="{{ g.aciklama or '' }}" placeholder="Açıklama">
+        <span style="display:flex;justify-content:space-between;align-items:center;gap:4px;flex-wrap:wrap;">
+          <label style="font-size:11.5px;"><input type="checkbox" name="pdfte" value="1" {{ 'checked' if g.pdfte is not false }}> Rapora ekle</label>
+          <span><button type="button" class="btn btn-sm btn-outline" title="Hatalı bölgeyi işaretle" onclick="kkCiz('{{ url_for('kalite_gorsel', gid=g.id) }}', {{ (g.aciklama or '')|tojson }})">✏️</button>
+          <button class="btn btn-sm btn-outline" type="submit">✓</button>
+          <button class="btn btn-sm btn-outline" type="submit" name="islem" value="sil" onclick="return confirm('Görsel silinsin mi?')">🗑</button></span></span>
+        {% else %}<span>{{ g.aciklama or '' }}</span>{% endif %}
+      </form></div>
+  {% else %}<p class="text-muted" style="font-size:12.5px;">Henüz görsel yok.</p>{% endfor %}
+  </div></div>
+</div>
+
+<div class="section-card kk-bolum">
+  <div class="section-header"><span class="section-title">✉ Gönderim ve DÖF<span class="en">/ Sending and CAPA</span></span></div>
+  <div style="padding:12px;display:flex;gap:18px;flex-wrap:wrap;">
+    <div style="flex:1;min-width:280px;">
+      <p style="font-size:12.5px;margin:0 0 6px;">Raporu <b>PDF indir</b> ile alıp {{ 'tedarikçiye' if tk == 'TU' else 'müşteriye' }} e-postayla gönderin, sonra buraya kaydedin.</p>
+      {% if yazabilir %}<form method="POST" action="{{ url_for('kalite_gonderildi', tur=tur, kid=k.id) }}" class="d-flex gap-8" style="flex-wrap:wrap;">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input name="kime" class="form-control" style="flex:1;min-width:200px;" placeholder="Kime (ad / e-posta)" value="{{ k.veri.get('tedarikci_yetkili' if tk == 'TU' else 'musteri_yetkili') or '' }}">
+        <input name="not" class="form-control" style="flex:1;min-width:160px;" placeholder="Not (ör. 8D rev.1)"><button class="btn btn-outline" type="submit">✉ Gönderildi olarak kaydet</button></form>{% endif %}
+      {% if k.veri.get('gonderimler') %}<ul style="font-size:12px;margin:8px 0 0 16px;">{% for g in k.veri.get('gonderimler')|reverse %}<li>{{ g.tarih.replace('T', ' ') }} → {{ g.kime }} ({{ g.gonderen }}){% if g.not %} — {{ g.not }}{% endif %}</li>{% endfor %}</ul>{% endif %}
+    </div>
+    <div style="min-width:220px;">
+      {% if k.dof_id %}<a class="btn btn-outline" href="{{ request.script_root }}/capa/{{ k.dof_id }}">🛠️ Bağlı DÖF</a>
+      {% elif yazabilir %}<form method="POST" action="{{ url_for('kalite_dof', tur=tur, kid=k.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-outline" type="submit" onclick="return confirm('Bu kayıttan DÖF açılsın mı?')">🛠️ DÖF aç</button></form>{% endif %}
+      {% if yonetici %}<form method="POST" action="{{ url_for('kalite_kayit', tur=tur, kid=k.id) }}" style="margin-top:8px;"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-sm btn-outline" name="islem" value="sil" onclick="return confirm('{{ k.no }} ve görselleri silinsin mi?')">🗑 Kaydı sil</button></form>{% endif %}
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<div id="kk-buyuk" onclick="this.style.display='none'"><img alt=""></div>
+<div id="kk-cizim">
+  <div class="arac">
+    <button type="button" class="btn btn-sm btn-outline sec" data-arac="kalem" onclick="kkArac(this)">✏️ Kalem</button>
+    <button type="button" class="btn btn-sm btn-outline" data-arac="dikdortgen" onclick="kkArac(this)">▭ Dikdörtgen</button>
+    <button type="button" class="btn btn-sm btn-outline" data-arac="daire" onclick="kkArac(this)">◯ Daire</button>
+    <button type="button" class="btn btn-sm btn-outline" data-arac="ok" onclick="kkArac(this)">➜ Ok</button>
+    <button type="button" class="btn btn-sm btn-outline" onclick="kkGeri()">↶ Geri al</button>
+    <button type="button" class="btn btn-sm btn-primary" onclick="kkKaydet()">💾 İşaretli görseli ekle</button>
+    <button type="button" class="btn btn-sm btn-outline" onclick="document.getElementById('kk-cizim').style.display='none'">✕ Kapat</button>
+  </div>
+  <canvas id="kk-canvas"></canvas>
+  <div style="color:#e2e8f0;font-size:12px;">İşaretli görsel yeni görsel olarak eklenir (asıl görsel korunur).</div>
+</div>
+<script>
+function kkSatir(k){const t=document.getElementById('tb-'+k),s=document.getElementById('say-'+k),i=+s.value,sut=JSON.parse(t.dataset.sut);s.value=i+1;
+  const r=t.insertRow(-1); sut.forEach((c,j)=>{r.insertCell(-1).innerHTML=`<input name="${k}__${i}__${j}">`;}); r.querySelector('input').focus();}
+function kkBuyut(src){const b=document.getElementById('kk-buyuk');b.querySelector('img').src=src;b.style.display='flex';}
+{% if k.id and yazabilir %}
+const KK_CSRF="{{ csrf_token() }}", KK_URL="{{ url_for('kalite_gorsel_yukle', tur=tur, kid=k.id) }}";
+async function kkGonder(dosyalar, etiket, aciklama){const fd=new FormData();fd.append('csrf_token',KK_CSRF);fd.append('etiket',etiket||document.getElementById('kk-etiket').value);
+  fd.append('aciklama',aciklama!==undefined?aciklama:document.getElementById('kk-aciklama').value);for(const f of dosyalar){fd.append('gorsel',f,f.name||'gorsel.png');}
+  const r=await fetch(KK_URL,{method:'POST',body:fd,headers:{'X-Requested-With':'fetch','X-CSRFToken':KK_CSRF}});if(r.ok){location.hash='gorseller';location.reload();}else{alert('Görsel eklenemedi ('+r.status+').');}}
+const kd=document.getElementById('kk-drop');
+['dragenter','dragover'].forEach(e=>kd.addEventListener(e,ev=>{ev.preventDefault();kd.classList.add('aktif');}));
+['dragleave','drop'].forEach(e=>kd.addEventListener(e,ev=>{ev.preventDefault();kd.classList.remove('aktif');}));
+kd.addEventListener('drop',ev=>{const f=[...ev.dataTransfer.files].filter(x=>x.type.startsWith('image/'));if(f.length)kkGonder(f);});
+document.addEventListener('paste',ev=>{if(document.getElementById('kk-cizim').style.display==='flex')return;const f=[...(ev.clipboardData||{}).items||[]].filter(i=>i.type.startsWith('image/')).map(i=>{const b=i.getAsFile();return new File([b],'ekran-goruntusu.png',{type:b.type});});
+  if(f.length){ev.preventDefault();kkGonder(f);}});
+// işaretleme
+let kkC,kkX,kkImg,kkAracSec='kalem',kkIz=[],kkBas=null,kkAcik='';
+function kkArac(b){kkAracSec=b.dataset.arac;document.querySelectorAll('#kk-cizim .arac button[data-arac]').forEach(x=>x.classList.toggle('sec',x===b));}
+function kkCiz(src,aciklama){kkAcik=aciklama||'';kkImg=new Image();kkImg.onload=()=>{kkC=document.getElementById('kk-canvas');kkC.width=kkImg.naturalWidth;kkC.height=kkImg.naturalHeight;kkX=kkC.getContext('2d');kkIz=[];kkCizYenile();document.getElementById('kk-cizim').style.display='flex';};kkImg.src=src;}
+function kkNokta(ev){const r=kkC.getBoundingClientRect();return{x:(ev.clientX-r.left)*kkC.width/r.width,y:(ev.clientY-r.top)*kkC.height/r.height};}
+function kkCizYenile(gecici){kkX.drawImage(kkImg,0,0);[...kkIz,...(gecici?[gecici]:[])].forEach(s=>kkSekil(s));}
+function kkSekil(s){const lw=Math.max(3,kkC.width/250);kkX.strokeStyle='#e11d48';kkX.lineWidth=lw;kkX.lineCap='round';kkX.beginPath();
+  if(s.t==='kalem'){s.p.forEach((p,i)=>i?kkX.lineTo(p.x,p.y):kkX.moveTo(p.x,p.y));}
+  else if(s.t==='dikdortgen'){kkX.rect(s.a.x,s.a.y,s.b.x-s.a.x,s.b.y-s.a.y);}
+  else if(s.t==='daire'){kkX.ellipse((s.a.x+s.b.x)/2,(s.a.y+s.b.y)/2,Math.abs(s.b.x-s.a.x)/2,Math.abs(s.b.y-s.a.y)/2,0,0,2*Math.PI);}
+  else if(s.t==='ok'){const a=Math.atan2(s.b.y-s.a.y,s.b.x-s.a.x),h=lw*5;kkX.moveTo(s.a.x,s.a.y);kkX.lineTo(s.b.x,s.b.y);kkX.lineTo(s.b.x-h*Math.cos(a-0.45),s.b.y-h*Math.sin(a-0.45));kkX.moveTo(s.b.x,s.b.y);kkX.lineTo(s.b.x-h*Math.cos(a+0.45),s.b.y-h*Math.sin(a+0.45));}
+  kkX.stroke();}
+document.getElementById('kk-canvas').addEventListener('pointerdown',ev=>{const p=kkNokta(ev);kkBas=kkAracSec==='kalem'?{t:'kalem',p:[p]}:{t:kkAracSec,a:p,b:p};kkC.setPointerCapture(ev.pointerId);});
+document.getElementById('kk-canvas').addEventListener('pointermove',ev=>{if(!kkBas)return;const p=kkNokta(ev);if(kkBas.t==='kalem')kkBas.p.push(p);else kkBas.b=p;kkCizYenile(kkBas);});
+document.getElementById('kk-canvas').addEventListener('pointerup',()=>{if(kkBas){kkIz.push(kkBas);kkBas=null;kkCizYenile();}});
+function kkGeri(){kkIz.pop();kkCizYenile();}
+function kkKaydet(){kkC.toBlob(b=>kkGonder([new File([b],'isaretli.png',{type:'image/png'})],'Hatalı (NOK)',('İşaretli — '+kkAcik).trim().replace(/—$/,'').trim()),'image/png');}
+{% endif %}
+</script>
+{% endblock %}

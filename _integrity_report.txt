@@ -1,0 +1,71 @@
+﻿======================================================================
+1) DOK▄MAN DOSYA B▄T▄NL▄º▄
+======================================================================
+Toplam dok³man      : 995
+Dosyas² mevcut      : 970
+Dosya yolu bo■      : 25
+DOSYASI BULUNAMAYAN : 0
+
+  Dosya yolu bo■ olanlar:
+    #   1 Y01-PO-001     Kalite Politikas²
+    #   2 D07-PO-001     Ãevre Politikas²
+    #   3 D01-PO-001     ¦■ Sa­l²­² ve G³venli­i Politikas²
+    #   4 D08-PO-001     Bilgi G³venli­i Politikas²
+    #   5 Y01-EK-001     Kalite El Kitab²
+    #   6 Y01-PR-001     Dok³man Kontrol Prosed³r³
+    #   7 Y01-PR-002     Kay²tlar²n Kontrol³ Prosed³r³
+    #   8 Y03-PR-001     D³zeltici Faaliyet Prosed³r³
+    #   9 Y03-PR-002     ¦ Tetkik Prosed³r³
+    #  10 Y02-PR-001     Y÷netimin G÷zden Geirmesi Prosed³r³
+    #  11 D06-PR-001     Uygun Olmayan ▄r³n Kontrol³ Prosed³r³
+    #  12 D05-PR-001     Sat²nalma Prosed³r³
+    #  13 D04-PR-001     Kalibrasyon Prosed³r³
+    #  14 D07-PR-001     Ãevresel Boyutlar ve Etki De­erlendirme Prosed³r³
+    #  15 D08-PR-001     Bilgi G³venli­i Risk De­erlendirme Prosed³r³
+
+======================================================================
+2) YET¦M KAYITLAR (FK tutarl²l²­²)
+======================================================================
+  [OK   ] documents.surec_id -> processes: 0
+  [OK   ] documents.hazirlayan_id -> users: 0
+  [OK   ] documents.onaylayan_id -> users: 0
+  [OK   ] document_approvals.document_id -> documents: 0
+  [OK   ] document_distributions.document_id -> documents: 0
+  [OK   ] document_revisions.document_id -> documents: 0
+
+======================================================================
+3) M▄KERRER DOK▄MAN NUMARASI
+======================================================================
+  M³kerrer dok³man no say²s²: 0
+
+======================================================================
+4) KULLANICI / ROL DURUMU
+======================================================================
+  Admin                    toplam=  2 aktif=2
+  Dok³man Kontrol          toplam=  2 aktif=2
+  Kullan²c²                toplam=  3 aktif=3
+  Toplam aktif kullan²c²: 7
+
+======================================================================
+5) DENET¦M ¦Z¦ (audit_logs) Z¦NC¦R¦
+======================================================================
+  Kay²t say²s²: 419
+  Son kay²t   : 2026-08-07 08:48:59.152170
+
+======================================================================
+6) TARAMA SIRASINDA OLUÌAN YAN ETK¦LER
+======================================================================
+  QRQC #1 QRQC-2026-001: durum=Kapat²ld² kapanis=2026-08-07 08:48:56.919256 dof_id=16
+  QRQC #2 QRQC-2026-002: durum=Kapat²ld² kapanis=2026-07-22 09:35:56.123758 dof_id=15
+  QRQC #3 QRQC-2026-003: durum=Kapat²ld² kapanis=2026-07-18 09:12:07.024449 dof_id=None
+  QRQC #4 QRQC-2026-004: durum=Kapat²ld² kapanis=2026-07-22 09:41:46.248302 dof_id=17
+  QRQC #5 QRQC-2026-005: durum=Kapat²ld² kapanis=2026-07-22 09:40:28.789868 dof_id=None
+  QRQC #6 QRQC-2026-006: durum=Kapat²ld² kapanis=2026-07-22 10:43:40.216191 dof_id=18
+  QRQC #7 QRQC-2026-007: durum=Kapat²ld² kapanis=2026-07-22 10:42:09.594544 dof_id=19
+
+  Son 5 DÍF:
+    #19 DÍF-2026-103 [QRQC] Kapat²ld² ù [QRQC-QRQC-2026-007] denemedeneme
+    #18 DÍF-2026-102 [QRQC] Kapat²ld² ù [QRQC-QRQC-2026-006] 203592 Mal eksi­i firesi hedef ppm a■²l
+    #17 DÍF-2026-101 [QRQC] Devam Ediyor ù [QRQC-QRQC-2026-004] jhghh
+    #16 DÍF-2026-100 [QRQC] Devam Ediyor ù [QRQC-QRQC-2026-001] Enjeksiyon 02 Hatt²nda Radyal Ãatlak
+    #15 DÍF-2026-099 [QRQC] Devam Ediyor ù [QRQC-2026-002] Kal²p maa s²k²■mas² ve ÷l³ d²■² apak

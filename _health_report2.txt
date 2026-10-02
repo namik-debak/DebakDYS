@@ -1,0 +1,122 @@
+﻿Test edilecek GET rotas²: 103
+Parametresi ÷z³lemeyen (atlanan): 1
+
+======================================================================
+OK (2xx)          : 98
+Y÷nlendirme (3xx) : 3
+¦stemci hata (4xx): 2
+SUNUCU HATA (5xx) : 0
+¦ST¦SNA           : 0
+======================================================================
+
+### 4xx ###
+  400  /api/documents/next-number   [api_documents_next_number]
+  404  /documents/1/preview   [document_preview]
+
+### 3xx (yetki/ak²■ kaynakl² olabilir) ###
+  302  /documents/1/download  ->  /documents   [document_download]
+  302  /documents/1/edit  ->  /documents/1   [document_edit]
+  302  /documents/1/procedure.docx  ->  /documents/1   [document_procedure_docx]
+
+### ATLANAN (veri yok) ###
+  /audits/evidence/<int:ev_id>/download   [audit_evidence_download]  ù audit_evidences tablosu bo■
+
+### BAÌARILI ROTALAR ###
+  200  /
+  200  /_platform/ping
+  200  /admin/audit-integrity
+  200  /admin/distribution-groups
+  200  /admin/users
+  200  /api/audits/checklist-preview
+  200  /api/documents/lookup
+  200  /approvals
+  200  /audit-log
+  200  /audits
+  200  /audits/1
+  200  /audits/1/checklist
+  200  /audits/checklists
+  200  /audits/list
+  200  /audits/new
+  200  /audits/program
+  200  /capa
+  200  /capa/1
+  200  /capa/1/edit
+  200  /capa/1/export.pdf
+  200  /capa/export.xlsx
+  200  /capa/list
+  200  /capa/new
+  200  /competency
+  200  /disposals
+  200  /distributions
+  200  /documents
+  200  /documents/1
+  200  /documents/1/revise
+  200  /documents/export.xlsx
+  200  /documents/new
+  200  /env/aspects
+  200  /env/incidents
+  200  /env/measurements
+  200  /health
+  200  /healthz
+  200  /iatf/apqp
+  200  /iatf/calibration
+  200  /iatf/control-plans
+  200  /iatf/csr
+  200  /iatf/fmea
+  200  /iatf/fmea/1
+  200  /iatf/fmea/1/edit
+  200  /iatf/fmea/new
+  200  /iatf/layout-inspection
+  200  /iatf/nonconforming
+  200  /iatf/pokayoke
+  200  /iatf/spc
+  200  /iatf/supplier-dev
+  200  /iatf/suppliers
+  200  /iatf/warranty
+  200  /ims
+  200  /ims/context
+  200  /ims/legal
+  200  /ims/requirements
+  200  /ims/reviews
+  200  /isms
+  200  /isms/access-reviews
+  200  /isms/assets
+  200  /isms/backups
+  200  /isms/incidents
+  200  /isms/risks
+  200  /isms/soa
+  200  /login
+  200  /ohs/drills
+  200  /ohs/drills/1
+  200  /ohs/hazards
+  200  /ohs/incidents
+  200  /ohs/participation
+  200  /ohs/ppe
+  200  /performance
+  200  /performance/1
+  200  /performance/kpi/1
+  200  /performance/process/D01
+  200  /ppap
+  200  /ppap/1
+  200  /ppap/1/element/1/download
+  200  /ppap/1/element/1/preview
+  200  /ppap/new
+  200  /processes
+  200  /processes/1
+  200  /qrqc
+  200  /qrqc/1
+  200  /qrqc/1/edit
+  200  /qrqc/list
+  200  /qrqc/new
+  200  /reports
+  200  /reports/audit-package
+  200  /reports/compliance
+  200  /reports/compliance/export.xlsx
+  200  /reports/inventory
+  200  /reports/obsolete
+  200  /reports/review-calendar
+  200  /risks
+  200  /risks/1/edit
+  200  /risks/new
+  200  /search
+  200  /training

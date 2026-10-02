@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% block title %}{{ audit.tetkik_no }}{% endblock %}
+
+{% block breadcrumb %}
+<span class="separator">›</span>
+<a href="{{ request.script_root }}/audits">İç Tetkik</a>
+<span class="separator">›</span>
+<span>{{ audit.tetkik_no }}</span>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex align-center justify-between mb-24">
+    <div>
+        <h2 style="font-size: 20px; font-weight: 700;">{{ audit.tetkik_no }} — {{ audit.baslik }}</h2>
+        <p class="text-muted" style="font-size: 13px;">
+            <span class="status-badge {{ (audit.denetim_tipi or 'Sistem Denetimi')|slug }}">{{ (audit.denetim_tipi or 'Sistem Denetimi')|enum }}</span>
+            &nbsp;·&nbsp;
+            <span class="status-badge {{ audit.durum|slug }}">{{ audit.durum|enum }}</span>
+            {% if audit.ilgili_standart %}&nbsp;·&nbsp;{{ audit.ilgili_standart }}{% endif %}
+        </p>
+    </div>
+    <a href="{{ request.script_root }}/audits/{{ audit.id }}/checklist" class="btn btn-primary">📋 {{ _('Soru Listesi & Kanıt') }}</a>
+</div>
+
+<div class="section-card mb-16">
+    <div class="section-body" style="padding: 20px; display:grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div><strong class="text-muted">Denetim Tipi:</strong> {{ (audit.denetim_tipi or 'Sistem Denetimi')|enum }}</div>
+        <div><strong class="text-muted">Tetkikçi:</strong> {{ audit.tetkik_eden.ad_soyad if audit.tetkik_eden else '-' }}</div>
+        <div><strong class="text-muted">Süreç:</strong> {{ (audit.denetlenen_surec.kod + ' - ' + audit.denetlenen_surec.ad) if audit.denetlenen_surec else '-' }}</div>
+        {% if audit.denetim_tipi == 'Ürün Denetimi' or audit.urun_adi %}
+        <div><strong class="text-muted">Ürün / Parça:</strong> {{ audit.urun_adi or '—' }}</div>
+        {% endif %}
+        <div><strong class="text-muted">Planlanan:</strong> {{ audit.planlanan_tarih.strftime('%d.%m.%Y') if audit.planlanan_tarih else '-' }}</div>
+        <div><strong class="text-muted">Gerçekleşen:</strong> {{ audit.gerceklesen_tarih.strftime('%d.%m.%Y') if audit.gerceklesen_tarih else '-' }}</div>
+        <div style="grid-column: span 2;"><strong class="text-muted">Kapsam:</strong><br>{{ audit.kapsam or '—' }}</div>
+        {% if audit.sonuc_ozeti %}<div style="grid-column: span 2;"><strong class="text-muted">Sonuç Özeti:</strong><br>{{ audit.sonuc_ozeti }}</div>{% endif %}
+    </div>
+</div>
+
+{% set _ek = denetim_ek_kanitlari(audit) %}{% if _ek %}
+<!-- 2026: ek kanıt dokümanları -->
+<div class="section-card mb-16">
+    <div class="section-header d-flex align-center justify-between" style="padding: 12px 16px;">
+        <strong>📎 Ek Kanıt Dokümanları ({{ _ek|length }})</strong>
+        <a href="{{ url_for('audit_checklist_run', audit_id=audit.id) }}#ek-kanit" class="btn btn-outline" style="padding:2px 10px;font-size:12px;">Kanıt ekle / yönet</a>
+    </div>
+    <div class="section-body" style="padding: 0;">
+        <table class="data-table"><thead><tr><th>Tür</th><th>Kanıt</th><th>Açıklama</th><th>Soru</th><th>Ekleyen</th></tr></thead><tbody>
+        {% for e in _ek %}<tr><td>{{ e.k.kanit_tipi or 'Diğer' }}</td>
+          <td>{% if e.k.dosya_yolu %}<a href="{{ url_for('audit_ek_kanit_dosya', kanit_id=e.k.id) }}" target="_blank">{{ e.k.dosya_adi }}</a>{% endif %}{% if e.dokuman %}🔗 <a href="{{ url_for('document_detail', doc_id=e.dokuman.id) }}">{{ e.dokuman.dokuman_no }}</a> {{ e.dokuman.baslik }}{% endif %}</td>
+          <td>{{ e.k.aciklama or '' }}</td><td>{{ (e.soru.soru_no or e.soru.sira) if e.soru else '—' }}</td>
+          <td style="font-size:12px;">{{ e.yukleyen }} · {{ e.k.olusturma_tarihi.strftime('%d.%m.%Y') if e.k.olusturma_tarihi else '' }}</td></tr>{% endfor %}
+        </tbody></table>
+    </div>
+</div>
+{% endif %}
+
+<!-- Bulgular -->
+<div class="section-card mb-16">
+    <div class="section-header d-flex align-center justify-between" style="padding: 12px 16px;">
+        <strong>Bulgular ({{ audit.findings|length }})</strong>
+    </div>
+    <div class="section-body" style="padding: 0;">
+        {% if audit.findings %}
+        <table class="data-table">
+            <thead><tr><th>Tip</th><th>Açıklama</th><th>Madde</th><th>DÖF</th><th></th></tr></thead>
+            <tbody>
+                {% for f in audit.findings %}
+                <tr>
+                    <td style="font-size:12px;">{{ f.bulgu_tipi|enum }}</td>
+                    <td>{{ f.aciklama }}</td>
+                    <td style="font-size:12px;">{{ f.ilgili_madde or '-' }}</td>
+                    <td>
+                        {% if f.capa %}
+                        <a href="{{ request.script_root }}/capa/{{ f.capa_id }}">{{ f.capa.dof_no }}</a>
+                        {% else %}-{% endif %}
+                    </td>
+                    <td>
+                        {% if is_editor and not f.capa_id %}
+                        <form method="POST" action="{{ request.script_root }}/audits/finding/{{ f.id }}/to-capa" style="display:inline;">
+                            <button type="submit" class="btn btn-sm btn-outline">DÖF'e Dönüştür</button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="text-muted" style="padding: 16px;">Henüz bulgu eklenmemiş.</p>
+        {% endif %}
+    </div>
+</div>
+
+{% if is_editor %}
+<div style="display:grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+    <!-- Bulgu Ekle -->
+    <div class="section-card">
+        <div class="section-header" style="padding: 12px 16px;"><strong>Bulgu Ekle</strong></div>
+        <div class="section-body" style="padding: 16px;">
+            <form method="POST" action="{{ request.script_root }}/audits/{{ audit.id }}/finding">
+                <div class="form-group">
+                    <label class="form-label">Bulgu Tipi</label>
+                    <select name="bulgu_tipi" class="form-control">
+                        {% for t in bulgu_tipleri %}<option value="{{ t }}">{{ t|enum }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Açıklama *</label>
+                    <textarea name="aciklama" class="form-control" rows="2" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">İlgili Madde</label>
+                    <input type="text" name="ilgili_madde" class="form-control" placeholder="ör. IATF 8.5.1">
+                </div>
+                <button type="submit" class="btn btn-primary">Bulgu Ekle</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tetkik Güncelle -->
+    <div class="section-card">
+        <div class="section-header" style="padding: 12px 16px;"><strong>Tetkiki Güncelle</strong></div>
+        <div class="section-body" style="padding: 16px;">
+            <form method="POST" action="{{ request.script_root }}/audits/{{ audit.id }}/update">
+                <div class="form-group">
+                    <label class="form-label">Denetim Tipi</label>
+                    <select name="denetim_tipi" class="form-control" id="updTip" onchange="document.getElementById('updUrun').style.display = this.value === 'Ürün Denetimi' ? '' : 'none'">
+                        {% for t in tipler %}<option value="{{ t }}" {{ 'selected' if (audit.denetim_tipi or 'Sistem Denetimi') == t }}>{{ t|enum }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="form-group" id="updUrun" style="{{ '' if audit.denetim_tipi == 'Ürün Denetimi' else 'display:none' }}">
+                    <label class="form-label">Ürün / Parça</label>
+                    <input type="text" name="urun_adi" class="form-control" value="{{ audit.urun_adi or '' }}">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Durum</label>
+                    <select name="durum" class="form-control">
+                        {% for d in durumlar %}<option value="{{ d }}" {{ 'selected' if audit.durum == d }}>{{ d|enum }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Gerçekleşen Tarih</label>
+                    <input type="date" name="gerceklesen_tarih" class="form-control"
+                           value="{{ audit.gerceklesen_tarih.isoformat() if audit.gerceklesen_tarih else '' }}">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Sonuç Özeti</label>
+                    <textarea name="sonuc_ozeti" class="form-control" rows="2">{{ audit.sonuc_ozeti or '' }}</textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Güncelle</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

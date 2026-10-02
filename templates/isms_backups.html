@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}{{ _('Yedekleme Kanıtı') }}{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><span>{{ _('Yedekleme Kanıtı') }}</span>{% endblock %}
+
+{% set is_editor = session.get('rol') in ['Admin', 'Doküman Kontrol'] %}
+
+{% block content %}
+<div class="mb-24">
+    <h2 style="font-size: 20px; font-weight: 700;">{{ _('Yedekleme Kanıtları') }}</h2>
+    <p class="text-muted" style="font-size: 13px;">{{ _('Yedekleme ve geri yükleme testi kayıtları') }}.</p>
+</div>
+
+<div class="section-card mb-16">
+    {% if kayitlar %}
+    <div class="data-table-wrapper">
+        <table class="data-table">
+            <caption class="sr-only">{{ _('Yedekleme Kanıtı') }}</caption>
+            <thead>
+                <tr>
+                    <th scope="col">{{ _('Tarih') }}</th>
+                    <th scope="col">{{ _('Tip') }}</th>
+                    <th scope="col">{{ _('Konum') }}</th>
+                    <th scope="col">MB</th>
+                    <th scope="col">{{ _('Geri Yükleme Testi') }}</th>
+                    <th scope="col">{{ _('Sorumlu') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in kayitlar %}
+                <tr>
+                    <td style="font-size:12px;">{{ r.yedek_tarihi or '—' }}</td>
+                    <td>{{ r.yedek_tipi }}</td>
+                    <td style="font-size:12px;">{{ r.konum or '—' }}</td>
+                    <td class="text-center">{{ r.boyut_mb if r.boyut_mb is not none else '—' }}</td>
+                    <td>{{ '✅' if r.geri_yukleme_testi_mi else '—' }} {% if r.test_tarihi %}({{ r.test_tarihi }}){% endif %}</td>
+                    <td>{{ r.sorumlu.ad_soyad if r.sorumlu else '—' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}<div class="empty-state"><div class="empty-icon">💾</div><h3>{{ _('Yedek kaydı yok') }}</h3></div>{% endif %}
+</div>
+
+{% if is_editor %}
+<div class="section-card">
+    <div class="section-header"><span class="section-title">➕ {{ _('Yeni Kanıt') }}</span></div>
+    <div class="section-body">
+        <form method="POST" action="{{ request.script_root }}/isms/backups">
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px;">
+                <div class="form-group"><label class="form-label" for="yedek_tarihi">{{ _('Yedek Tarihi') }}</label><input type="datetime-local" name="yedek_tarihi" id="yedek_tarihi" class="form-control"></div>
+                <div class="form-group">
+                    <label class="form-label" for="yedek_tipi">{{ _('Tip') }}</label>
+                    <select name="yedek_tipi" id="yedek_tipi" class="form-control">{% for t in yedek_tipleri %}<option value="{{ t }}">{{ t }}</option>{% endfor %}</select>
+                </div>
+                <div class="form-group"><label class="form-label" for="boyut_mb">MB</label><input type="number" step="any" name="boyut_mb" id="boyut_mb" class="form-control"></div>
+                <div class="form-group" style="grid-column: span 2;"><label class="form-label" for="konum">{{ _('Konum') }}</label><input name="konum" id="konum" class="form-control"></div>
+                <div class="form-group">
+                    <label class="form-label" for="sorumlu_id">{{ _('Sorumlu') }}</label>
+                    <select name="sorumlu_id" id="sorumlu_id" class="form-control">
+                        <option value="">—</option>
+                        {% for u in users %}<option value="{{ u.id }}">{{ u.ad_soyad }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><input type="checkbox" name="geri_yukleme_testi_mi" value="1"> {{ _('Geri yükleme testi yapıldı') }}</label>
+                </div>
+                <div class="form-group"><label class="form-label" for="test_tarihi">{{ _('Test Tarihi') }}</label><input type="date" name="test_tarihi" id="test_tarihi" class="form-control"></div>
+                <div class="form-group" style="grid-column: span 3;"><label class="form-label" for="test_sonucu">{{ _('Test Sonucu') }}</label><textarea name="test_sonucu" id="test_sonucu" class="form-control" rows="2"></textarea></div>
+            </div>
+            <button type="submit" class="btn btn-primary">{{ _('Kaydet') }}</button>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

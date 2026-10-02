@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block title %}{{ e.ekipman_no }} — {{ e.ad }}{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><a href="{{ url_for('iatf_calibration') }}">Kalibrasyon</a><span class="separator">›</span><span>{{ e.ekipman_no }}</span>{% endblock %}
+{% block content %}
+{% set kalan = e.kalan_gun %}
+{% set gs = e.gecerli_sertifika %}
+<style>
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px 18px;font-size:13px;}
+.kv div span{display:block;font-size:11px;color:var(--text-muted);}
+</style>
+<div class="d-flex align-center justify-between mb-16" style="flex-wrap:wrap;gap:12px;">
+  <div>
+    <h2 style="font-size:20px;font-weight:700;">📏 {{ e.ekipman_no }} — {{ e.ad }}</h2>
+    <p class="text-muted" style="font-size:13px;">{{ e.cihaz_turu or '' }}{% if e.tip %} · {{ e.tip }}{% endif %}{% if e.kaynak %} · kaynak: {{ e.kaynak }}{% endif %}</p>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+    <span class="badge" style="font-weight:700;padding:6px 12px;background:{{ '#d1fae5' if e.durum == 'Geçerli' else ('#fef3c7' if e.durum == 'Kalibrasyonda' else '#fee2e2') }};">{{ e.durum }}</span>
+    {% if kalan is not none %}<span style="font-weight:700;color:{{ '#ef4444' if kalan <= 0 else ('#f59e0b' if kalan <= 30 else '#10b981') }};">{{ kalan }} gün</span>{% endif %}
+    {% if gs %}<a class="btn btn-outline" href="{{ url_for('calibration_cert_download', cid=gs.id) }}" target="_blank">📄 Geçerli sertifika</a>{% endif %}
+    <a class="btn btn-outline" href="{{ url_for('iatf_calibration') }}">⬅️ Liste</a>
+  </div>
+</div>
+
+<div class="section-card mb-16"><div class="section-body kv">
+  <div><span>Cihaz kodu (listede)</span>{{ e.cihaz_kodu or '—' }}</div>
+  <div><span>Seri no</span>{{ e.seri_no or '—' }}</div>
+  <div><span>İmalatçı</span>{{ e.imalatci or '—' }}</div>
+  <div><span>Ölçüm tipi</span>{{ e.olcum_tipi or '—' }}</div>
+  <div><span>Kullanım yeri / bölüm</span>{{ e.konum or '—' }}{% if e.kullanici_bolum %} · {{ e.kullanici_bolum }}{% endif %}</div>
+  <div><span>Hassasiyet / ölçüm aralığı / kullanım aralığı</span>{{ e.hassasiyet or '—' }} / {{ e.olcum_araligi or '—' }} / {{ e.kullanim_araligi or '—' }} {{ e.birim or '' }}</div>
+  <div><span>Kalibrasyon periyodu</span>{{ (e.kalibrasyon_araligi_ay ~ ' ay') if e.kalibrasyon_araligi_ay else '—' }}</div>
+  <div><span>Son / sonraki kalibrasyon</span>{{ e.son_kalibrasyon.strftime('%d.%m.%Y') if e.son_kalibrasyon else '—' }} → <strong>{{ e.sonraki_kalibrasyon.strftime('%d.%m.%Y') if e.sonraki_kalibrasyon else '—' }}</strong></div>
+  <div><span>Sertifika no</span>{{ e.sertifika_no or '—' }}</div>
+  <div><span>İzin verilen toplam ölçüm hatası</span>{{ e.izin_verilen_hata or '—' }}</div>
+  <div><span>Kalibrasyon sonucu (sapma)</span>{{ e.kalibrasyon_sapma or '—' }}</div>
+  <div><span>Ara doğrulama periyodu / yöntemi</span>{{ e.dogrulama_periyodu or '—' }} / {{ e.dogrulama_yontemi or '—' }}</div>
+  <div><span>MSA tipi / sonucu</span>{{ e.msa_tipi or '—' }} / {{ e.msa_sonucu or '—' }}</div>
+  <div><span>Karar</span>{{ e.karar or '—' }}</div>
+  <div><span>Özel karakteristik</span>{{ 'Evet' if e.ozel_karakteristik else ('Hayır' if e.ozel_karakteristik is sameas false else '—') }}</div>
+  <div><span>Kullanıma onay veren / sorumlu</span>{{ e.kullanima_onay_veren or '—' }}{% if e.sorumlu %} · {{ e.sorumlu.ad_soyad }}{% endif %}</div>
+  {% if e.ek.get('not') %}<div><span>Not</span>{{ e.ek.get('not') }}</div>{% endif %}
+</div></div>
+
+{% if can_edit %}
+<div class="section-card mb-16" style="border-left:4px solid var(--color-primary);">
+  <div class="section-header"><span class="section-title">📤 Sertifika yükle</span></div>
+  <div class="section-body">
+    <form method="POST" enctype="multipart/form-data">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="sertifika">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">
+        <div class="form-group"><label class="form-label">Sertifika dosyası (PDF / JPG / PNG) *</label><input type="file" name="dosya" accept=".pdf,.jpg,.jpeg,.png" required class="form-control"></div>
+        <div class="form-group"><label class="form-label">Sertifika no</label><input name="sertifika_no" class="form-control" placeholder="{{ e.sertifika_no or 'Örn: Egemet-0005K-1225-14869' }}"></div>
+        <div class="form-group"><label class="form-label">Kalibrasyon tarihi</label><input type="date" name="kalibrasyon_tarihi" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Sonraki kalibrasyon</label><input type="date" name="sonraki_kalibrasyon" class="form-control">
+          <div class="text-muted" style="font-size:11px;">Boşsa periyottan hesaplanır ({{ e.kalibrasyon_araligi_ay or '—' }} ay).</div></div>
+        <div class="form-group"><label class="form-label">Kalibrasyon kuruluşu</label><input name="kurum" class="form-control" placeholder="Örn: Egemet, Bilginoğlu"></div>
+        <div class="form-group"><label class="form-label">Sonuç</label><select name="sonuc" class="form-control"><option>Uygun</option><option>Uygun Değil</option></select></div>
+        <div class="form-group"><label class="form-label">Sapma</label><input name="sapma" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Açıklama</label><input name="aciklama" class="form-control"></div>
+      </div>
+      <label style="font-size:13px;"><input type="checkbox" name="kaydi_guncelle" value="1" checked> Cihaz kaydını güncelle (tarihler, sertifika no, sapma; sonuç "Uygun Değil" ise durum "Kullanım Dışı")</label>
+      <div style="margin-top:10px;"><button class="btn btn-primary" type="submit">Sertifikayı yükle</button>
+        <span class="text-muted" style="font-size:12px;">Yeni sertifika geçerli olur, öncekiler arşivde kalır.</span></div>
+    </form>
+  </div>
+</div>
+{% endif %}
+
+<div class="section-card mb-16">
+  <div class="section-header"><span class="section-title">📚 Sertifika geçmişi ({{ e.sertifikalar|length }})</span></div>
+  <div class="section-body" style="padding:0;">
+  {% if e.sertifikalar %}
+  <table class="data-table">
+    <thead><tr><th>Durum</th><th>Sertifika no</th><th>Kalibrasyon</th><th>Sonraki</th><th>Kuruluş</th><th>Sonuç / sapma</th><th>Dosya</th><th>Yükleyen</th>{% if can_edit %}<th></th>{% endif %}</tr></thead>
+    <tbody>
+    {% for c in e.sertifikalar %}
+    <tr {% if not c.gecerli %}style="opacity:.6"{% endif %}>
+      <td>{% if c.gecerli %}<span class="status-badge onayli">Geçerli</span>{% else %}<span class="status-badge eskimis">Arşiv</span>{% endif %}</td>
+      <td>{{ c.sertifika_no or '—' }}</td>
+      <td>{{ c.kalibrasyon_tarihi.strftime('%d.%m.%Y') if c.kalibrasyon_tarihi else '—' }}</td>
+      <td>{{ c.sonraki_kalibrasyon.strftime('%d.%m.%Y') if c.sonraki_kalibrasyon else '—' }}</td>
+      <td>{{ c.kurum or '—' }}</td>
+      <td>{{ c.sonuc or '—' }}{% if c.sapma %} · {{ c.sapma }}{% endif %}</td>
+      <td style="font-size:12px;"><a href="{{ url_for('calibration_cert_download', cid=c.id) }}" target="_blank">📄 {{ c.dosya_adi }}</a>
+        · <a href="{{ url_for('calibration_cert_download', cid=c.id, indir=1) }}">indir</a>
+        {% if c.aciklama %}<div class="text-muted">{{ c.aciklama.split(' | ')[0] }}</div>{% endif %}</td>
+      <td style="font-size:12px;">{{ c.yukleyen.ad_soyad if c.yukleyen else '—' }}<div class="text-muted">{{ c.olusturma_tarihi.strftime('%d.%m.%Y %H:%M') if c.olusturma_tarihi else '' }}</div></td>
+      {% if can_edit %}<td><form method="POST" style="display:inline;"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="action" value="sertifika_durum"><input type="hidden" name="cid" value="{{ c.id }}"><input type="hidden" name="gecerli" value="{{ '0' if c.gecerli else '1' }}">
+        <button class="btn btn-outline" style="padding:2px 8px;font-size:11px;" type="submit">{{ 'Arşive al' if c.gecerli else 'Geçerli yap' }}</button></form></td>{% endif %}
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<p class="text-muted" style="padding:14px;">Bu cihaz için yüklenmiş sertifika yok.</p>{% endif %}
+  </div>
+</div>
+
+{% if can_edit %}
+<details class="section-card">
+  <summary class="section-header" style="cursor:pointer;"><span class="section-title">✏️ Cihaz bilgilerini düzenle</span></summary>
+  <div class="section-body">
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="duzenle">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">
+        {% for alan, et in [('ad','Cihaz adı'),('tip','Tanım'),('konum','Kullanım yeri'),('kullanici_bolum','Kullanıcı bölüm'),('seri_no','Seri no'),('imalatci','İmalatçı'),
+            ('hassasiyet','Hassasiyet'),('olcum_araligi','Ölçüm aralığı'),('kullanim_araligi','Kullanım aralığı'),('birim','Birim'),('sertifika_no','Sertifika no'),
+            ('izin_verilen_hata','İzin verilen toplam hata'),('kalibrasyon_sapma','Sapma'),('dogrulama_periyodu','Ara doğrulama periyodu'),('dogrulama_yontemi','Doğrulama yöntemi'),
+            ('msa_tipi','MSA tipi'),('msa_sonucu','MSA sonucu'),('karar','Karar')] %}
+        <div class="form-group"><label class="form-label">{{ et }}</label><input name="{{ alan }}" class="form-control" value="{{ e[alan] or '' }}"></div>
+        {% endfor %}
+        <div class="form-group"><label class="form-label">Kalibrasyon periyodu (ay)</label><input type="number" min="1" name="kalibrasyon_araligi_ay" class="form-control" value="{{ e.kalibrasyon_araligi_ay or '' }}"></div>
+        <div class="form-group"><label class="form-label">Son kalibrasyon</label><input type="date" name="son_kalibrasyon" class="form-control" value="{{ e.son_kalibrasyon or '' }}"></div>
+        <div class="form-group"><label class="form-label">Sonraki kalibrasyon</label><input type="date" name="sonraki_kalibrasyon" class="form-control" value="{{ e.sonraki_kalibrasyon or '' }}"></div>
+        <div class="form-group"><label class="form-label">Durum</label><select name="durum" class="form-control">{% for d in durumlar %}<option {% if d == e.durum %}selected{% endif %}>{{ d }}</option>{% endfor %}</select></div>
+        <div class="form-group"><label class="form-label">Sorumlu</label><select name="sorumlu_id" class="form-control"><option value="">—</option>{% for u in users %}<option value="{{ u.id }}" {% if u.id == e.sorumlu_id %}selected{% endif %}>{{ u.ad_soyad }}</option>{% endfor %}</select></div>
+      </div>
+      <button class="btn btn-primary" type="submit">Kaydet</button>
+    </form>
+  </div>
+</details>
+{% endif %}
+{% endblock %}

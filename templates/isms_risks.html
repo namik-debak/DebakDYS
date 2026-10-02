@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% block title %}ISMS Risk Değerlendirmesi{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><span>ISMS Riskleri</span>{% endblock %}
+
+{% block content %}
+<div class="d-flex align-center justify-between mb-24" style="flex-wrap:wrap;gap:12px;">
+  <div>
+    <h2 style="font-size:20px;font-weight:700;">ISMS Risk Değerlendirmesi</h2>
+    <p class="text-muted" style="font-size:13px;">ISO/IEC 27001 Bilgi Güvenliği Risk Sicili ve Tedavi Planları. Toplam <strong>{{ kayitlar|length }}</strong> kayıt.</p>
+  </div>
+</div>
+
+<!-- Risk Listesi Tablosu -->
+<div class="section-card mb-24">
+{% if kayitlar %}
+<div class="data-table-wrapper">
+<table class="data-table">
+<thead>
+    <tr>
+        <th>No</th>
+        <th>İlgili Varlık</th>
+        <th>Tehdit</th>
+        <th>Zafiyet</th>
+        <th style="text-align:center;">Olasılık (O)</th>
+        <th style="text-align:center;">Etki (E)</th>
+        <th style="text-align:center;">Risk Skoru</th>
+        <th>Tedavi Seçeneği</th>
+        <th>İlgili SoA Kontrolü</th>
+        <th>Sorumlu</th>
+    </tr>
+</thead>
+<tbody>
+{% for r in kayitlar %}
+<tr>
+    <td><code style="color:var(--text-accent); font-weight:700;">{{ r.risk_no or '—' }}</code></td>
+    <td><strong>{{ r.asset.ad if r.asset else '—' }}</strong></td>
+    <td style="font-size:13px;">{{ r.tehdit }}</td>
+    <td style="font-size:12px; color:var(--text-muted);">{{ r.zafiyet or '—' }}</td>
+    <td class="text-center" style="font-family:monospace;">{{ r.olasilik or 1 }}</td>
+    <td class="text-center" style="font-family:monospace;">{{ r.etki or 1 }}</td>
+    <td class="text-center" style="font-family:monospace; font-weight:700;">
+        {% set skor = (r.olasilik or 1) * (r.etki or 1) %}
+        <span class="badge" style="font-weight:700; background:{{ '#fee2e2' if skor >= 12 else ('#fef3c7' if skor >= 6 else '#d1fae5') }}; color:{{ '#991b1b' if skor >= 12 else ('#92400e' if skor >= 6 else '#065f46') }};">
+            {{ skor }}
+        </span>
+    </td>
+    <td>{{ r.tedavi or '—' }}</td>
+    <td><code>{{ r.soa_kontrol or '—' }}</code></td>
+    <td><span style="font-size:12px;">{{ r.sorumlu.ad_soyad if r.sorumlu else '—' }}</span></td>
+</tr>
+{% endfor %}
+</tbody></table>
+</div>
+{% else %}
+<div class="empty-state"><div class="empty-icon">⚠️</div><h3>Kayıt yok</h3></div>
+{% endif %}
+</div>
+
+<!-- Yeni Risk Ekleme Formu -->
+{% if can_edit %}
+<div class="section-card">
+    <div class="section-header" style="border-bottom:1px solid var(--border); padding:12px 20px;">
+        <span class="section-title">➕ Yeni Risk Analizi Ekle</span>
+    </div>
+    <div class="section-body" style="padding:20px;">
+        <form method="POST" action="{{ url_for('isms_risks') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:16px; margin-bottom:16px;">
+                <div class="form-group">
+                    <label class="form-label">Risk No</label>
+                    <input type="text" name="risk_no" class="form-control" placeholder="Örn: RISK-102">
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label">İlişkili Bilgi Varlığı *</label>
+                    <select name="asset_id" class="form-control" required>
+                        <option value="">— Varlık Seçiniz —</option>
+                        {% for a in assets %}
+                        <option value="{{ a.id }}">{{ a.varlik_no or '' }} {{ a.ad }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Risk Sorumlusu</label>
+                    <select name="sorumlu_id" class="form-control">
+                        <option value="">— Seçiniz —</option>
+                        {% for u in users %}
+                        <option value="{{ u.id }}">{{ u.ad_soyad }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label">Tehdit Tanımı *</label>
+                    <input type="text" name="tehdit" class="form-control" required placeholder="Örn: SQL Injection saldırısı veya fiziksel hasar">
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label">Mevcut Zafiyetler</label>
+                    <input type="text" name="zafiyet" class="form-control" placeholder="Örn: Giriş doğrulama eksikliği, yedeksiz altyapı">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Olasılık (1-5) *</label>
+                    <select name="olasilik" class="form-control" required>
+                        <option value="1">1 - Çok Düşük</option>
+                        <option value="2">2 - Düşük</option>
+                        <option value="3" selected>3 - Orta</option>
+                        <option value="4">4 - Yüksek</option>
+                        <option value="5">5 - Çok Yüksek</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Etki (1-5) *</label>
+                    <select name="etki" class="form-control" required>
+                        <option value="1">1 - Çok Düşük</option>
+                        <option value="2">2 - Düşük</option>
+                        <option value="3" selected>3 - Orta</option>
+                        <option value="4">4 - Yüksek</option>
+                        <option value="5">5 - Çok Yüksek</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Risk Tedavi Seçeneği *</label>
+                    <select name="tedavi" class="form-control" required>
+                        {% for t in tedavi_secenekleri %}
+                        <option value="{{ t }}" {{ 'selected' if t=='Azaltma' }}>{{ t }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">İlgili SoA Kontrolü (Ek A)</label>
+                    <input type="text" name="soa_kontrol" class="form-control" placeholder="Örn: A.8.20, A.8.24">
+                </div>
+                
+                <div class="form-group" style="grid-column: span 4;">
+                    <label class="form-label">Tedavi Planı (Risk Aksiyonları)</label>
+                    <textarea name="tedavi_plani" class="form-control" rows="2" placeholder="Riski azaltmak için alınacak önlemleri ve uygulanacak teknik kontrolleri açıklayınız..."></textarea>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" style="padding:10px 24px;">💾 Riski Kaydet</button>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

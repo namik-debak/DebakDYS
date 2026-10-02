@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+{% block title %}Uyum Matrisi (Entegre Standartlar){% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><span>Uyum Matrisi</span>{% endblock %}
+
+{% block content %}
+<!-- Uyum Matrisi Başlık ve Açıklama -->
+<div class="d-flex align-center justify-between mb-24" style="flex-wrap:wrap;gap:12px;">
+  <div>
+    <h2 style="font-size:20px;font-weight:700;">Uyum Matrisi</h2>
+    <p class="text-muted" style="font-size:13px;">ISO 9001, IATF 16949, ISO 14001, ISO 45001, ISO 27001 Standart Maddeleri Uyum Sicili. Toplam <strong>{{ kayitlar|length }}</strong> gereklilik.</p>
+  </div>
+</div>
+
+<!-- Dinamik Uyum Yüzdesi ve İlerleme Çubuğu -->
+{% set total_app = namespace(val=0) %}
+{% set total_comp = namespace(val=0) %}
+{% set total_part = namespace(val=0) %}
+
+{% for r in kayitlar %}
+    {% if not r.status or r.status.uygulanabilirlik != 'Uygulanamaz' %}
+        {% set total_app.val = total_app.val + 1 %}
+        {% if r.status %}
+            {% if r.status.uygulama_durumu == 'Uygulandı' %}
+                {% set total_comp.val = total_comp.val + 1 %}
+            {% elif r.status.uygulama_durumu == 'Kısmen Uygulandı' %}
+                {% set total_part.val = total_part.val + 1 %}
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% endfor %}
+
+{% set compliance_pct = 0 %}
+{% if total_app.val > 0 %}
+    {% set compliance_pct = ((total_comp.val + total_part.val * 0.5) / total_app.val * 100)|round|int %}
+{% endif %}
+
+<div class="section-card mb-24" style="background:var(--bg-secondary); border:1px solid var(--border); padding:20px; border-radius:8px;">
+    <div style="display:flex; justify-content:between; align-items:center; margin-bottom:12px;">
+        <span style="font-size:14px; font-weight:700; color:var(--text-primary);">📊 Genel Uyum Skoru (Standartlar Ortalama)</span>
+        <span style="font-size:24px; font-weight:800; color:{{ '#ef4444' if compliance_pct < 50 else ('#f59e0b' if compliance_pct < 80 else '#10b981') }}">{{ compliance_pct }}%</span>
+    </div>
+    <div class="progress-bar-wrapper" style="width:100%; height:12px; background:var(--border); border-radius:6px; overflow:hidden;">
+        <div class="progress-bar-fill" style="width:{{ compliance_pct }}%; height:100%; background:{{ '#ef4444' if compliance_pct < 50 else ('#f59e0b' if compliance_pct < 80 else '#10b981') }}; transition:width 0.5s ease-in-out;"></div>
+    </div>
+    <div style="display:flex; gap:24px; margin-top:16px; font-size:12px;" class="text-muted">
+        <div>🔍 Toplam Uygulanabilir: <strong>{{ total_app.val }}</strong></div>
+        <div>✅ Tam Uyumlu (Uygulandı): <strong>{{ total_comp.val }}</strong></div>
+        <div>🟡 Kısmen Uyumlu: <strong>{{ total_part.val }}</strong></div>
+        <div>❌ Uyumsuz / Uygulanmadı: <strong>{{ total_app.val - total_comp.val - total_part.val }}</strong></div>
+    </div>
+</div>
+
+<!-- Standart Maddeleri Tablosu -->
+<div class="section-card">
+{% if kayitlar %}
+<div class="data-table-wrapper">
+<table class="data-table">
+<thead>
+    <tr>
+        <th>Madde</th>
+        <th>Standart Edition</th>
+        <th>Gereklilik Başlığı</th>
+        <th>Uygulanabilirlik</th>
+        <th>Uygulama Durumu</th>
+        <th>Etkinlik</th>
+        <th>Sorumlu</th>
+        <th>Son Doğrulama</th>
+        {% if can_edit %}
+        <th style="text-align:center;">İşlem</th>
+        {% endif %}
+    </tr>
+</thead>
+<tbody>
+{% for r in kayitlar %}
+<tr>
+    <td><code style="color:var(--text-accent); font-weight:700;">{{ r.madde_no }}</code></td>
+    <td style="font-size:11px; white-space:nowrap;">{{ (r.edition.standart ~ ' ' ~ r.edition.surum) if r.edition else '—' }}</td>
+    <td style="font-size:13px; font-weight:600; max-width:280px;">{{ r.baslik }}</td>
+    <td>
+        <span class="badge" style="font-size:10px; font-weight:700; background:{{ '#fee2e2' if r.status and r.status.uygulanabilirlik=='Uygulanamaz' else '#d1fae5' }}; color:{{ '#991b1b' if r.status and r.status.uygulanabilirlik=='Uygulanamaz' else '#065f46' }};">
+            {{ r.status.uygulanabilirlik if r.status else 'Uygulanabilir' }}
+        </span>
+    </td>
+    <td>
+        {% if r.status %}
+        <span class='status-badge {{ r.status.uygulama_durumu|slug }}'>{{ r.status.uygulama_durumu }}</span>
+        {% else %}
+        <span class="status-badge uygulanmadi">Uygulanmadı</span>
+        {% endif %}
+    </td>
+    <td>
+        {% if r.status %}
+        <span class="badge" style="font-size:10px; font-weight:700; background:{{ '#d1fae5' if r.status.etkinlik=='Etkin' else ('#fee2e2' if r.status.etkinlik=='Etkin Değil' else '#f3f4f6') }}; color:{{ '#065f46' if r.status.etkinlik=='Etkin' else ('#991b1b' if r.status.etkinlik=='Etkin Değil' else '#4b5563') }};">
+            {{ r.status.etkinlik }}
+        </span>
+        {% else %}
+        <span class="text-muted" style="font-size:11px;">—</span>
+        {% endif %}
+    </td>
+    <td><span style="font-size:12px;">{{ r.status.sorumlu.ad_soyad if r.status and r.status.sorumlu else '—' }}</span></td>
+    <td style="font-size:12px; font-family:monospace;">{{ r.status.son_dogrulama_tarihi.strftime('%Y-%m-%d') if r.status and r.status.son_dogrulama_tarihi else '—' }}</td>
+    {% if can_edit %}
+    <td class="text-center">
+        <button type="button" class="btn btn-outline" style="padding:2px 8px; font-size:11px;"
+            onclick="openRequirementModal({{ r.id }}, '{{ r.madde_no }}', '{{ r.status.uygulanabilirlik if r.status else 'Uygulanabilir' }}', '{{ r.status.uygulama_durumu if r.status else 'Uygulanmadı' }}', '{{ r.status.etkinlik if r.status else 'Değerlendirilmedi' }}', '{{ r.status.sorumlu_id or '' }}', '{{ (r.status.notlar or "")|replace("'", "\\'")|replace("\n", " ") }}', '{{ r.status.son_dogrulama_tarihi or "" }}', '{{ (r.status.gerekce or "")|replace("'", "\\'")|replace("\n", " ") }}')">
+            ✏️ Durum
+        </button>
+    </td>
+    {% endif %}
+</tr>
+{% endfor %}
+</tbody></table>
+</div>
+{% else %}
+<div class="empty-state"><div class="empty-icon">📋</div><h3>Kayıt yok</h3></div>
+{% endif %}
+</div>
+
+<!-- Gereklilik Güncelleme Modalı -->
+<div id="reqModal" class="modal-backdrop" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+    <div class="modal-content" style="background:var(--bg-primary); width:90%; max-width:500px; border-radius:8px; border:1px solid var(--border); box-shadow: 0 4px 20px rgba(0,0,0,0.15); overflow:hidden;">
+        <div style="padding:16px 20px; border-bottom:1px solid var(--border); background:var(--bg-secondary); display:flex; justify-content:between; align-items:center;">
+            <h3 style="font-size:15px; font-weight:700; margin:0;" id="reqModalTitle">✏️ Uyum Durumu Güncelle</h3>
+            <button type="button" class="btn btn-outline" style="padding:2px 8px; font-size:11px;" onclick="closeRequirementModal()">✕</button>
+        </div>
+        <form id="reqForm" method="POST" action="">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div style="padding:20px; display:flex; flex-direction:column; gap:16px;">
+                <div class="form-group">
+                    <label class="form-label">Uygulanabilirlik *</label>
+                    <select name="uygulanabilir_mi" id="req_uygulanabilir" class="form-control" onchange="toggleReqGerekce(this.value)">
+                        {% for opt in uygulanabilirlik_secenekleri %}
+                        <option value="{{ opt }}">{{ opt }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group" id="reqGerekceGroup" style="display:none;">
+                    <label class="form-label">Uygulanmama Gerekçesi</label>
+                    <textarea name="gerekce" id="req_gerekce" class="form-control" rows="2" placeholder="Muafiyet gerekçesini açıklayınız..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Uygulama Durumu *</label>
+                    <select name="uygulama_durumu" id="req_uygulama" class="form-control" required>
+                        {% for opt in uygulama_durumlari %}
+                        <option value="{{ opt }}">{{ opt }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Etkinlik Durumu *</label>
+                    <select name="etkinlik" id="req_etkinlik" class="form-control" required>
+                        {% for opt in etkinlik_durumlari %}
+                        <option value="{{ opt }}">{{ opt }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Sorumlu / Takipçi</label>
+                    <select name="sorumlu_id" id="req_sorumlu" class="form-control">
+                        <option value="">— Seçiniz —</option>
+                        {% for u in users %}
+                        <option value="{{ u.id }}">{{ u.ad_soyad }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Son Doğrulama / Tetkik Tarihi</label>
+                    <input type="date" name="son_dogrulama_tarihi" id="req_tarih" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Uyum Kanıtı Açıklaması / Notlar</label>
+                    <textarea name="notlar" id="req_notlar" class="form-control" rows="3" placeholder="Uygulama kanıtı, ilgili prosedür referansı vb."></textarea>
+                </div>
+            </div>
+            <div style="padding:16px 20px; border-top:1px solid var(--border); background:var(--bg-secondary); text-align:right;">
+                <button type="button" class="btn btn-outline" onclick="closeRequirementModal()">Vazgeç</button>
+                <button type="submit" class="btn btn-primary" style="margin-left:8px;">💾 Değişiklikleri Kaydet</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openRequirementModal(id, maddeNo, uygulanabilir, uygulama, etkinlik, sorumluId, notlar, tarih, gerekce) {
+    document.getElementById('reqModalTitle').textContent = '✏️ Uyum Durumu Güncelle — Madde ' + maddeNo;
+    document.getElementById('reqForm').action = '{{ request.script_root }}/ims/requirements/update/' + id;
+    
+    document.getElementById('req_uygulanabilir').value = uygulanabilir;
+    document.getElementById('req_uygulama').value = uygulama;
+    document.getElementById('req_etkinlik').value = etkinlik;
+    document.getElementById('req_sorumlu').value = sorumluId;
+    document.getElementById('req_notlar').value = notlar;
+    document.getElementById('req_tarih').value = tarih;
+    document.getElementById('req_gerekce').value = gerekce;
+    
+    toggleReqGerekce(uygulanabilir);
+    
+    document.getElementById('reqModal').style.display = 'flex';
+}
+
+function closeRequirementModal() {
+    document.getElementById('reqModal').style.display = 'none';
+}
+
+function toggleReqGerekce(val) {
+    document.getElementById('reqGerekceGroup').style.display = (val == 'Uygulanamaz') ? 'block' : 'none';
+}
+</script>
+{% endblock %}

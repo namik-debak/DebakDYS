@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}Mevzuat & Uygunluk Yükümlülükleri{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><span>Mevzuat & Uygunluk</span>{% endblock %}
+
+{% block content %}
+<div class="d-flex align-center justify-between mb-24" style="flex-wrap:wrap;gap:12px;">
+  <div>
+    <h2 style="font-size:20px;font-weight:700;">Mevzuat & Uygunluk Yükümlülükleri</h2>
+    <p class="text-muted" style="font-size:13px;">ISO 14001, ISO 45001, ISO 27001 Yasal ve Diğer Gereklilikler Listesi. Toplam <strong>{{ kayitlar|length }}</strong> kayıt.</p>
+  </div>
+</div>
+
+<!-- Mevzuat Listesi Tablosu -->
+<div class="section-card mb-24">
+{% if kayitlar %}
+<div class="data-table-wrapper">
+<table class="data-table">
+<thead>
+    <tr>
+        <th>Mevzuat / Yükümlülük Başlığı</th>
+        <th>Tür</th>
+        <th>Referans No</th>
+        <th>Yükümlülük Detayı</th>
+        <th>Sorumlu</th>
+        <th>Son Değerlendirme</th>
+        <th>Sonraki Değerlendirme</th>
+        <th style="text-align:center;">Durum</th>
+    </tr>
+</thead>
+<tbody>
+{% for r in kayitlar %}
+<tr>
+    <td><strong>{{ r.baslik }}</strong></td>
+    <td><span class="badge" style="font-size:10px; font-weight:700; background:var(--bg-secondary); color:var(--text-primary);">{{ r.tur }}</span></td>
+    <td><code>{{ r.referans or '—' }}</code></td>
+    <td style="font-size:12px; max-width:240px;" class="text-muted">{{ r.yukumluluk|truncate(100) if r.yukumluluk else '—' }}</td>
+    <td><span style="font-size:12px;">{{ r.sorumlu.ad_soyad if r.sorumlu else '—' }}</span></td>
+    <td style="font-size:12px; font-family:monospace;">{{ r.son_degerlendirme_tarihi.strftime('%Y-%m-%d') if r.son_degerlendirme_tarihi else '—' }}</td>
+    <td style="font-size:12px; font-family:monospace;">{{ r.sonraki_degerlendirme_tarihi.strftime('%Y-%m-%d') if r.sonraki_degerlendirme_tarihi else '—' }}</td>
+    <td class="text-center">
+        <span class="badge" style="font-size:10px; font-weight:700; background:{{ '#d1fae5' if r.uygunluk_durumu=='Uygun' else ('#fee2e2' if r.uygunluk_durumu=='Uygun Değil' else '#f3f4f6') }}; color:{{ '#065f46' if r.uygunluk_durumu=='Uygun' else ('#991b1b' if r.uygunluk_durumu=='Uygun Değil' else '#4b5563') }};">
+            {{ r.uygunluk_durumu }}
+        </span>
+    </td>
+</tr>
+{% endfor %}
+</tbody></table>
+</div>
+{% else %}
+<div class="empty-state"><div class="empty-icon">📋</div><h3>Kayıt yok</h3></div>
+{% endif %}
+</div>
+
+<!-- Yeni Mevzuat Ekleme Formu -->
+{% if can_edit %}
+<div class="section-card">
+    <div class="section-header" style="border-bottom:1px solid var(--border); padding:12px 20px;">
+        <span class="section-title">➕ Yeni Mevzuat / Yasal Yükümlülük Ekle</span>
+    </div>
+    <div class="section-body" style="padding:20px;">
+        <form method="POST" action="{{ url_for('ims_legal') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:16px; margin-bottom:16px;">
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label">Mevzuat / Yükümlülük Başlığı *</label>
+                    <input type="text" name="baslik" class="form-control" required placeholder="Örn: 6331 Sayılı İş Sağlığı ve Güvenliği Kanunu">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tür / Kategori *</label>
+                    <select name="tur" class="form-control" required>
+                        <option value="Çevre">Çevre</option>
+                        <option value="İSG">İSG</option>
+                        <option value="Bilgi Güvenliği">Bilgi Güvenliği</option>
+                        <option value="Genel" selected>Genel</option>
+                        <option value="Müşteri Özel Şartı">Müşteri Özel Şartı</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Referans Kanun/Yönetmelik No</label>
+                    <input type="text" name="referans" class="form-control" placeholder="Örn: RG 20.06.2012 / 28329">
+                </div>
+                
+                <div class="form-group" style="grid-column: span 4;">
+                    <label class="form-label">Yükümlülük / Madde İcerik Detayı</label>
+                    <textarea name="yukumluluk" class="form-control" rows="3" placeholder="İşletmeyi bağlayan yasal zorunlulukları veya maddeleri buraya yazınız..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Uygunluk Durumu</label>
+                    <select name="uygunluk_durumu" class="form-control">
+                        <option value="Değerlendirilmedi" selected>Değerlendirilmedi</option>
+                        <option value="Uygun">Uygun</option>
+                        <option value="Uygun Değil">Uygun Değil</option>
+                        <option value="Kısmen Uygun">Kısmen Uygun</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Sorumlu Kişi</label>
+                    <select name="sorumlu_id" class="form-control">
+                        <option value="">— Seçiniz —</option>
+                        {% for u in users %}
+                        <option value="{{ u.id }}">{{ u.ad_soyad }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Son Değerlendirme Tarihi</label>
+                    <input type="date" name="son_degerlendirme_tarihi" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Sonraki Değerlendirme Tarihi</label>
+                    <input type="date" name="sonraki_degerlendirme_tarihi" class="form-control">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" style="padding:10px 24px;">💾 Yükümlülüğü Kaydet</button>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

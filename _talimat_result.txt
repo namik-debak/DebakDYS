@@ -1,0 +1,89 @@
+﻿Common: 487 | Portal only: 12 | Excel only: 0
+Title mismatches: 7
+  D03-T02
+    Portal: 16 Bak²m Program² Kullanma Talimat²
+    Excel :  Bak²m Program² Kullanma Talimat²
+  D03-T03
+    Portal: 44 Kal²p Periyodik Bak²m S³releri Belirleme Talimat²
+    Excel : Kal²p Periyodik Bak²m S³releri Belirleme Talimat²
+  M02-T03
+    Portal: T2 T01 PFMEA Haz²rlama Talimat²
+    Excel : PFMEA Haz²rlama Talimat²
+  M02-T04
+    Portal: T2 T02 Kontrol Plan² Haz²rlama Talimat²
+    Excel : Kontrol Plan² Haz²rlama Talimat²
+  M03-T14
+    Portal: T3.1 T04 Fifo talimat²
+    Excel :  Fifo talimat²
+  M03-T15
+    Portal: T3.1 T05 ¦zlenebilirlik Ìemas²
+    Excel :  ¦zlenebilirlik Ìemas²
+  M04-T07
+    Portal: Arburg Enj. Mak. Operasyon Talimat² rev
+    Excel : Arburg Enj. Mak. Operasyon Talimat²
+
+Portal only:
+  D01.2-T17 -> G▄VENLIGI EL KITABI
+  D03-TL-001 -> Koruyucu Bak²m Talimat²
+  D06-T13 -> Ízel Karakteristik Tablosu
+  D06-TL-001 -> Giri■ Kalite Kontrol Talimat²
+  M01-T01 -> Customer Satisfaction Questionaire
+  M01-T02 -> M³■teri Gizlilik S÷zle■mesi
+  M01-T03 -> M³■teri memnuniyet anketi
+  M01-T05 -> Sales Agreement
+  M02-T02 -> T180 Urun Guvenligi Talimati
+  M03-T12 -> FIFO ya g÷re hammadde kullan²m talimat²
+  M04-TL-001 -> Proses Kontrol Talimat²
+  Y03-TL- -> deneme talimat²
+
+--- SAMPLE: D01-T03 / El Y²kama Talimat² ---
+Excel: kod=D01 T03 rev=1 tarih=14.02.2023
+File: D:\UYGULAMA PROJELER\debak dijital\dys\uploads\documents\287\rev0\D01 T03 El Y²kama Talimat².docx
+
+BEFORE:
+{
+  "path": "D:\\UYGULAMA PROJELER\\debak dijital\\dys\\uploads\\documents\\287\\rev0\\D01 T03 El Y²kama Talimat².docx",
+  "sections": 1,
+  "section_0": {
+    "header": [],
+    "footer": [
+      "D2 T44(1)_14.02.2023"
+    ],
+    "first_page_header": [],
+    "first_page_footer": []
+  },
+  "body_sample": [
+    "EL YIKAMA TAL¦MATI",
+    "Ellerinizi a■a­²daki durumlarda s²k y²kay²n²z.",
+    "Íks³r³k ve hap■²r²k sonras²",
+    "Yemek haz²rlamadan ÷nce ve haz²rlad²ktan sonra",
+    "Yemek yemeden ÷nce",
+    "Tuvalete girerken ve ²karken",
+    "Eller g÷r³n³r ■ekilde kirlendi­inde"
+  ]
+}
+
+UPDATED footer line: Dok³man No: D01 T03    Rev: 1    Tarih: 14.02.2023
+
+AFTER:
+{
+  "path": "D:\\UYGULAMA PROJELER\\debak dijital\\dys\\uploads\\documents\\287\\rev0\\D01 T03 El Y²kama Talimat².docx",
+  "sections": 1,
+  "section_0": {
+    "header": [],
+    "footer": [
+      "Dok³man No: D01 T03    Rev: 1    Tarih: 14.02.2023"
+    ],
+    "first_page_header": [],
+    "first_page_footer": []
+  },
+  "body_sample": [
+    "EL YIKAMA TAL¦MATI",
+    "Ellerinizi a■a­²daki durumlarda s²k y²kay²n²z.",
+    "Íks³r³k ve hap■²r²k sonras²",
+    "Yemek haz²rlamadan ÷nce ve haz²rlad²ktan sonra",
+    "Yemek yemeden ÷nce",
+    "Tuvalete girerken ve ²karken",
+    "Eller g÷r³n³r ■ekilde kirlendi­inde"
+  ]
+}

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}İşlerim{% endblock %}
+
+{% block breadcrumb %}
+<span class="separator">›</span>
+<span>İşlerim</span>
+{% endblock %}
+
+{% block content %}
+<style>
+.is-bolum .section-header .sayi{display:inline-block;min-width:24px;text-align:center;border-radius:12px;padding:1px 8px;font-size:12px;font-weight:700;background:var(--bg-secondary);margin-left:6px;}
+.is-bolum .section-header .sayi.var{background:var(--color-primary);color:#fff;}
+.is-satir{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border-color);}
+.is-satir:last-child{border-bottom:none;}
+.is-satir .ana{flex:1;min-width:0;}
+.is-satir .ana a{font-weight:600;}
+.is-satir .alt{font-size:12px;color:var(--text-secondary);}
+.is-satir .tarih{font-size:12px;white-space:nowrap;color:var(--text-secondary);}
+.is-satir .tarih.gec{color:var(--color-danger, #dc2626);font-weight:700;}
+.is-bos{color:var(--text-secondary);font-size:13px;padding:4px 0;}
+.is-ozet{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.is-ozet a{border:1px solid var(--border-color);border-radius:16px;padding:4px 12px;font-size:13px;text-decoration:none;color:var(--text-primary);}
+.is-ozet a.var{border-color:var(--color-primary);}
+</style>
+<div class="d-flex align-center justify-between mb-24" style="flex-wrap:wrap;gap:12px;">
+    <div>
+        <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 4px;">📥 İşlerim</h2>
+        <p class="text-muted" style="font-size: 13px;">Size ait bekleyen tüm işler tek listede ({{ bugun.strftime('%d.%m.%Y') }}) · toplam <strong>{{ toplam }}</strong>{% if geciken %} · <span style="color:var(--color-danger, #dc2626);font-weight:700;">{{ geciken }} gecikmiş / reddedilen</span>{% endif %}</p>
+    </div>
+    <a href="{{ request.script_root }}/" class="btn btn-secondary">← Panel</a>
+</div>
+
+<div class="is-ozet">
+    {% for b in bolumler %}<a href="#is-{{ b.anahtar }}" class="{{ 'var' if b.satirlar else '' }}">{{ b.ikon }} {{ b.baslik }} · <strong>{{ b.satirlar|length }}</strong></a>{% endfor %}
+</div>
+
+{% for b in bolumler %}
+<div class="section-card is-bolum" id="is-{{ b.anahtar }}">
+    <div class="section-header">
+        <span class="section-title">{{ b.ikon }} {{ b.baslik }}<span class="sayi {{ 'var' if b.satirlar else '' }}">{{ b.satirlar|length }}</span></span>
+        <a href="{{ request.script_root }}{{ b.tumu }}" class="btn btn-sm btn-outline">Tümü →</a>
+    </div>
+    <div class="section-body">
+        <p class="text-muted" style="font-size:12px;margin-bottom:6px;">{{ b.aciklama }}</p>
+        {% for s in b.satirlar %}
+        <div class="is-satir">
+            <div class="ana"><a href="{{ request.script_root }}{{ s.link }}">{{ s.metin }}</a>{% if s.alt %}<div class="alt">{{ s.alt }}</div>{% endif %}</div>
+            {% if s.tarih %}<span class="tarih {{ 'gec' if s.gecikme else '' }}">{{ s.tarih.strftime('%d.%m.%Y') }}{% if s.gecikme %} ⚠{% endif %}</span>{% endif %}
+            {% if s.eylem %}
+            <form method="POST" action="{{ request.script_root }}{{ s.eylem.url }}" style="display:inline;">
+                <input type="hidden" name="next" value="/islerim">{% for ad, deger in (s.eylem.alan or {}).items() %}<input type="hidden" name="{{ ad }}" value="{{ deger }}">{% endfor %}
+                <button type="submit" class="btn btn-sm btn-success">✓ {{ s.eylem.etiket }}</button>
+            </form>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="is-bos">Bekleyen iş yok.</div>
+        {% endfor %}
+    </div>
+</div>
+{% endfor %}
+{% endblock %}

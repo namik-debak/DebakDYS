@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Standart Uyumluluk Matrisi{% endblock %}
+
+{% block breadcrumb %}
+<span class="separator">›</span>
+<a href="{{ request.script_root }}/reports">Raporlar</a>
+<span class="separator">›</span>
+<span>Standart Uyumluluk Matrisi</span>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex align-center justify-between mb-24">
+    <div>
+        <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 4px;">🛡️ Standart Uyumluluk Matrisi</h2>
+        <p class="text-muted" style="font-size: 13px;">IATF 16949, ISO 14001, ISO 45001 ve ISO 27001 maddelerinin doküman kapsamı</p>
+    </div>
+    <span class="d-flex gap-8">
+        <a href="{{ request.script_root }}/reports/compliance/export.xlsx" class="btn btn-outline">⬇ Excel</a>
+        <a href="{{ request.script_root }}/reports/compliance/export.pdf" class="btn btn-outline">⬇ PDF</a>
+        <a href="{{ request.script_root }}/reports" class="btn btn-secondary">← Raporlar</a>
+    </span>
+</div>
+
+<!-- Kapsam Özeti -->
+<div class="stats-grid mb-24">
+    {% for standart, veri in matris.items() %}
+    <div class="stat-card">
+        <div class="stat-icon {{ 'blue' if 'IATF' in standart else 'green' if '14001' in standart else 'yellow' if '45001' in standart else 'red' }}">🛡️</div>
+        <div class="stat-value">%{{ veri.oran }}</div>
+        <div class="stat-label">{{ standart }} <span class="text-muted">({{ veri.kapsanan }}/{{ veri.toplam }})</span></div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Madde Bazlı Kapsam -->
+{% for standart, veri in matris.items() %}
+<div class="section-card mb-24">
+    <div class="section-header">
+        <span class="section-title">{{ standart }} — Madde Kapsamı</span>
+        <span class="text-muted" style="font-size: 13px;">Kapsanan {{ veri.kapsanan }} / {{ veri.toplam }} madde</span>
+    </div>
+    <div class="section-body">
+        <div class="data-table-wrapper">
+            <table class="matrix-table">
+                <thead>
+                    <tr>
+                        <th style="width: 90px;">Madde</th>
+                        <th>Açıklama</th>
+                        <th style="width: 120px;" class="text-center">Doküman</th>
+                        <th style="width: 120px;" class="text-center">Durum</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for satir in veri.satirlar %}
+                    <tr>
+                        <td><code style="color: var(--text-accent);">{{ satir.no }}</code></td>
+                        <td>{{ satir.ad }}</td>
+                        <td class="text-center"><strong>{{ satir.adet }}</strong></td>
+                        <td class="text-center">
+                            {% if satir.kapsandi %}
+                            <span class="matrix-check">✓ Kapsandı</span>
+                            {% else %}
+                            <span class="matrix-cross">— Eksik</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- Süreç × Standart -->
+<div class="section-card">
+    <div class="section-header">
+        <span class="section-title">Süreç × Standart İlişkisi</span>
+    </div>
+    <div class="section-body">
+        <div class="data-table-wrapper">
+            <table class="matrix-table">
+                <thead>
+                    <tr>
+                        <th>Süreç</th>
+                        <th class="text-center">IATF 16949</th>
+                        <th class="text-center">ISO 14001</th>
+                        <th class="text-center">ISO 45001</th>
+                        <th class="text-center">ISO 27001</th>
+                        <th class="text-center">Doküman</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in processes %}
+                    <tr>
+                        <td>{{ p.kod }} - {{ p.ad }}</td>
+                        <td class="text-center">{% if 'IATF' in (p.ilgili_standartlar or '') %}<span class="matrix-check">✓</span>{% else %}<span class="matrix-cross">—</span>{% endif %}</td>
+                        <td class="text-center">{% if '14001' in (p.ilgili_standartlar or '') %}<span class="matrix-check">✓</span>{% else %}<span class="matrix-cross">—</span>{% endif %}</td>
+                        <td class="text-center">{% if '45001' in (p.ilgili_standartlar or '') %}<span class="matrix-check">✓</span>{% else %}<span class="matrix-cross">—</span>{% endif %}</td>
+                        <td class="text-center">{% if '27001' in (p.ilgili_standartlar or '') %}<span class="matrix-check">✓</span>{% else %}<span class="matrix-cross">—</span>{% endif %}</td>
+                        <td class="text-center"><strong>{{ p.documents|length }}</strong></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

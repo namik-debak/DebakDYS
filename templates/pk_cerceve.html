@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Performans Değerlendirme (KPI){% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><span>Performans Değerlendirme (KPI)</span>{% endblock %}
+{% block content %}
+{# kpi.debak.com arayüzü — sitenin kendisi, değiştirilmeden; veri DYS veritabanında #}
+<iframe id="pk-cerceve" title="Performans ve CAPA" src="{{ request.script_root }}/performans/uygulama{{ yol if yol != '/' else '/' }}"
+        style="width:100%;height:calc(100vh - 150px);min-height:620px;border:1px solid var(--border-color);border-radius:10px;background:#fff;"></iframe>
+<p class="text-muted" style="font-size:11.5px;margin-top:6px;">Ekranlar kpi.debak.com ile aynıdır; kullanıcı ve yetki DYS oturumundan gelir (yönetici: Admin / Doküman Kontrol). Uygunsuzluk kayıtları DÖF modülünde de listelenir.
+  <a href="{{ request.script_root }}/performans/uygulama/" target="_blank">Tam ekran aç ↗</a></p>
+<script>
+(function () {   // çerçeve yüksekliği pencereye uysun
+  const f = document.getElementById('pk-cerceve');
+  function boy() { const r = f.getBoundingClientRect(); f.style.height = Math.max(620, window.innerHeight - r.top - 40) + 'px'; }
+  window.addEventListener('resize', boy); boy();
+})();
+</script>
+{% endblock %}

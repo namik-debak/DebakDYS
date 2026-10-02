@@ -1,0 +1,118 @@
+﻿{% extends "base.html" %}
+{% block title %}PPAP Yönetimi{% endblock %}
+
+{% block breadcrumb %}
+<span class="separator">›</span>
+<span>PPAP Yönetimi</span>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex align-center justify-between mb-24">
+    <div>
+        <h2 style="font-size: 20px; font-weight: 700;">📦 PPAP Sunumları</h2>
+        <p class="text-muted" style="font-size: 13px; margin-top: 4px;">
+            IATF 16949 Madde 8.3.4.4 — Production Part Approval Process
+        </p>
+    </div>
+    {% if session.get('rol') in ['Admin', 'Doküman Kontrol'] %}
+    <a href="{{ request.script_root }}/ppap/new" class="btn btn-primary">➕ Yeni PPAP Sunumu</a>
+    {% endif %}
+</div>
+
+<!-- İstatistikler -->
+<div class="stats-grid mb-24">
+    <div class="stat-card">
+        <div class="stat-icon blue">📦</div>
+        <div class="stat-value">{{ ppaps|length }}</div>
+        <div class="stat-label">Toplam PPAP</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon green">✅</div>
+        <div class="stat-value">{{ ppaps|selectattr('durum', 'equalto', 'Onaylandı')|list|length }}</div>
+        <div class="stat-label">Onaylandı</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon yellow">⏳</div>
+        <div class="stat-value">{{ ppaps|selectattr('durum', 'equalto', 'Hazırlanıyor')|list|length }}</div>
+        <div class="stat-label">Hazırlanıyor</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon red">❌</div>
+        <div class="stat-value">{{ ppaps|selectattr('durum', 'equalto', 'Reddedildi')|list|length }}</div>
+        <div class="stat-label">Reddedildi</div>
+    </div>
+</div>
+
+<!-- Filtreler -->
+<div class="filters mb-16">
+    <form method="GET" action="{{ request.script_root }}/ppap" class="d-flex gap-8 align-center flex-wrap">
+        <select name="durum" class="filter-select" onchange="this.form.submit()">
+            <option value="">Tüm Durumlar</option>
+            {% for d in ["Hazırlanıyor", "İncelemede", "Onaylandı", "Reddedildi", "Koşullu Onay"] %}
+            <option value="{{ d }}" {{ 'selected' if request.args.get('durum') == d }}>{{ d }}</option>
+            {% endfor %}
+        </select>
+        <input type="text" name="search" class="filter-select" placeholder="Parça no / Müşteri ara..."
+               value="{{ request.args.get('search', '') }}" style="min-width: 200px;">
+        <button type="submit" class="btn btn-sm btn-outline">🔍 Filtrele</button>
+        {% if request.args.get('durum') or request.args.get('search') %}
+        <a href="{{ request.script_root }}/ppap" class="btn btn-sm btn-secondary">Temizle</a>
+        {% endif %}
+    </form>
+</div>
+
+<!-- PPAP Listesi -->
+<div class="section-card">
+    {% if ppaps %}
+    <div class="data-table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Parça No</th>
+                    <th>Parça Adı</th>
+                    <th>Müşteri</th>
+                    <th>Seviye</th>
+                    <th>İlerleme</th>
+                    <th>Durum</th>
+                    <th>Sorumlu</th>
+                    <th>Tarih</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in ppaps %}
+                <tr>
+                    <td><code style="color: var(--text-accent);">{{ p.parca_no }}</code></td>
+                    <td style="font-weight: 600;">{{ p.parca_adi }}</td>
+                    <td>{{ p.musteri }}</td>
+                    <td class="text-center">
+                        <span class="ppap-level-badge">Lv.{{ p.sunum_seviyesi }}</span>
+                    </td>
+                    <td style="min-width: 120px;">
+                        <div class="ppap-progress-bar">
+                            <div class="ppap-progress-fill" style="width: {{ p.tamamlanma_orani }}%"></div>
+                        </div>
+                        <span class="text-muted" style="font-size: 11px;">%{{ p.tamamlanma_orani }}</span>
+                    </td>
+                    <td>
+                        <span class="ppap-status {{ p.durum|slug }}">{{ p.durum|enum }}</span>
+                    </td>
+                    <td class="text-muted">{{ p.sorumlu.ad_soyad if p.sorumlu else '-' }}</td>
+                    <td class="text-muted">{{ p.olusturma_tarihi.strftime('%d.%m.%Y') if p.olusturma_tarihi else '-' }}</td>
+                    <td>
+                        <a href="{{ request.script_root }}/ppap/{{ p.id }}" class="btn btn-sm btn-outline">Detay</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">📦</div>
+        <h3>Henüz PPAP sunumu yok</h3>
+        <p>Yeni bir PPAP sunumu oluşturmak için yukarıdaki butonu kullanın.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}{{ t.tutanak_no }} {{ t.tur }}{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><a href="{{ url_for('toplantilar') }}">Toplantı Tutanakları</a><span class="separator">›</span><span>{{ t.tutanak_no }}</span>{% endblock %}
+{% block content %}
+<style>.tt-alan{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:9px 14px;} .tt-alan label{font-size:12.5px;display:flex;flex-direction:column;gap:3px;} .tt-alan .gen{grid-column:1/-1;}
+.tt-m{width:100%;border-collapse:collapse;} .tt-m th,.tt-m td{border:1px solid var(--border-color);padding:4px 5px;font-size:12px;vertical-align:top;} .tt-m textarea,.tt-m input,.tt-m select{width:100%;font-size:12px;padding:3px 5px;border:1px solid var(--border-color);border-radius:5px;background:var(--bg-primary,#fff);color:inherit;}
+.gec{color:#b91c1c;font-weight:700;}</style>
+{% set kilit = not yazabilir %}
+<form method="POST">
+<div class="d-flex align-center justify-between mb-16" style="flex-wrap:wrap;gap:10px;">
+  <div><h2 style="font-size:19px;font-weight:700;margin:0;">🗓️ {{ t.tur }} <span class="text-muted" style="font-size:13px;font-weight:400;">{{ bilgi.form }} · {{ t.tutanak_no }} · {{ t.durum }}</span></h2></div>
+  <div class="d-flex gap-8">{% if t.id %}<a href="{{ url_for('toplanti_yazdir', tid=t.id) }}" target="_blank" class="btn btn-outline">🖨️ Tutanak çıktısı</a>{% endif %}
+    {% if yazabilir %}<button class="btn btn-primary" type="submit" name="islem" value="kaydet">Kaydet</button><button class="btn btn-success" type="submit" name="islem" value="yayinla">Kaydet ve yayınla</button>{% endif %}</div>
+</div>
+<fieldset {{ 'disabled' if kilit }} style="border:0;padding:0;margin:0;">
+<div class="section-card" style="margin-bottom:12px;"><div class="section-body tt-alan">
+  <input type="hidden" name="tur" value="{{ t.tur }}">
+  <label>Tarih<input type="date" name="tarih" value="{{ t.tarih.isoformat() }}" class="form-control" required></label>
+  <label>Saat<input type="time" name="saat" value="{{ t.saat or '' }}" class="form-control"></label>
+  <label>Yer<input name="yer" value="{{ t.yer or '' }}" class="form-control"></label>
+  <label class="gen">Konu<input name="konu" value="{{ t.konu or '' }}" class="form-control" placeholder="ör. Eylül 2026 aylık kalite toplantısı"></label>
+  <label class="gen">Katılımcılar<textarea name="katilimcilar" class="form-control" rows="2" placeholder="Ad Soyad – görev, …">{{ t.katilimcilar or '' }}</textarea></label>
+  <label class="gen">Gündem<textarea name="gundem" class="form-control" rows="2">{{ t.gundem or '' }}</textarea></label>
+  {% for a, ad in bilgi.ek %}<label class="gen">{{ ad }}<textarea name="ek_{{ a }}" class="form-control" rows="2">{{ t.veri.get(a, '') }}</textarea></label>{% endfor %}
+</div></div>
+<div class="section-card" style="margin-bottom:12px;"><div class="section-header"><span class="section-title">Görüşülen konular, kararlar ve aksiyonlar</span>{% if yazabilir %}<button type="button" class="btn btn-sm btn-outline" onclick="ttEkle()">➕ Madde</button>{% endif %}</div>
+  <div class="data-table-wrapper"><table class="tt-m" id="tt-m">
+  <tr><th style="width:30px;">#</th><th style="width:17%;">{{ bilgi.konu }}</th><th>{{ bilgi.gorusme }}</th><th>{{ bilgi.karar }}</th><th style="width:13%;">Sorumlu</th><th style="width:110px;">Termin</th><th style="width:100px;">Durum</th><th style="width:110px;">Gerçekleşme</th><th style="width:60px;">DÖF / sil</th></tr>
+  {% for m in t.maddeler %}{% set i = loop.index0 %}
+  <tr><td>{{ loop.index }}<input type="hidden" name="m_id_{{ i }}" value="{{ m.id or '' }}"></td>
+    <td><textarea name="m_konu_{{ i }}" rows="2">{{ m.konu or '' }}</textarea></td><td><textarea name="m_gorusme_{{ i }}" rows="2">{{ m.gorusme or '' }}</textarea></td><td><textarea name="m_karar_{{ i }}" rows="2">{{ m.karar or '' }}</textarea></td>
+    <td><select name="m_sorumlu_{{ i }}"><option value="">—</option>{% for u in kullanicilar %}<option value="{{ u.id }}" {{ 'selected' if u.id == m.sorumlu_id }}>{{ u.ad_soyad }}</option>{% endfor %}</select><input name="m_sorumlu_metin_{{ i }}" value="{{ m.sorumlu_metin or '' }}" placeholder="ya da bölüm / kişi" style="margin-top:3px;"></td>
+    <td><input type="date" name="m_termin_{{ i }}" value="{{ m.termin.isoformat() if m.termin else '' }}" class="{{ 'gec' if m.termin and m.termin < bugun and m.durum == 'Açık' }}"></td>
+    <td><select name="m_durum_{{ i }}">{% for d in durumlar %}<option {{ 'selected' if d == (m.durum or 'Açık') }}>{{ d }}</option>{% endfor %}</select></td>
+    <td><input type="date" name="m_gercek_{{ i }}" value="{{ m.gerceklesme_tarihi.isoformat() if m.gerceklesme_tarihi else '' }}"></td>
+    <td>{% if m.dof_id %}<a href="{{ request.script_root }}/capa/{{ m.dof_id }}">DÖF</a>{% elif m.id and yazabilir %}<button type="submit" formaction="{{ url_for('toplanti_madde_dof', mid=m.id) }}" formnovalidate class="btn btn-sm btn-outline" title="Bu maddeden DÖF aç" onclick="return confirm('Bu maddeden DÖF açılsın mı?');">DÖF</button>{% endif %}
+      <label style="font-size:11px;display:block;margin-top:3px;"><input type="checkbox" name="m_sil_{{ i }}" value="1" style="width:auto;"> sil</label></td></tr>
+  {% endfor %}
+  </table></div><input type="hidden" name="madde_say" id="tt-say" value="{{ t.maddeler|length }}"></div>
+<div class="section-card"><div class="section-body tt-alan"><label class="gen">Notlar<textarea name="notlar" class="form-control" rows="2">{{ t.notlar or '' }}</textarea></label></div></div>
+</fieldset>
+</form>
+<script>
+const TT_KUL = `<option value="">—</option>{% for u in kullanicilar %}<option value="{{ u.id }}">{{ u.ad_soyad|e }}</option>{% endfor %}`;
+function ttEkle(){ const t=document.getElementById('tt-m'), s=document.getElementById('tt-say'), i=+s.value; s.value=i+1; const r=t.insertRow(-1);
+ r.innerHTML=`<td>${i+1}</td><td><textarea name="m_konu_${i}" rows="2"></textarea></td><td><textarea name="m_gorusme_${i}" rows="2"></textarea></td><td><textarea name="m_karar_${i}" rows="2"></textarea></td>
+ <td><select name="m_sorumlu_${i}">${TT_KUL}</select><input name="m_sorumlu_metin_${i}" placeholder="ya da bölüm / kişi" style="margin-top:3px;"></td><td><input type="date" name="m_termin_${i}"></td>
+ <td><select name="m_durum_${i}"><option>Açık</option><option>Tamamlandı</option><option>İptal</option></select></td><td><input type="date" name="m_gercek_${i}"></td><td></td>`; }
+{% if not t.maddeler %}ttEkle();{% endif %}
+</script>
+{% endblock %}

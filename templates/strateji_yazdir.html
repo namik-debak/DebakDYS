@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Stratejik Planlama Raporu {{ yil }}</title>
+<style>
+  @page { size: A4 {{ 'landscape' if yon == 'yatay' else 'portrait' }}; margin: 11mm 10mm 13mm 10mm; }
+  * { box-sizing: border-box; }
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 9.5pt; color: #000; margin: 0; background: #fff; }
+  .araclar { padding: 10px 14px; background: #eef2f8; border-bottom: 1px solid #ccc; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; font-size: 12.5px; }
+  .araclar button { padding: 6px 14px; font-size: 13px; cursor: pointer; }
+  .araclar label { white-space: nowrap; }
+  .sayfa { max-width: {{ '277mm' if yon == 'yatay' else '190mm' }}; margin: 0 auto; padding: 6mm 0; }
+  table { border-collapse: collapse; width: 100%; }
+  .antet td { border: 1px solid #555; padding: 4px 6px; font-size: 9pt; }
+  .antet .logo { width: 34mm; text-align: center; }
+  .antet .surec { text-align: center; font-weight: bold; font-size: 11pt; background: #d9e2f3; }
+  .antet .ad { text-align: center; font-weight: bold; font-size: 12pt; }
+  .antet .etk { width: 32mm; background: #d9e2f3; }
+  .antet .deg { width: 34mm; font-weight: bold; text-align: center; }
+  .cikti { display: flex; justify-content: space-between; font-size: 8pt; margin: 4px 0 8px; color: #333; }
+  h2 { font-size: 11pt; background: #d9e2f3; padding: 5px 7px; margin: 10px 0 5px; border-left: 4px solid #1f3864; page-break-after: avoid; }
+  h3 { font-size: 10pt; margin: 8px 0 3px; padding: 2px 0; border-bottom: 1px solid #999; page-break-after: avoid; }
+  .liste th, .liste td { border: 1px solid #777; padding: 3px 5px; font-size: 8.5pt; vertical-align: top; text-align: left; }
+  .liste th { background: #eee; }
+  .liste tr { page-break-inside: avoid; }
+  .no { width: 9mm; text-align: center; }
+  .ozet { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4mm; margin: 4px 0 6px; }
+  .ozet div { border: 1px solid #777; padding: 3mm; text-align: center; }
+  .ozet b { display: block; font-size: 15pt; }
+  .swot { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; }
+  .swot > div { border: 1px solid #777; padding: 2mm 3mm; page-break-inside: avoid; }
+  .swot h4 { margin: 0 0 1.5mm; font-size: 10pt; }
+  .swot ol { margin: 0; padding-left: 5mm; } .swot li { margin: 0.7mm 0; font-size: 8.8pt; }
+  .etk-k { font-size: 7.5pt; color: #1d4ed8; } .etk-i { font-size: 7.5pt; color: #15803d; }
+  .gec { color: #b91c1c; font-weight: bold; }
+  .imza { margin-top: 8mm; page-break-inside: avoid; }
+  .imza th { border: 1px solid #555; background: #eee; font-size: 9pt; padding: 3px; }
+  .imza td { border: 1px solid #555; padding: 5px 6px; font-size: 9pt; height: 18mm; vertical-align: top; width: 33%; }
+  .not { font-size: 7.5pt; color: #333; margin-top: 6px; border-top: 1px solid #999; padding-top: 3px; }
+  .yeni-sayfa { page-break-before: always; }
+  @media print { .araclar { display: none; } .sayfa { padding: 0; max-width: none; } }
+</style>
+</head>
+<body>
+<form class="araclar" method="GET">
+  <button type="button" onclick="window.print()">🖨️ Yazdır / PDF</button>
+  <a href="{{ url_for('strateji', yil=yil) }}">← Modüle dön</a>
+  <label>Dönem <select name="yil" onchange="this.form.submit()">{% for y in yillar %}<option {{ 'selected' if y == yil }}>{{ y }}</option>{% endfor %}</select></label>
+  <label>Kapsam <select name="kapsam" onchange="this.form.submit()"><option value="">Tümü</option>{% for k in kapsamlar %}<option {{ 'selected' if k == kapsam }}>{{ k }}</option>{% endfor %}</select></label>
+  <label>Sayfa <select name="yon" onchange="this.form.submit()"><option value="yatay" {{ 'selected' if yon == 'yatay' }}>Yatay</option><option value="dikey" {{ 'selected' if yon == 'dikey' }}>Dikey</option></select></label>
+  <span>Bölümler:</span>
+  {% for b, ad in sekmeler %}<label><input type="checkbox" name="bolum" value="{{ b }}" {{ 'checked' if b in secili }} onchange="this.form.submit()"> {{ ad.split('·')[1].strip() }}</label>{% endfor %}
+</form>
+{% set gg = donem.gozden_gecirme if donem else {} %}
+<div class="sayfa">
+  <table class="antet">
+    <tr>
+      <td class="logo" rowspan="4"><img src="{{ url_for('static', filename='branding/debak-logo.png') }}" alt="debak" style="max-width:30mm;max-height:13mm;"></td>
+      <td class="surec" rowspan="2">{{ (surec.kod ~ ' ' ~ surec.ad) | upper if surec else 'Y01 YÖNETİM SORUMLULUĞU VE SÜREKLİ İYİLEŞTİRME' }}</td>
+      <td class="etk">Doküman Kodu</td><td class="deg">Y01 F02 / Y01 F03</td>
+    </tr>
+    <tr><td class="etk">Dönem</td><td class="deg">{{ yil }}</td></tr>
+    <tr>
+      <td class="ad" rowspan="2">STRATEJİK PLANLAMA RAPORU{% if kapsam %} — {{ kapsam | upper }}{% endif %}<div style="font-size:8.5pt;font-weight:normal;">Çevre (bağlam) analizi · Paydaş analizi · SWOT · Stratejiler · Öncelikli stratejiler ve gözden geçirme</div></td>
+      <td class="etk">Son gözden geçirme</td><td class="deg">{{ son_gg or '—' }}</td>
+    </tr>
+    <tr><td class="etk">Rapor tarihi</td><td class="deg">{{ bugun.strftime('%d.%m.%Y') }}</td></tr>
+  </table>
+  <div class="cikti"><span>Standart maddeleri: ISO 9001 / IATF 16949 4.1 · 4.2 · 6.1 · 6.2 — ISO 14001 / ISO 45001 4.1 · 4.2 · 6.1</span><span>Çıktıyı alan: {{ kullanici }} · {{ simdi.strftime('%d.%m.%Y %H:%M') }}</span></div>
+
+  <h2>Özet</h2>
+  <div class="ozet">
+    {% for b, ad in sekmeler %}<div>{{ ad.split('·')[1].strip() }}<b>{{ veriler[b]|length }}</b></div>{% endfor %}
+  </div>
+  <table class="liste" style="margin-bottom:3mm;">
+    <tr><th>SWOT</th>{% for t in swot_turleri %}<td><b>{{ t }}:</b> {{ ozet.swot[t] }}</td>{% endfor %}<td></td></tr>
+    <tr><th>Öncelikli stratejiler</th>{% for d, n in ozet.durum.items() %}<td><b>{{ d }}:</b> {{ n }}</td>{% endfor %}</tr>
+  </table>
+  {% if ozet.geciken %}<div class="gec" style="font-size:9pt;">Terminini geçen ve tamamlanmamış {{ ozet.geciken|length }} strateji: {% for k in ozet.geciken %}{{ k.kod or '' }} {{ k.metin[:60] }}{{ '…' if k.metin|length > 60 }} ({{ k.termin.strftime('%d.%m.%Y') }}){{ '; ' if not loop.last }}{% endfor %}</div>{% endif %}
+  {% if donem and donem.gozden_gecirme %}<div style="font-size:8pt;margin-top:2mm;">Gözden geçirme tarihleri:
+    {% for b, ad in sekmeler %}{% if gg.get(b) or gg.get(b ~ '_isg_cevre') %}{{ ad.split('·')[1].strip() }}: {{ gg.get(b) or '—' }}{% if gg.get(b ~ '_isg_cevre') %} (İSG & Çevre {{ gg.get(b ~ '_isg_cevre') }}){% endif %}{{ ' · ' if not loop.last }}{% endif %}{% endfor %}</div>{% endif %}
+
+  {% macro etiket(k) %}{% if k.veri.get('ortak') %} <span class="etk-k">[Ortak]</span>{% elif k.kapsam != 'Kurumsal' %} <span class="etk-i">[{{ k.kapsam }}]</span>{% endif %}{% endmacro %}
+
+  {% if 'baglam' in secili %}
+  <h2>1. Çevre (bağlam) analizi</h2>
+  {% set liste = veriler['baglam'] %}
+  {% for g in liste|map(attribute='grup')|unique %}
+  <h3>{{ loop.index }}. {{ g }}</h3>
+  <table class="liste"><thead><tr><th class="no">No</th><th style="width:30%;">Husus</th><th style="width:20%;">Kurumsal bilginin kaynağı</th><th>İlk analiz / değişiklikler</th></tr></thead><tbody>
+  {% for k in liste if k.grup == g %}<tr><td class="no">{{ loop.index }}</td><td>{{ k.metin }}{{ etiket(k) }}</td><td>{{ k.veri.get('kaynak', '') }}</td><td>{{ k.veri.get('analiz', '') }}</td></tr>{% endfor %}
+  </tbody></table>
+  {% endfor %}
+  {% endif %}
+
+  {% if 'paydas' in secili %}
+  <h2 class="{{ 'yeni-sayfa' if 'baglam' in secili }}">2. Paydaş analizi</h2>
+  <table class="liste"><thead><tr><th class="no">No</th><th style="width:16%;">Önemli paydaş</th><th style="width:8%;">Statü</th><th style="width:7%;">Etki</th><th>Kuruluş faaliyetlerine etkisi</th><th>İhtiyaç ve beklentiler</th><th>İSG ve çevre beklentileri</th></tr></thead><tbody>
+  {% for k in veriler['paydas'] %}<tr><td class="no">{{ loop.index }}</td><td><b>{{ k.metin }}</b>{{ etiket(k) }}</td><td>{{ k.veri.get('statu', '') }}</td><td>{{ k.veri.get('etki', '') }}</td><td>{{ k.veri.get('faaliyet_etkisi', '') }}</td><td>{{ k.veri.get('beklenti', '') }}</td><td>{{ k.veri.get('isg_cevre_beklenti', '') }}</td></tr>{% endfor %}
+  </tbody></table>
+  {% endif %}
+
+  {% if 'swot' in secili %}
+  <h2 class="yeni-sayfa">3. SWOT analizi{% if gg.get('swot_sayfa') %} <span style="font-weight:normal;font-size:8.5pt;">(kaynak: {{ gg.get('swot_sayfa') }}{% if gg.get('swot_isg_cevre_sayfa') %}, İSG & Çevre: {{ gg.get('swot_isg_cevre_sayfa') }}{% endif %})</span>{% endif %}</h2>
+  <div class="swot">
+  {% for t in swot_turleri %}
+    <div><h4>{{ {'Güçlü':'GÜÇLÜ YANLAR','Zayıf':'ZAYIF YANLAR','Fırsat':'FIRSATLAR','Tehdit':'TEHDİTLER'}[t] }} ({{ ozet.swot[t] }})</h4>
+      <ol>{% for k in veriler['swot'] if k.grup == t %}<li>{{ k.metin }}{{ etiket(k) }}</li>{% endfor %}</ol></div>
+  {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if 'strateji' in secili %}
+  <h2 class="{{ 'yeni-sayfa' if 'swot' in secili }}">4. Stratejiler</h2>
+  <table class="liste"><thead><tr><th class="no">No</th><th>Strateji</th><th style="width:22%;">İlgili paydaş</th><th style="width:14%;">Dayandığı SWOT maddeleri</th></tr></thead><tbody>
+  {% for k in veriler['strateji'] %}<tr><td class="no">{{ k.kod or '' }}</td><td>{{ k.metin }}{{ etiket(k) }}</td><td>{{ k.veri.get('ilgili_paydas', '') }}</td><td>{{ k.veri.get('swot', '') }}</td></tr>{% endfor %}
+  </tbody></table>
+  {% endif %}
+
+  {% if 'eylem' in secili %}
+  <h2 class="{{ 'yeni-sayfa' if 'strateji' in secili }}">5. Öncelikli stratejiler ve gözden geçirme</h2>
+  <table class="liste"><thead><tr><th class="no">Önc.</th><th class="no">No</th><th style="width:26%;">Strateji</th><th style="width:15%;">Kritik başarı faktörü</th><th style="width:8%;">Termin</th><th style="width:10%;">Kaynak</th><th style="width:8%;">Durum</th><th style="width:9%;">Sorumlu</th><th>Gözden geçirme</th><th style="width:7%;">Gerçekleşen</th></tr></thead><tbody>
+  {% for k in veriler['eylem'] %}{% set v = k.veri %}
+  <tr><td class="no">{{ loop.index }}</td><td class="no">{{ k.kod or '' }}</td><td>{{ k.metin }}{{ etiket(k) }}</td><td>{{ v.get('kbf', '') }}</td>
+    <td class="{{ 'gec' if k.termin and k.termin < bugun and k.durum not in ['Tamamlandı', 'İptal'] }}">{{ k.termin.strftime('%d.%m.%Y') if k.termin else v.get('termin_metin', '') }}</td>
+    <td>{{ v.get('kaynak', '') }}</td><td>{{ k.durum or 'Planlandı' }}</td><td>{{ k.sorumlu.ad_soyad if k.sorumlu else '' }}</td>
+    <td>{{ v.get('gg_notu', '') }}{% if v.get('gg_tarihi') %} <i>({{ v.get('gg_tarihi') }})</i>{% endif %}</td><td>{{ v.get('gerceklesen', '') }}</td></tr>{% endfor %}
+  </tbody></table>
+  {% endif %}
+
+  <table class="imza">
+    <tr><th>Hazırlayan</th><th>Kontrol Eden</th><th>Onaylayan</th></tr>
+    <tr><td>Yönetim Sistemleri / Kalite Sistem Yöneticisi<br><br>Ad Soyad / İmza / Tarih</td><td>Yönetim Temsilcisi<br><br>Ad Soyad / İmza / Tarih</td><td>Genel Müdür<br><br>Ad Soyad / İmza / Tarih</td></tr>
+  </table>
+  <div class="not">Bu rapor DYS Stratejik Planlama modülünden alınmıştır (Y01 P01 Bağlam, Strateji, Risk ve Fırsatlar Yönetimi Prosedürü). Yönetim Gözden Geçirme toplantısına girdi olarak kullanılır. Güncel hali DYS'dedir; basılı kopya kontrolsüz kopyadır.
+    [Ortak] = kurumsal ve İSG & çevre analizlerinde ortak kalem · [İSG & Çevre] = yalnız İSG & çevre analizinde.{% if donem and donem.kaynak %} Kaynak: {{ donem.kaynak }}.{% endif %}</div>
+</div>
+</body>
+</html>

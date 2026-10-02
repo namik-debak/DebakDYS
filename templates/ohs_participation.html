@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}Çalışan Katılımı ve Danışma (İSG){% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><span>Çalışan Katılımı</span>{% endblock %}
+
+{% block content %}
+<div class="d-flex align-center justify-between mb-24" style="flex-wrap:wrap;gap:12px;">
+  <div>
+    <h2 style="font-size:20px;font-weight:700;">Çalışan Katılımı ve Danışma</h2>
+    <p class="text-muted" style="font-size:13px;">ISO 45001:2018 § 5.4 Çalışanların Katılımı, İSG Öneri Sistemi ve İSG Kurulu Kararları. Toplam <strong>{{ kayitlar|length }}</strong> kayıt.</p>
+  </div>
+</div>
+
+<!-- Katılım Listesi Tablosu -->
+<div class="section-card mb-24">
+{% if kayitlar %}
+<div class="data-table-wrapper">
+<table class="data-table">
+<thead>
+    <tr>
+        <th>Tür / Kategori</th>
+        <th>Tarih</th>
+        <th>Öneri / Danışma Konusu</th>
+        <th>Öneriyi Sunan / Katılımcı</th>
+        <th>Kurul Kararı / Gözden Geçirme</th>
+        <th style="text-align:center;">Kapatıldı mı?</th>
+    </tr>
+</thead>
+<tbody>
+{% for r in kayitlar %}
+<tr>
+    <td><strong>{{ r.tur }}</strong></td>
+    <td style="font-size:12px; font-family:monospace;">{{ r.tarih.strftime('%Y-%m-%d') if r.tarih else '—' }}</td>
+    <td style="font-size:13px; font-weight:600;">{{ r.konu }}</td>
+    <td><span style="font-size:12px;">{{ r.katilimci or 'Anonim / Gizli' }}</span></td>
+    <td style="font-size:12px;" class="text-muted">{{ r.karar or 'Değerlendirilmesi Bekleniyor' }}</td>
+    <td class="text-center">
+        <span class="badge" style="font-size:10px; font-weight:700; background:{{ '#d1fae5' if r.kapatildi else '#fee2e2' }}; color:{{ '#065f46' if r.kapatildi else '#991b1b' }};">
+            {{ 'Evet' if r.kapatildi else 'Açık / Değerlendiriliyor' }}
+        </span>
+    </td>
+</tr>
+{% endfor %}
+</tbody></table>
+</div>
+{% else %}
+<div class="empty-state"><div class="empty-icon">🗣️</div><h3>Kayıt yok</h3></div>
+{% endif %}
+</div>
+
+<!-- Yeni Öneri / Katılım Ekleme Formu -->
+<div class="section-card">
+    <div class="section-header" style="border-bottom:1px solid var(--border); padding:12px 20px;">
+        <span class="section-title">➕ Yeni İSG Önerisi veya Çalışan Katılım Kaydı Gönder</span>
+    </div>
+    <div class="section-body" style="padding:20px;">
+        <form method="POST" action="{{ url_for('ohs_participation') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:16px; margin-bottom:16px;">
+                <div class="form-group">
+                    <label class="form-label">Öneri / Kayıt Türü *</label>
+                    <select name="tur" class="form-control" required>
+                        {% for t in katilim_turleri %}
+                        <option value="{{ t }}" {{ 'selected' if t=='Öneri' }}>{{ t }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tarih *</label>
+                    <input type="date" name="tarih" class="form-control" required value="{{ date_today }}">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Katılımcı / Öneren Ad Soyad</label>
+                    <input type="text" name="katilimci" class="form-control" placeholder="Anonim kalmak için boş bırakabilirsiniz" value="{{ session.get('ad_soyad', '') }}">
+                </div>
+                
+                <div class="form-group" style="grid-column: span 3;">
+                    <label class="form-label">Öneriniz / Danışılacak İSG Konusu *</label>
+                    <textarea name="konu" class="form-control" rows="3" required placeholder="Çalışma ortamının iyileştirilmesi, riskli durum bildirimi veya İSG kurulu önerilerinizi yazınız..."></textarea>
+                </div>
+                
+                {% if can_edit %}
+                <!-- Sadece İSG Yetkilileri karar yazabilir -->
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label">İSG Kurulu Kararı / Aksiyon</label>
+                    <input type="text" name="karar" class="form-control" placeholder="Kurul kararı veya yönetim geri bildirimi">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Durum</label>
+                    <select name="kapatildi" class="form-control">
+                        <option value="0">Açık / Değerlendiriliyor</option>
+                        <option value="1">Kapatıldı / Karara Bağlandı</option>
+                    </select>
+                </div>
+                {% endif %}
+            </div>
+            <button type="submit" class="btn btn-primary" style="padding:10px 24px;">🗣️ Öneriyi Gönder</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Makine & Kalıp Listesi{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><a href="{{ url_for('bakim_form') }}">Bakım Formu</a><span class="separator">›</span><span>Makine & Kalıp Listesi</span>{% endblock %}
+{% block content %}
+<style>
+.bk-etiket{display:inline-block;font-size:11px;padding:1px 8px;border-radius:10px;border:1px solid var(--border);background:var(--bg-secondary);}
+.bk-etiket.gec{background:rgba(239,68,68,.12);color:var(--color-danger,#ef4444);border-color:rgba(239,68,68,.35);}
+.bk-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;}
+</style>
+<div class="mb-16 d-flex align-center justify-between" style="flex-wrap:wrap;gap:10px;">
+  <div><h2 style="font-size:20px;font-weight:700;">🏭 Makine & Kalıp Listesi</h2>
+    <p class="text-muted" style="font-size:13px;">{{ toplam }} ekipman · {{ geciken }} ekipmanda geciken bakım. Tür ve marka, Bakım Formu'nda hangi formların çıkacağını belirler.</p></div>
+  <div style="display:flex;gap:8px;"><a href="{{ url_for('bakim_form') }}" class="btn btn-primary">🔧 Bakım Formu</a><a href="{{ url_for('bakim_kayitlar') }}" class="btn btn-outline">📋 Kayıtlar</a></div>
+</div>
+
+{% if toplam == 0 and yonetici %}
+<div class="section-card mb-16" style="border-left:4px solid var(--color-primary);"><div class="section-body">
+  <p style="margin-bottom:8px;">Başlangıç listesi: D03 F03 kritik ekipman listesindeki enjeksiyon makineleri (Krauss Maffei K6…K25, Arburg AP1…AP6, markası belirtilmemiş K20…K32) ve kalıphane bakım kartlarındaki tezgahlar (43 ekipman).</p>
+  <form method="POST"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="baslangic"><button class="btn btn-primary" type="submit">Başlangıç listesini yükle</button></form>
+</div></div>
+{% endif %}
+
+<form method="GET" class="filters-bar mb-16" style="gap:8px;flex-wrap:wrap;">
+  <select name="tur" class="filter-select" onchange="this.form.submit()"><option value="">Tüm türler</option>{% for t in turler %}<option {% if tur == t %}selected{% endif %}>{{ t }}</option>{% endfor %}</select>
+  <input name="q" value="{{ q }}" class="form-control" style="max-width:260px;" placeholder="Ara: kod, ad, marka, model">
+  <label style="font-size:12px;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="pasif" value="1" {% if pasif %}checked{% endif %}> Pasifler</label>
+  <button class="btn btn-outline" type="submit">Ara</button>
+</form>
+
+<div class="section-card mb-16">
+  <div class="section-body" style="padding:0;overflow-x:auto;">
+    {% if liste %}
+    <table class="data-table">
+      <thead><tr><th>Kod</th><th>Ad</th><th>Tür</th><th>Marka / model</th><th>Bölüm</th><th>Form</th><th>Son bakım</th><th>Durum</th><th></th></tr></thead>
+      <tbody>
+      {% for x in liste %}{% set e = x.e %}
+      <tr {% if e.aktif == false %}style="opacity:.55;"{% endif %}>
+        <td><a href="{{ url_for('bakim_ekipman_detay', eid=e.id) }}" style="font-weight:700;font-family:monospace;">{{ e.kod }}</a></td>
+        <td>{{ e.ad }}</td><td>{{ e.tur }}</td>
+        <td>{{ e.marka or '—' }}{% if e.model %} <span class="text-muted">· {{ e.model }}</span>{% endif %}</td>
+        <td>{{ e.bolum or '—' }}</td><td>{{ x.sablon }}</td>
+        <td>{% if x.son %}{{ x.son.tarih.strftime('%d.%m.%Y') }} <span class="text-muted" style="font-size:11px;">{{ x.son.form_ad|truncate(28) }}</span>{% else %}—{% endif %}</td>
+        <td>{% if x.geciken %}<span class="bk-etiket gec">{{ x.geciken }} geciken</span>{% elif x.kayit %}<span class="bk-etiket">✔</span>{% else %}<span class="bk-etiket">kayıt yok</span>{% endif %}
+            {% if not e.marka and e.tur == 'Enjeksiyon Makinesi' %}<span class="bk-etiket gec">marka?</span>{% endif %}</td>
+        <td><a href="{{ url_for('bakim_form', ekipman=e.id) }}" class="btn btn-outline" style="font-size:12px;padding:2px 10px;">🔧 Form</a></td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}<p class="text-muted" style="padding:16px;">Ekipman yok.</p>{% endif %}
+  </div>
+</div>
+
+{% if yazabilir %}
+<div class="section-card">
+  <div class="section-header"><span class="section-title">＋ Makine / kalıp ekle</span></div>
+  <div class="section-body">
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="bk-g">
+        <div class="form-group"><label class="form-label">Kod *</label><input name="kod" class="form-control" required placeholder="ör. K33 / KLP-222747"></div>
+        <div class="form-group"><label class="form-label">Ad *</label><input name="ad" class="form-control" required placeholder="ör. Enjeksiyon K33"></div>
+        <div class="form-group"><label class="form-label">Tür *</label><select name="tur" class="form-control" required>{% for t in turler %}<option>{{ t }}</option>{% endfor %}</select></div>
+        <div class="form-group"><label class="form-label">Marka</label><input name="marka" list="bk-marka" class="form-control"><datalist id="bk-marka">{% for m in markalar %}<option value="{{ m }}">{% endfor %}</datalist></div>
+        <div class="form-group"><label class="form-label">Model</label><input name="model" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Seri no</label><input name="seri_no" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Bölüm</label><select name="bolum" class="form-control"><option value="">—</option>{% for b in bolumler %}<option>{{ b }}</option>{% endfor %}</select></div>
+        <div class="form-group"><label class="form-label">Baskı ömrü (kalıp)</label><input name="baski_omru" inputmode="numeric" class="form-control"></div>
+        <div class="form-group" style="grid-column:1/-1;"><label class="form-label">Not</label><input name="notlar" maxlength="500" class="form-control"></div>
+      </div>
+      <button class="btn btn-primary" type="submit">Ekle</button>
+    </form>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

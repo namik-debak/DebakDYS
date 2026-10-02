@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Toplantı Tutanakları{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><span>Toplantı Tutanakları</span>{% endblock %}
+{% block content %}
+<div class="d-flex align-center justify-between mb-24" style="flex-wrap:wrap;gap:12px;">
+  <div><h2 style="font-size:20px;font-weight:700;margin-bottom:4px;">🗓️ Toplantı Tutanakları</h2>
+    <p class="text-muted" style="font-size:12.5px;">Y01.4 İletişim — günlük üretim & bakım toplantısı (F02), aylık kalite toplantısı (F04), iç paydaş toplantısı (F03), proje ve diğer toplantılar. Kararlar sorumlu ve terminle takip edilir; gerekirse DÖF açılır. QRQC toplantıları QRQC modülündedir.</p></div>
+  <div class="d-flex gap-8" style="flex-wrap:wrap;">
+    <a href="{{ url_for('toplanti_aksiyonlar') }}" class="btn btn-outline">📌 Açık aksiyonlar <strong>{{ acik }}</strong></a>
+    {% if yazabilir %}{% for t in turler %}<a href="{{ url_for('toplanti', tur=t) }}" class="btn btn-sm {{ 'btn-primary' if loop.first else 'btn-outline' }}">➕ {{ t }}</a>{% endfor %}{% endif %}
+  </div>
+</div>
+<form method="GET" class="d-flex gap-8" style="flex-wrap:wrap;align-items:center;margin-bottom:10px;">
+  <select name="tur" class="form-control" style="width:auto;" onchange="this.form.submit()"><option value="">Tüm türler</option>{% for t in turler %}<option {{ 'selected' if t == tur }}>{{ t }}</option>{% endfor %}</select>
+  <select name="yil" class="form-control" style="width:auto;" onchange="this.form.submit()"><option value="">Tüm yıllar</option>{% for y in yillar %}<option {{ 'selected' if y == yil }}>{{ y }}</option>{% endfor %}</select>
+  <input name="q" value="{{ q }}" class="form-control" placeholder="Konu, katılımcı ara" style="max-width:240px;"><button class="btn btn-sm btn-outline" type="submit">Ara</button>
+</form>
+<div class="section-card"><div class="data-table-wrapper"><table class="data-table">
+  <thead><tr><th>No</th><th>Tarih</th><th>Tür</th><th>Konu</th><th>Madde</th><th>Açık aksiyon</th><th>Durum</th><th></th></tr></thead><tbody>
+  {% for t in liste %}{% set ac = t.maddeler|selectattr('durum', 'equalto', 'Açık')|list %}
+  <tr><td><a href="{{ url_for('toplanti', tid=t.id) }}"><strong>{{ t.tutanak_no }}</strong></a></td><td>{{ t.tarih.strftime('%d.%m.%Y') }}</td><td>{{ t.tur }} <span class="text-muted" style="font-size:11px;">{{ tur_bilgi[t.tur].form }}</span></td>
+    <td>{{ t.konu or '' }}</td><td>{{ t.maddeler|length }}</td><td>{% if ac %}<span class="status-badge incelemede">{{ ac|length }}</span>{% endif %}</td>
+    <td><span class="status-badge {{ 'onayli' if t.durum == 'Yayınlandı' else 'taslak' }}">{{ t.durum }}</span></td>
+    <td><a href="{{ url_for('toplanti_yazdir', tid=t.id) }}" target="_blank" class="btn btn-sm btn-outline">🖨️</a></td></tr>
+  {% else %}<tr><td colspan="8" class="text-muted">Tutanak yok. Yukarıdaki düğmelerle yeni tutanak açın.</td></tr>{% endfor %}
+</tbody></table></div></div>
+{% endblock %}

@@ -1,0 +1,26 @@
+﻿python.exe : \\192.168.0.249\ortak\HARUN\dys\.venv\lib\site-packages\openpyxl\reader\drawings.py:67: UserWarning: wmf i
+mage format is not supported so the image is being dropped
+At C:\Users\labaratuvar03\AppData\Local\Temp\ps-script-1db070f3-d271-4092-8248-39ea88cf456c.ps1:112 char:1
++ & "\\192.168.0.249\ortak\HARUN\dys\.venv\Scripts\python.exe" "d:\UYGU ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (\\192.168.0.249...s being dropped:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  warn(msg)
+Counts: {'xlsx': 30, 'xls': 245, 'doc': 56}
+
+XLSX Y03.3-T01:
+  oddFooter R: <openpyxl.worksheet.header_footer._HeaderFooterPart object at 0x000001D808CC3160>
+  oddHeader R: <openpyxl.worksheet.header_footer._HeaderFooterPart object at 0x000001D808CC2FE0>
+  row1: [None, '▄RET¦M & LOJ¦ST¦K & KAL¦TE PROSESLER¦                               ÍNER¦ S¦STEM¦ ESASLARI', None, None, None]
+
+XLSX M03-T02:
+  oddFooter R: 'T3 T 7.01(1)_21.01.2008'
+  oddHeader R: <openpyxl.worksheet.header_footer._HeaderFooterPart object at 0x000001D809150400>
+  row1: [None, None, None, None, '▄R▄N AMBALAJ ÌARTNAMES¦']
+
+XLSX M03-T03:
+  oddFooter R: 'M03 T07(2)_04.04.2025'
+  oddHeader R: <openpyxl.worksheet.header_footer._HeaderFooterPart object at 0x000001D8091D6230>
+  row1: ['▄R▄N AMBALAJ ÌARTNAMES¦ L¦STES¦', None, None, None, None]
+xls err No module named 'xlrd'

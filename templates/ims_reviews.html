@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}Yönetim Gözden Geçirme (YGG){% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><span>Yönetim Gözden Geçirme</span>{% endblock %}
+
+{% block content %}
+<div class="d-flex align-center justify-between mb-24" style="flex-wrap:wrap;gap:12px;">
+  <div>
+    <h2 style="font-size:20px;font-weight:700;">Yönetim Gözden Geçirme</h2>
+    <p class="text-muted" style="font-size:13px;">ISO 9001 / 14001 / 45001 / 27001 YGG Toplantı Kayıtları ve Kararları. Toplam <strong>{{ kayitlar|length }}</strong> kayıt.</p>
+  </div>
+</div>
+
+<!-- YGG Listesi Tablosu -->
+<div class="section-card mb-24">
+{% if kayitlar %}
+<div class="data-table-wrapper">
+<table class="data-table">
+<thead>
+    <tr>
+        <th>Toplantı / Gözden Geçirme Başlığı</th>
+        <th>Toplantı Tarihi</th>
+        <th>Katılımcılar</th>
+        <th>Toplantı Girdileri (Özet)</th>
+        <th>Alınan Kararlar</th>
+        <th>Aksiyon Planları</th>
+        <th style="text-align:center;">Durum</th>
+    </tr>
+</thead>
+<tbody>
+{% for r in kayitlar %}
+<tr>
+    <td><strong>{{ r.baslik }}</strong></td>
+    <td style="font-size:12px; font-family:monospace; font-weight:700;">{{ r.toplanti_tarihi.strftime('%Y-%m-%d') if r.toplanti_tarihi else '—' }}</td>
+    <td style="font-size:12px;">{{ r.katilimcilar|truncate(60) if r.katilimcilar else '—' }}</td>
+    <td style="font-size:12px; max-width:200px;" class="text-muted">{{ r.girdiler|truncate(80) if r.girdiler else '—' }}</td>
+    <td style="font-size:12px; max-width:200px;">{{ r.kararlar|truncate(80) if r.kararlar else '—' }}</td>
+    <td style="font-size:12px; max-width:200px;">{{ r.aksiyonlar|truncate(80) if r.aksiyonlar else '—' }}</td>
+    <td class="text-center">
+        <span class="status-badge {{ r.durum|slug }}">{{ r.durum }}</span>
+    </td>
+</tr>
+{% endfor %}
+</tbody></table>
+</div>
+{% else %}
+<div class="empty-state"><div class="empty-icon">📋</div><h2>Kayıt yok</h2></div>
+{% endif %}
+</div>
+
+<!-- Yeni YGG Ekleme Formu -->
+{% if can_edit %}
+<div class="section-card">
+    <div class="section-header" style="border-bottom:1px solid var(--border); padding:12px 20px;">
+        <span class="section-title">➕ Yeni Yönetim Gözden Geçirme (YGG) Toplantısı Ekle</span>
+    </div>
+    <div class="section-body" style="padding:20px;">
+        <form method="POST" action="{{ url_for('ims_reviews') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:16px; margin-bottom:16px;">
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label">YGG Toplantı / Gözden Geçirme Başlığı *</label>
+                    <input type="text" name="baslik" class="form-control" required placeholder="Örn: 2026 Yılı 1. Yarıyıl Yönetim Gözden Geçirme Toplantısı">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Toplantı Tarihi *</label>
+                    <input type="date" name="toplanti_tarihi" class="form-control" required value="{{ date_today }}">
+                </div>
+                
+                <div class="form-group" style="grid-column: span 3;">
+                    <label class="form-label">Katılımcılar (İsimler veya Departmanlar)</label>
+                    <input type="text" name="katilimcilar" class="form-control" placeholder="Örn: Genel Müdür, Kalite Müdürü, İSG Uzmanı, Üretim Sorumlusu">
+                </div>
+                
+                <div class="form-group" style="grid-column: span 3;">
+                    <label class="form-label">YGG Girdileri (Gözden geçirilen performans göstergeleri, denetim sonuçları vb.)</label>
+                    <textarea name="girdiler" class="form-control" rows="2" placeholder="Örn: 2025 yılı KPI hedefleri, iç tetkik uygunsuzlukları, müşteri şikayetleri..."></textarea>
+                </div>
+                <div class="form-group" style="grid-column: span 3;">
+                    <label class="form-label">Alınan Kararlar / Toplantı Çıktıları</label>
+                    <textarea name="kararlar" class="form-control" rows="2" placeholder="Alınan kaynak artırma kararları, proses değişikliği onayları..."></textarea>
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label">Aksiyon Planları (Sorumlu ve Hedef Tarihli)</label>
+                    <textarea name="aksiyonlar" class="form-control" rows="2" placeholder="Örn: Proses iyileştirme için DÖF-2026-05 açılacak (Sorumlu: Ahmet Y.)"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Toplantı Durumu</label>
+                    <select name="durum" class="form-control">
+                        <option value="Planlandı">Planlandı</option>
+                        <option value="Gerçekleşti">Gerçekleşti</option>
+                        <option value="Tamamlandı" selected>Tamamlandı (Kararlar Yayınlandı)</option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" style="padding:10px 24px;">💾 YGG Toplantısını Kaydet</button>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

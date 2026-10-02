@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+{% block title %}Tehlike Tanımlama ve Risk Değerlendirmesi (İSG){% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><span>Tehlike & Risk</span>{% endblock %}
+
+{% block content %}
+<div class="d-flex align-center justify-between mb-24" style="flex-wrap:wrap;gap:12px;">
+  <div>
+    <h2 style="font-size:20px;font-weight:700;">Tehlike Tanımlama ve Risk Değerlendirmesi</h2>
+    <p class="text-muted" style="font-size:13px;">ISO 45001:2018 İş Sağlığı ve Güvenliği Tehlike, Risk ve Aksiyon Sicili. Toplam <strong>{{ kayitlar|length }}</strong> kayıt.</p>
+  </div>
+</div>
+
+<!-- Tehlike Listesi Tablosu -->
+<div class="section-card mb-24">
+{% if kayitlar %}
+<div class="data-table-wrapper">
+<table class="data-table">
+<thead>
+    <tr>
+        <th>Faaliyet / Alan</th>
+        <th>Tehlike Tanımı</th>
+        <th>Risk Çıktısı</th>
+        <th>Çalışan Grubu</th>
+        <th style="text-align:center;">Rutin mi?</th>
+        <th style="text-align:center;">Olasılık (O)</th>
+        <th style="text-align:center;">Şiddet (Ş)</th>
+        <th style="text-align:center;">Risk Skoru</th>
+        <th>Risk Seviyesi</th>
+        <th>Kontrol Hiyerarşisi</th>
+        <th>Mevcut Kontroller / Önlemler</th>
+        <th style="text-align:center;">Artık Risk</th>
+        <th style="text-align:center;">Durum</th>
+    </tr>
+</thead>
+<tbody>
+{% for r in kayitlar %}
+<tr>
+    <td><strong>{{ r.faaliyet }}</strong></td>
+    <td><code>{{ r.tehlike }}</code></td>
+    <td style="font-size:13px;">{{ r.risk or '—' }}</td>
+    <td style="font-size:12px;">{{ r.calisan_grubu or 'Tüm Çalışanlar' }}</td>
+    <td class="text-center">{{ 'Evet' if r.rutin_mi else 'Hayır' }}</td>
+    <td class="text-center" style="font-family:monospace;">{{ r.olasilik or 1 }}</td>
+    <td class="text-center" style="font-family:monospace;">{{ r.siddet or 1 }}</td>
+    <td class="text-center" style="font-family:monospace; font-weight:700;">
+        {% set skor = r.risk_skoru %}
+        <span class="badge" style="font-weight:700; background:{{ '#fee2e2' if skor >= 15 else ('#fef3c7' if skor >= 8 else '#d1fae5') }}; color:{{ '#991b1b' if skor >= 15 else ('#92400e' if skor >= 8 else '#065f46') }};">
+            {{ skor }}
+        </span>
+    </td>
+    <td style="font-weight:600; color:{{ '#ef4444' if r.risk_seviyesi=='Yüksek' else ('#f59e0b' if r.risk_seviyesi=='Orta' else '#10b981') }};">
+        {{ r.risk_seviyesi }}
+    </td>
+    <td style="font-size:11px;" class="text-muted">{{ r.kontrol_hiyerarsisi or '—' }}</td>
+    <td style="font-size:12px; max-width:200px;">{{ r.mevcut_kontroller or '—' }}</td>
+    <td class="text-center" style="font-family:monospace; font-weight:700; color:{{ '#ef4444' if (r.artik_risk or 0) >= 8 else 'var(--text-primary)' }};">
+        {{ r.artik_risk if r.artik_risk is not none else '—' }}
+    </td>
+    <td class="text-center">
+        <span class='status-badge {{ r.durum|slug }}'>{{ r.durum|enum }}</span>
+    </td>
+</tr>
+{% endfor %}
+</tbody></table>
+</div>
+{% else %}
+<div class="empty-state"><div class="empty-icon">⛑️</div><h3>Kayıt yok</h3></div>
+{% endif %}
+</div>
+
+<!-- Yeni Tehlike Ekleme Formu -->
+{% if can_edit %}
+<div class="section-card">
+    <div class="section-header" style="border-bottom:1px solid var(--border); padding:12px 20px;">
+        <span class="section-title">➕ Yeni Tehlike & Risk Değerlendirmesi Ekle</span>
+    </div>
+    <div class="section-body" style="padding:20px;">
+        <form method="POST" action="{{ url_for('ohs_hazards') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:16px; margin-bottom:16px;">
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label">Faaliyet / Süreç Adımı *</label>
+                    <input type="text" name="faaliyet" class="form-control" required placeholder="Örn: Forklift kullanımı, Yüksekte çalışma, Kimyasal hazırlama">
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label">Tehlike (Güvenlik Açığı / Kaynak) *</label>
+                    <input type="text" name="tehlike" class="form-control" required placeholder="Örn: Forklift devrilmesi, Merdivenden düşme, Buhar soluma">
+                </div>
+                
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label">Olası Risk Çıktısı (Yaralanma, Kaza vb.) *</label>
+                    <input type="text" name="risk" class="form-control" required placeholder="Örn: Ezilme, Kemik kırılması, Zehirlenme">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Etkilenen Çalışan Grubu</label>
+                    <input type="text" name="calisan_grubu" class="form-control" placeholder="Örn: Depo personeli, Bakım ekibi, Tüm çalışanlar">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">İş Rutin mi?</label>
+                    <select name="rutin_mi" class="form-control">
+                        <option value="1">Evet (Rutin Faaliyet)</option>
+                        <option value="0">Hayır (Rutin Dışı / Bakım vb.)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Olasılık (1-5) *</label>
+                    <select name="olasilik" class="form-control" required>
+                        <option value="1">1 - Çok Düşük</option>
+                        <option value="2">2 - Düşük</option>
+                        <option value="3" selected>3 - Orta</option>
+                        <option value="4">4 - Yüksek</option>
+                        <option value="5">5 - Çok Yüksek</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Şiddet (1-5) *</label>
+                    <select name="siddet" class="form-control" required>
+                        <option value="1">1 - Çok Düşük (Kayıpsız)</option>
+                        <option value="2">2 - Düşük (İlk yardım)</option>
+                        <option value="3" selected>3 - Orta (İş günü kaybı)</option>
+                        <option value="4">4 - Yüksek (Kalıcı hasar)</option>
+                        <option value="5">5 - Çok Yüksek (Ölüm/Uzuv kaybı)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Kontrol Hiyerarşisi Yöntemi *</label>
+                    <select name="kontrol_hiyerarsisi" class="form-control" required>
+                        {% for k in kontrol_hiyerarsisi %}
+                        <option value="{{ k }}" {{ 'selected' if k=='Kişisel Koruyucu Donanım' }}>{{ k }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Artık Risk Skoru (Önlemler Sonrası)</label>
+                    <input type="number" name="artik_risk" class="form-control" placeholder="Örn: 3">
+                </div>
+                
+                <div class="form-group" style="grid-column: span 3;">
+                    <label class="form-label">Mevcut Kontroller ve Ek Önlemler</label>
+                    <input type="text" name="mevcut_kontroller" class="form-control" placeholder="Örn: Hız sınırlayıcı tampon, Emniyet kemeri kontrolü, Çelik burunlu ayakkabı">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">İlgili Süreç</label>
+                    <select name="ilgili_surec_id" class="form-control">
+                        <option value="">— Süreç Seçiniz —</option>
+                        {% for p in processes %}
+                        <option value="{{ p.id }}">{{ p.ad }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Risk Durumu</label>
+                    <select name="durum" class="form-control">
+                        {% for d in risk_durumlari %}
+                        <option value="{{ d }}" {{ 'selected' if d=='Açık' }}>{{ d }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Risk Sorumlusu</label>
+                    <select name="sorumlu_id" class="form-control">
+                        <option value="">— Seçiniz —</option>
+                        {% for u in users %}
+                        <option value="{{ u.id }}">{{ u.ad_soyad }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" style="padding:10px 24px;">💾 Riski Kaydet</button>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,296 @@
+﻿{% extends "base.html" %}
+{% block title %}PPAP — {{ ppap.parca_no }} {{ ppap.parca_adi }}{% endblock %}
+
+{% block breadcrumb %}
+<span class="separator">›</span>
+<a href="{{ request.script_root }}/ppap">PPAP Yönetimi</a>
+<span class="separator">›</span>
+<span>{{ ppap.parca_no }}</span>
+{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="d-flex align-center justify-between mb-24">
+    <div>
+        <div class="d-flex align-center gap-8 mb-8">
+            <span class="ppap-level-badge" style="font-size: 13px; padding: 4px 12px;">Seviye {{ ppap.sunum_seviyesi }}</span>
+            <h2 style="font-size: 20px; font-weight: 700;">{{ ppap.parca_adi }}</h2>
+            <span class="ppap-status {{ ppap.durum|slug }}">{{ ppap.durum|enum }}</span>
+        </div>
+        <div class="d-flex align-center gap-16 text-muted" style="font-size: 13px;">
+            <span>Parça No: <strong style="color: var(--text-primary);">{{ ppap.parca_no }}</strong></span>
+            <span>Müşteri: <strong style="color: var(--text-primary);">{{ ppap.musteri }}</strong></span>
+            {% if ppap.sorumlu %}
+            <span>Sorumlu: <strong style="color: var(--text-primary);">{{ ppap.sorumlu.ad_soyad }}</strong></span>
+            {% endif %}
+        </div>
+    </div>
+    <div class="d-flex gap-8">
+        {% if session.get('rol') in ['Admin', 'Doküman Kontrol'] %}
+        <form method="POST" action="{{ request.script_root }}/ppap/{{ ppap.id }}/submit-approval" style="display:inline;">
+            <button type="submit" class="btn btn-primary">📤 Onaya Gönder</button>
+        </form>
+        <button class="btn btn-secondary" onclick="openModal('status-modal')">📝 Durum Güncelle</button>
+        {% endif %}
+    </div>
+</div>
+
+<!-- PPAP Onay Akışı -->
+{% if ppap.approvals %}
+<div class="section-card mb-24">
+    <div class="section-header"><span class="section-title">✅ Onay Akışı</span></div>
+    <div class="section-body" style="padding: 0;">
+        <table class="data-table">
+            <thead><tr><th>Adım</th><th>Kişi</th><th>Durum</th><th>Açıklama</th><th></th></tr></thead>
+            <tbody>
+                {% for a in ppap.approvals %}
+                <tr>
+                    <td>{{ a.onay_adimi|enum }}</td>
+                    <td>{{ a.kullanici.ad_soyad if a.kullanici else '-' }}</td>
+                    <td><span class="status-badge {{ a.durum|slug }}">{{ a.durum|enum }}</span></td>
+                    <td class="text-muted" style="font-size:12px;">{{ a.aciklama or '-' }}</td>
+                    <td>
+                        {% if a.durum == 'Bekliyor' and session.get('rol') in ['Admin', 'Doküman Kontrol'] %}
+                        <form method="POST" action="{{ request.script_root }}/ppap/approval/{{ a.id }}/approve" style="display:inline;">
+                            <button type="submit" class="btn btn-sm btn-success">✓</button>
+                        </form>
+                        <form method="POST" action="{{ request.script_root }}/ppap/approval/{{ a.id }}/reject" style="display:inline;">
+                            <input type="hidden" name="aciklama" value="Reddedildi">
+                            <button type="submit" class="btn btn-sm btn-danger">✕</button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+<!-- Bilgiler -->
+<div class="stats-grid mb-24" style="grid-template-columns: repeat(5, 1fr);">
+    <div class="stat-card">
+        <div class="stat-icon blue">📦</div>
+        <div class="stat-value">Lv.{{ ppap.sunum_seviyesi }}</div>
+        <div class="stat-label">Sunum Seviyesi</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon green">✅</div>
+        <div class="stat-value">{{ ppap.elements|selectattr('durum', 'equalto', 'Tamamlandı')|list|length }}</div>
+        <div class="stat-label">Tamamlanan</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon yellow">⏳</div>
+        <div class="stat-value">{{ ppap.elements|selectattr('durum', 'equalto', 'Hazırlanıyor')|list|length }}</div>
+        <div class="stat-label">Hazırlanıyor</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background: rgba(107,114,128,0.15); color: #9ca3af;">⬜</div>
+        <div class="stat-value">{{ ppap.elements|selectattr('durum', 'equalto', 'Hazırlanmadı')|list|length }}</div>
+        <div class="stat-label">Hazırlanmadı</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background: rgba(99,102,241,0.15); color: var(--text-accent);">🔵</div>
+        <div class="stat-value">%{{ ppap.tamamlanma_orani }}</div>
+        <div class="stat-label">Tamamlanma</div>
+    </div>
+</div>
+
+<!-- Progress Bar -->
+<div class="section-card mb-24">
+    <div class="section-body" style="padding: 16px 20px;">
+        <div class="d-flex justify-between align-center mb-8">
+            <span style="font-weight: 600; font-size: 13px;">Genel İlerleme</span>
+            <span style="font-size: 13px; color: var(--text-accent); font-weight: 700;">%{{ ppap.tamamlanma_orani }}</span>
+        </div>
+        <div class="ppap-progress-bar" style="height: 12px; border-radius: 6px;">
+            <div class="ppap-progress-fill" style="width: {{ ppap.tamamlanma_orani }}%; height: 12px; border-radius: 6px;"></div>
+        </div>
+        {% if ppap.revizyon_nedeni %}
+        <p class="text-muted" style="font-size: 12px; margin-top: 8px;">
+            📝 Revizyon Nedeni: {{ ppap.revizyon_nedeni }}
+        </p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- 18 Element Grid -->
+<div class="section-card">
+    <div class="section-header">
+        <span class="section-title">📋 PPAP 18 Element Durumu</span>
+    </div>
+    <div class="ppap-element-grid">
+        {% for elem in ppap.elements|sort(attribute='element_no') %}
+        <div class="ppap-element-card {{ elem.durum|slug }}" id="elem-{{ elem.element_no }}">
+            <div class="ppap-elem-header">
+                <span class="ppap-elem-no">{{ elem.element_no }}</span>
+                <span class="ppap-elem-status-dot {{ elem.durum|slug }}"></span>
+            </div>
+            <div class="ppap-elem-title">{{ elem.element_adi_tr }}</div>
+            <div class="ppap-elem-title-en">{{ elem.element_adi_en }}</div>
+            <div class="ppap-elem-status">
+                {% if elem.durum == 'Tamamlandı' %}✅
+                {% elif elem.durum == 'Hazırlanıyor' %}⏳
+                {% elif elem.durum == 'Uygulanamaz' %}🔵
+                {% else %}⬜{% endif %}
+                {{ elem.durum }}
+            </div>
+            {% if elem.dosya_adi %}
+            <div class="ppap-elem-file">📎 {{ elem.dosya_adi }}</div>
+            <div class="ppap-elem-actions">
+                <a href="{{ request.script_root }}/ppap/{{ ppap.id }}/element/{{ elem.element_no }}/preview"
+                   class="btn btn-sm btn-outline ppap-file-btn" target="_blank" title="Önizle">
+                    👁️ Önizle
+                </a>
+                <a href="{{ request.script_root }}/ppap/{{ ppap.id }}/element/{{ elem.element_no }}/download"
+                   class="btn btn-sm btn-outline ppap-file-btn" title="İndir">
+                    ⬇️ İndir
+                </a>
+            </div>
+            {% endif %}
+            {% if elem.notlar %}
+            <div class="ppap-elem-note">{{ elem.notlar }}</div>
+            {% endif %}
+
+            {% if session.get('rol') in ['Admin', 'Doküman Kontrol'] %}
+            <button class="btn btn-sm btn-outline ppap-elem-edit-btn"
+                    onclick="openElementModal({{ elem.element_no }}, {{ elem.element_adi_tr|tojson }}, '{{ elem.durum }}', {{ (elem.notlar or '')|tojson }}, '{{ elem.ilgili_document_id or '' }}')">
+                ✏️ Düzenle
+            </button>
+            {% if elem.ilgili_document %}
+            <div class="ppap-elem-note">🔗 {{ elem.ilgili_document.dokuman_no }}</div>
+            {% endif %}
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Tarihler -->
+<div class="section-card mt-24">
+    <div class="section-header">
+        <span class="section-title">📅 Tarihler & Notlar</span>
+    </div>
+    <div class="section-body">
+        <div class="info-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+            <div class="info-item">
+                <span class="info-label">Oluşturma Tarihi</span>
+                <span class="info-value">{{ ppap.olusturma_tarihi.strftime('%d.%m.%Y') if ppap.olusturma_tarihi else '-' }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Sunum Tarihi</span>
+                <span class="info-value">{{ ppap.sunum_tarihi.strftime('%d.%m.%Y') if ppap.sunum_tarihi else '-' }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Onay Tarihi</span>
+                <span class="info-value">{{ ppap.onay_tarihi.strftime('%d.%m.%Y') if ppap.onay_tarihi else '-' }}</span>
+            </div>
+        </div>
+        {% if ppap.notlar %}
+        <div style="margin-top: 16px; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 8px;">
+            <span style="font-size: 12px; color: var(--text-muted);">Notlar:</span>
+            <p style="font-size: 13px; margin-top: 4px;">{{ ppap.notlar }}</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Element Düzenleme Modal -->
+<div class="modal-overlay" id="element-modal">
+    <div class="modal">
+        <div class="modal-header">
+            <span class="modal-title" id="elem-modal-title">Element Düzenle</span>
+            <button class="modal-close" onclick="closeModal('element-modal')">✕</button>
+        </div>
+        <form method="POST" id="elem-form" enctype="multipart/form-data">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Durum</label>
+                    <select name="durum" id="elem-modal-durum" class="form-control">
+                        <option value="Hazırlanmadı">Hazırlanmadı</option>
+                        <option value="Hazırlanıyor">Hazırlanıyor</option>
+                        <option value="Tamamlandı">Tamamlandı</option>
+                        <option value="Uygulanamaz">Uygulanamaz</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Kontrollü Dokümana Bağla (isteğe bağlı)</label>
+                    <select name="ilgili_document_id" id="elem-modal-doc" class="form-control">
+                        <option value="">— Bağlı doküman yok —</option>
+                        {% for d in documents %}
+                        <option value="{{ d.id }}">{{ d.dokuman_no }} - {{ d.baslik }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="form-hint">Ayrı kopya yerine mevcut kontrollü dokümana referans verebilirsiniz.</span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Doküman Yükle</label>
+                    <input type="file" name="dosya" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Notlar</label>
+                    <textarea name="notlar" id="elem-modal-notlar" class="form-control" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('element-modal')">İptal</button>
+                <button type="submit" class="btn btn-primary">Kaydet</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Durum Güncelleme Modal -->
+<div class="modal-overlay" id="status-modal">
+    <div class="modal">
+        <div class="modal-header">
+            <span class="modal-title">📝 PPAP Durumunu Güncelle</span>
+            <button class="modal-close" onclick="closeModal('status-modal')">✕</button>
+        </div>
+        <form method="POST" action="{{ request.script_root }}/ppap/{{ ppap.id }}/status">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Durum</label>
+                    <select name="durum" class="form-control">
+                        {% for d in ["Hazırlanıyor", "İncelemede", "Onaylandı", "Reddedildi", "Koşullu Onay"] %}
+                        <option value="{{ d }}" {{ 'selected' if ppap.durum == d }}>{{ d }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Sunum Tarihi</label>
+                    <input type="date" name="sunum_tarihi" class="form-control"
+                           value="{{ ppap.sunum_tarihi.isoformat() if ppap.sunum_tarihi else '' }}">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Onay Tarihi</label>
+                    <input type="date" name="onay_tarihi" class="form-control"
+                           value="{{ ppap.onay_tarihi.isoformat() if ppap.onay_tarihi else '' }}">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Notlar</label>
+                    <textarea name="notlar" class="form-control" rows="3">{{ ppap.notlar or '' }}</textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('status-modal')">İptal</button>
+                <button type="submit" class="btn btn-primary">Güncelle</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openElementModal(no, title, durum, notlar, docId) {
+    document.getElementById('elem-modal-title').textContent = 'Element ' + no + ' — ' + title;
+    document.getElementById('elem-modal-durum').value = durum;
+    document.getElementById('elem-modal-notlar').value = notlar;
+    var docSel = document.getElementById('elem-modal-doc');
+    if (docSel) docSel.value = docId || '';
+    var base = (window.DYS_BASE || '').replace(/\/$/, '');
+    document.getElementById('elem-form').action = base + '/ppap/{{ ppap.id }}/element/' + no;
+    openModal('element-modal');
+}
+</script>
+{% endblock %}

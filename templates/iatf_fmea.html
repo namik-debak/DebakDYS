@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}FMEA — Action Priority{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><span>FMEA</span>{% endblock %}
+{% block content %}
+<div class="d-flex align-center justify-between mb-24" style="flex-wrap:wrap;gap:12px;">
+  <div>
+    <h2 style="font-size:20px;font-weight:700;">FMEA <span class="text-muted" style="font-size:13px;font-weight:400;">VDA/AIAG Handbook 2019</span></h2>
+    <p class="text-muted" style="font-size:13px;">Toplam <strong>{{ kayitlar|length }}</strong> kayıt</p>
+  </div>
+  {% if session.rol in ('Admin','Doküman Kontrol') %}
+  <a href="{{ url_for('fmea_new') }}" class="btn btn-primary" style="text-decoration:none;">
+    <span style="font-size:16px;">＋</span> Yeni FMEA
+  </a>
+  {% endif %}
+</div>
+
+{# ── Filtreler ─────────────────────────────────────────────────────── #}
+<div class="section-card mb-16" style="padding:12px 16px;">
+  <form method="get" class="d-flex align-center" style="gap:12px;flex-wrap:wrap;">
+    <select name="tip" class="form-control" style="width:auto;min-width:120px;">
+      <option value="">Tüm Tipler</option>
+      {% for t in tipler %}
+      <option value="{{ t }}" {{ 'selected' if tip_filtre == t }}>{{ t }}</option>
+      {% endfor %}
+    </select>
+    <select name="ap" class="form-control" style="width:auto;min-width:150px;">
+      <option value="">Tüm AP Seviyeleri</option>
+      <option value="H" {{ 'selected' if ap_filtre == 'H' }}>🔴 High</option>
+      <option value="M" {{ 'selected' if ap_filtre == 'M' }}>🟡 Medium</option>
+      <option value="L" {{ 'selected' if ap_filtre == 'L' }}>🟢 Low</option>
+    </select>
+    <button type="submit" class="btn btn-outline" style="padding:6px 16px;">Filtrele</button>
+    {% if tip_filtre or ap_filtre %}
+    <a href="{{ url_for('fmea_list') }}" class="text-muted" style="font-size:13px;">Temizle</a>
+    {% endif %}
+  </form>
+</div>
+
+{# ── Tablo ─────────────────────────────────────────────────────────── #}
+<div class="section-card">
+{% if kayitlar %}
+<div class="data-table-wrapper">
+<table class="data-table">
+<thead>
+  <tr>
+    <th>No</th>
+    <th>Tip</th>
+    <th>Kapsam / Parça-Proses</th>
+    <th>Müşteri</th>
+    <th>Adım</th>
+    <th>Rev.</th>
+    <th style="text-align:center;">AP Dağılımı</th>
+    <th style="text-align:center;">Satır</th>
+  </tr>
+</thead>
+<tbody>
+{% for r in kayitlar %}
+{% set oz = r.ap_ozet %}
+<tr style="cursor:pointer;" onclick="location.href='{{ url_for('fmea_detail', fmea_id=r.id) }}'">
+  <td><code>{{ r.fmea_no }}</code></td>
+  <td>
+    <span class="badge" style="background:{{ '#6366f1' if r.tip == 'DFMEA' else '#0ea5e9' }};color:#fff;font-size:11px;padding:2px 8px;border-radius:4px;">{{ r.tip }}</span>
+  </td>
+  <td>
+    {{ r.kapsam or '—' }}
+    {% if r.parca_proses %}<br><span class="text-muted" style="font-size:12px;">{{ r.parca_proses }}</span>{% endif %}
+  </td>
+  <td>{{ r.musteri or '—' }}</td>
+  <td>
+    <span class="text-muted" style="font-size:12px;">{{ r.mevcut_adim or '—' }}</span>
+  </td>
+  <td style="text-align:center;">{{ r.revizyon or '00' }}</td>
+  <td style="text-align:center;">
+    {% if oz.toplam > 0 %}
+    <span style="display:inline-flex;gap:4px;font-size:12px;font-weight:600;">
+      {% if oz.H > 0 %}<span style="background:{{ ap_renkler.H.bg }};color:{{ ap_renkler.H.fg }};padding:1px 6px;border-radius:3px;" title="High">{{ oz.H }}</span>{% endif %}
+      {% if oz.M > 0 %}<span style="background:{{ ap_renkler.M.bg }};color:{{ ap_renkler.M.fg }};padding:1px 6px;border-radius:3px;" title="Medium">{{ oz.M }}</span>{% endif %}
+      {% if oz.L > 0 %}<span style="background:{{ ap_renkler.L.bg }};color:{{ ap_renkler.L.fg }};padding:1px 6px;border-radius:3px;" title="Low">{{ oz.L }}</span>{% endif %}
+    </span>
+    {% else %}
+    <span class="text-muted">—</span>
+    {% endif %}
+  </td>
+  <td style="text-align:center;">{{ r.items|length }}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+{% else %}
+<div class="empty-state"><div class="empty-icon">📋</div><h3>FMEA kaydı yok</h3><p class="text-muted">Yeni bir FMEA oluşturmak için yukarıdaki butonu kullanın.</p></div>
+{% endif %}
+</div>
+{% endblock %}

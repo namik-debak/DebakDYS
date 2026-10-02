@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>{{ t.form_kodu }} {{ t.ad }} — {{ 'Kayıt ' ~ k.kayit_no if k else 'Boş form' }}</title>
+<style>
+  @page { size: A4; margin: 12mm 10mm 16mm 10mm; }
+  * { box-sizing: border-box; }
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 10.5pt; color: #000; margin: 0; background: #fff; }
+  .araclar { padding: 10px; background: #eef2f8; border-bottom: 1px solid #ccc; display: flex; gap: 10px; align-items: center; }
+  .araclar button { padding: 7px 14px; font-size: 13px; cursor: pointer; }
+  .sayfa { max-width: 190mm; margin: 0 auto; padding: 6mm 0; }
+  table { border-collapse: collapse; width: 100%; }
+  .antet td { border: 1px solid #555; padding: 4px 6px; font-size: 9pt; }
+  .antet .logo { width: 34mm; text-align: center; }
+  .antet .surec { text-align: center; font-weight: bold; font-size: 11pt; background: #d9e2f3; }
+  .antet .ad { text-align: center; font-weight: bold; font-size: 10.5pt; }
+  .antet .etk { width: 26mm; background: #d9e2f3; }
+  .antet .deg { width: 30mm; font-weight: bold; text-align: center; }
+  .cikti { display: flex; justify-content: space-between; font-size: 8.5pt; margin: 4px 0 10px; color: #333; }
+  .alan { display: flex; align-items: flex-end; gap: 8px; margin: 7px 0; page-break-inside: avoid; }
+  .alan .et { min-width: 48mm; font-weight: bold; font-size: 9.5pt; }
+  .alan .bos { flex: 1; border-bottom: 1px solid #000; min-height: 16px; padding: 0 4px; }
+  .uzun { border: 1px solid #000; min-height: 22mm; padding: 4px; margin-top: 3px; white-space: pre-wrap; }
+  h3 { font-size: 10.5pt; background: #eee; padding: 4px 6px; margin: 12px 0 6px; border-left: 3px solid #555; }
+  .liste td, .liste th { border: 1px solid #555; padding: 4px 5px; font-size: 9pt; vertical-align: middle; }
+  .liste th { background: #eee; }
+  .kutu { display: inline-block; width: 12px; height: 12px; border: 1px solid #000; vertical-align: middle; text-align: center; line-height: 11px; font-size: 10px; }
+  .imza td { border: 1px solid #555; padding: 5px 6px; font-size: 9pt; height: 16mm; vertical-align: top; width: 33%; }
+  .imza th { border: 1px solid #555; background: #eee; font-size: 9pt; padding: 3px; }
+  .not { font-size: 8pt; color: #333; margin-top: 8px; border-top: 1px solid #999; padding-top: 4px; }
+  @media print { .araclar { display: none; } .sayfa { padding: 0; } }
+</style>
+</head>
+<body>
+<div class="araclar">
+  <button onclick="window.print()">🖨️ Yazdır</button>
+  <a href="{{ request.script_root }}/forms/{{ t.id }}">← Forma dön</a>
+  <span style="font-size:12px;color:#555;">{{ 'Dolu kayıt çıktısı' if k else 'Boş form — sahada doldurulup DYS\'ye aktarılır' }} · Çıktı no: {{ cikti_no }}</span>
+</div>
+<div class="sayfa">
+  <table class="antet">
+    <tr>
+      <td class="logo" rowspan="4"><img src="{{ url_for('static', filename='branding/debak-logo.png') }}" alt="debak" style="max-width:30mm;max-height:13mm;"></td>
+      <td class="surec" rowspan="2">{{ (t.surec.kod ~ ' ' ~ t.surec.ad) | upper if t.surec else '' }}</td>
+      <td class="etk">Doküman Kodu</td><td class="deg">{{ t.form_kodu }}</td>
+    </tr>
+    <tr><td class="etk">Rev. No</td><td class="deg">{{ t.revizyon_no }}</td></tr>
+    <tr>
+      <td class="ad" rowspan="2">{{ t.ad }}</td>
+      <td class="etk">Rev. Tarihi</td><td class="deg">{{ t.document.yururluk_tarihi.strftime('%d.%m.%Y') if t.document and t.document.yururluk_tarihi else '—' }}</td>
+    </tr>
+    <tr><td class="etk">Kayıt No</td><td class="deg">{{ k.kayit_no if k else '' }}</td></tr>
+  </table>
+  <div class="cikti"><span>Çıktı no: <strong>{{ cikti_no }}</strong></span><span>Çıktıyı alan: {{ kullanici }} · {{ simdi.strftime('%d.%m.%Y %H:%M') }}</span></div>
+
+  {% for a in alanlar %}{% set tip = a.tip or 'metin' %}{% set v = veri.get(a.ad) if k else none %}
+    {% if tip == 'baslik' %}<h3>{{ a.ad }}</h3>
+    {% elif tip == 'kontrol_listesi' %}
+      {% set sec = a.secenekler or ['Uygun', 'Uygun Değil', 'Kapsam Dışı'] %}
+      <h3>{{ a.ad }}</h3>
+      <table class="liste">
+        <thead><tr><th style="width:8mm;">#</th><th>Madde</th>{% for s in sec %}<th style="width:19mm;">{{ s }}</th>{% endfor %}<th style="width:45mm;">Açıklama</th></tr></thead>
+        <tbody>
+        {% for m in a.maddeler or [] %}{% set d = (v[loop.index0] if v and v is not string and v|length > loop.index0 else {}) %}
+          <tr><td>{{ loop.index }}</td><td>{{ m }}</td>{% for s in sec %}<td style="text-align:center;"><span class="kutu">{{ '✕' if d.sonuc == s else '' }}</span></td>{% endfor %}<td>{{ d.aciklama or '' }}</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      {% if a.aciklama_zorunlu %}<div style="font-size:8pt;color:#333;">* {{ a.aciklama_zorunlu|join(', ') }} işaretlenen maddelerde açıklama yazılması zorunludur.</div>{% endif %}
+    {% elif tip == 'tablo' %}
+      {% set sut = a.sutunlar or ['Değer'] %}
+      <h3>{{ a.ad }}</h3>
+      <table class="liste"><thead><tr><th style="width:8mm;">#</th>{% for s in sut %}<th>{{ s }}</th>{% endfor %}</tr></thead><tbody>
+      {% set satirlar = (v if v and v is not string else []) %}
+      {% for r in range([satirlar|length, (a.satir or 8)|int]|max) %}
+        <tr style="height:8mm;"><td>{{ r + 1 }}</td>{% for s in sut %}<td>{{ satirlar[r].get(s, '') if r < satirlar|length else '' }}</td>{% endfor %}</tr>
+      {% endfor %}
+      </tbody></table>
+    {% elif tip == 'uzun_metin' %}
+      <div style="margin:8px 0;"><div class="et" style="font-weight:bold;font-size:9.5pt;">{{ a.ad }}</div><div class="uzun">{{ v or '' }}</div></div>
+    {% elif tip in ('secim', 'coklu_secim') and a.secenekler %}
+      <div class="alan"><span class="et">{{ a.ad }}</span><span style="flex:1;">{% for s in a.secenekler %}<span class="kutu">{{ '✕' if v and (s == v or (v is not string and s in v)) else '' }}</span> {{ s }}&nbsp;&nbsp;&nbsp;{% endfor %}</span></div>
+    {% elif tip == 'evet_hayir' %}
+      <div class="alan"><span class="et">{{ a.ad }}</span><span style="flex:1;"><span class="kutu">{{ '✕' if v == 'Evet' else '' }}</span> Evet &nbsp;&nbsp; <span class="kutu">{{ '✕' if v == 'Hayır' else '' }}</span> Hayır</span></div>
+    {% else %}
+      <div class="alan"><span class="et">{{ a.ad }}{{ ' (GG.AA.YYYY)' if tip == 'tarih' and not k else '' }}</span><span class="bos">{{ v or '' }}</span></div>
+    {% endif %}
+  {% endfor %}
+
+  <table class="imza" style="margin-top:14px;">
+    <tr><th>DOLDURAN (Ad Soyad / İmza / Tarih)</th><th>KONTROL / ONAY</th><th>DYS'YE AKTARAN</th></tr>
+    <tr>
+      <td>{% if k and k.olusturan %}{{ k.olusturan.ad_soyad }}<br>{{ k.olusturma_tarihi.strftime('%d.%m.%Y %H:%M') }}{% endif %}</td>
+      <td>{% if k and k.onaylayan %}{{ k.onaylayan.ad_soyad }} — {{ k.durum }}<br>{{ k.onay_tarihi.strftime('%d.%m.%Y %H:%M') if k.onay_tarihi else '' }}{% endif %}</td>
+      <td>{% if k %}{{ veri.get('_kaynak', 'DYS\'de elektronik doldurulmuştur') }}{% endif %}</td>
+    </tr>
+  </table>
+  <div class="not">
+    {% if k %}Bu çıktı DYS'deki {{ k.kayit_no }} numaralı kaydın kopyasıdır; geçerli kayıt DYS'deki elektronik kayıttır. Basılı kopyası kontrolsüzdür · DEBAK A.Ş.
+    {% else %}Bu form DYS'den {{ cikti_no }} numarasıyla alınmıştır. Doldurulduktan sonra en geç aynı vardiya içinde DYS'ye aktarılmalı ("Kağıt formdan aktarılıyor" seçeneği, çıktı no ve taranmış kağıt ile). Kağıt, DYS kaydı onaylanana kadar saklanır. Basılı kopyası kontrolsüzdür · DEBAK A.Ş.{% endif %}
+  </div>
+</div>
+</body>
+</html>

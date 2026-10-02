@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="tr"><head><meta charset="UTF-8"><title>{{ t.tutanak_no }} {{ t.tur }}</title>
+<style>
+@page{size:A4 landscape;margin:11mm 10mm 13mm 10mm;} *{box-sizing:border-box;} body{font-family:Arial,Helvetica,sans-serif;font-size:9.5pt;color:#000;margin:0;background:#fff;}
+.araclar{padding:10px 14px;background:#eef2f8;border-bottom:1px solid #ccc;display:flex;gap:12px;align-items:center;font-size:12.5px;} .araclar button{padding:6px 14px;cursor:pointer;}
+.sayfa{max-width:277mm;margin:0 auto;padding:6mm 0;} table{border-collapse:collapse;width:100%;}
+.antet td{border:1px solid #555;padding:4px 6px;font-size:9pt;} .antet .logo{width:34mm;text-align:center;} .antet .surec{text-align:center;font-weight:bold;font-size:11pt;background:#d9e2f3;}
+.antet .ad{text-align:center;font-weight:bold;font-size:12pt;} .antet .etk{width:30mm;background:#d9e2f3;} .antet .deg{width:34mm;font-weight:bold;text-align:center;}
+.bilgi td{border:1px solid #777;padding:4px 6px;font-size:9pt;vertical-align:top;} .bilgi th{border:1px solid #777;background:#eee;text-align:left;padding:4px 6px;width:34mm;font-size:9pt;vertical-align:top;}
+.liste th,.liste td{border:1px solid #777;padding:3px 5px;font-size:8.8pt;vertical-align:top;text-align:left;} .liste th{background:#eee;} .liste tr{page-break-inside:avoid;}
+.imza{margin-top:8mm;} .imza th{border:1px solid #555;background:#eee;font-size:9pt;padding:3px;} .imza td{border:1px solid #555;height:18mm;vertical-align:top;padding:5px;font-size:9pt;width:33%;}
+.not{font-size:7.5pt;color:#333;margin-top:6px;border-top:1px solid #999;padding-top:3px;} @media print{.araclar{display:none;} .sayfa{padding:0;max-width:none;}}
+</style></head><body>
+<div class="araclar"><button onclick="window.print()">🖨️ Yazdır / PDF</button><a href="{{ url_for('toplanti', tid=t.id) }}">← Tutanağa dön</a></div>
+<div class="sayfa">
+<table class="antet"><tr><td class="logo" rowspan="4"><img src="{{ url_for('static', filename='branding/debak-logo.png') }}" alt="debak" style="max-width:30mm;max-height:13mm;"></td>
+  <td class="surec" rowspan="2">{{ (surec.kod ~ ' ' ~ surec.ad)|upper if surec else 'Y01 YÖNETİM SORUMLULUĞU VE SÜREKLİ İYİLEŞTİRME' }} · Y01.4 İLETİŞİM</td><td class="etk">Doküman Kodu</td><td class="deg">{{ bilgi.form }}</td></tr>
+  <tr><td class="etk">Tutanak No</td><td class="deg">{{ t.tutanak_no }}</td></tr>
+  <tr><td class="ad" rowspan="2">{{ t.tur|upper }} TUTANAĞI</td><td class="etk">Tarih / Saat</td><td class="deg">{{ t.tarih.strftime('%d.%m.%Y') }} {{ t.saat or '' }}</td></tr>
+  <tr><td class="etk">Durum</td><td class="deg">{{ t.durum }}</td></tr></table>
+<table class="bilgi" style="margin-top:4mm;">
+  <tr><th>Konu</th><td>{{ t.konu or '' }}</td><th>Yer</th><td>{{ t.yer or '' }}</td></tr>
+  <tr><th>Katılımcılar</th><td colspan="3" style="white-space:pre-wrap;">{{ t.katilimcilar or '' }}</td></tr>
+  {% if t.gundem %}<tr><th>Gündem</th><td colspan="3" style="white-space:pre-wrap;">{{ t.gundem }}</td></tr>{% endif %}
+  {% for a, ad in bilgi.ek %}<tr><th>{{ ad }}</th><td colspan="3" style="white-space:pre-wrap;">{{ t.veri.get(a, '') or '—' }}</td></tr>{% endfor %}
+</table>
+<table class="liste" style="margin-top:4mm;"><thead><tr><th style="width:7mm;">#</th><th style="width:16%;">{{ bilgi.konu }}</th><th>{{ bilgi.gorusme }}</th><th>{{ bilgi.karar }}</th><th style="width:12%;">Sorumlu</th><th style="width:19mm;">Termin</th><th style="width:18mm;">Durum</th><th style="width:19mm;">Gerçekleşme</th></tr></thead><tbody>
+{% for m in t.maddeler %}<tr><td>{{ loop.index }}</td><td>{{ m.konu or '' }}</td><td style="white-space:pre-wrap;">{{ m.gorusme or '' }}</td><td style="white-space:pre-wrap;">{{ m.karar or '' }}{% if m.dof %} <i>({{ m.dof.dof_no }})</i>{% endif %}</td>
+  <td>{{ m.sorumlu.ad_soyad if m.sorumlu else '' }}{{ ' / ' if m.sorumlu and m.sorumlu_metin }}{{ m.sorumlu_metin or '' }}</td><td>{{ m.termin.strftime('%d.%m.%Y') if m.termin else '' }}</td><td>{{ m.durum }}</td><td>{{ m.gerceklesme_tarihi.strftime('%d.%m.%Y') if m.gerceklesme_tarihi else '' }}</td></tr>{% endfor %}
+</tbody></table>
+{% if t.notlar %}<p style="white-space:pre-wrap;font-size:9pt;"><b>Notlar:</b> {{ t.notlar }}</p>{% endif %}
+<table class="imza"><tr><th>Tutanağı Hazırlayan</th><th>Toplantı Başkanı</th><th>Onaylayan</th></tr><tr><td>Ad Soyad / İmza</td><td>Ad Soyad / İmza</td><td>Genel Müdür / Yönetim Temsilcisi<br>Ad Soyad / İmza</td></tr></table>
+<div class="not">DYS Toplantı Tutanakları modülünden alınmıştır (Y01.4 İletişim). Çıktıyı alan: {{ kullanici }} · {{ simdi.strftime('%d.%m.%Y %H:%M') }}. Güncel hali DYS'dedir; basılı kopya kontrolsüz kopyadır.</div>
+</div></body></html>

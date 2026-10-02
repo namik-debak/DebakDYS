@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Audit Bütünlük{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><span>Audit Bütünlük</span>{% endblock %}
+{% block content %}
+<div class="mb-24">
+  <h2 style="font-size:20px;font-weight:700;">Audit Log Hash Zinciri</h2>
+  <p class="text-muted" style="font-size:13px;">Değiştirilemez kayıt bütünlüğü doğrulaması</p>
+</div>
+<div class="stats-grid mb-24">
+  <div class="stat-card"><div class="stat-icon blue">🔍</div><div class="stat-value">{{ toplam }}</div><div class="stat-label">Toplam Kayıt</div></div>
+  <div class="stat-card {{ 'stat-card-alert' if bozuk else '' }}"><div class="stat-icon red">⚠️</div><div class="stat-value">{{ bozuk|length }}</div><div class="stat-label">Bozuk / Uyumsuz</div></div>
+</div>
+<div class="section-card">
+  <div class="section-body">
+  {% if bozuk %}
+    <p class="text-muted">Bozuk kayıt ID'leri:</p>
+    <code>{{ bozuk|join(', ') }}</code>
+  {% else %}
+    <p style="margin:0;">Hash zinciri bütün durumda. Bozuk kayıt bulunamadı.</p>
+  {% endif %}
+  </div>
+</div>
+{% endblock %}

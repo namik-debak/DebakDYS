@@ -1,0 +1,338 @@
+{% extends "base.html" %}
+{% block title %}FMEA {{ fmea.fmea_no }}{% endblock %}
+{% block breadcrumb %}
+<span class="separator">›</span><a href="{{ url_for('fmea_list') }}">FMEA</a>
+<span class="separator">›</span><span>{{ fmea.fmea_no }}</span>
+{% endblock %}
+{% block content %}
+
+{# ── Üst Bilgi Kartları ─────────────────────────────────────────── #}
+<div class="d-flex align-center justify-between mb-16" style="flex-wrap:wrap;gap:12px;">
+  <div>
+    <h2 style="font-size:20px;font-weight:700;">
+      <span class="badge" style="background:{{ '#6366f1' if fmea.tip == 'DFMEA' else '#0ea5e9' }};color:#fff;font-size:12px;padding:2px 10px;border-radius:4px;vertical-align:middle;">{{ fmea.tip }}</span>
+      {{ fmea.fmea_no }}
+      <span class="text-muted" style="font-size:13px;font-weight:400;margin-left:8px;">Rev. {{ fmea.revizyon or '00' }}</span>
+    </h2>
+    <p class="text-muted" style="font-size:13px;">
+      {{ fmea.kapsam or '' }}
+      {% if fmea.musteri %} · {{ fmea.musteri }}{% endif %}
+      {% if fmea.parca_proses %} · {{ fmea.parca_proses }}{% endif %}
+    </p>
+  </div>
+  <div class="d-flex" style="gap:8px;">
+    {% if session.rol in ('Admin','Doküman Kontrol') %}
+    <a href="{{ url_for('fmea_edit', fmea_id=fmea.id) }}" class="btn btn-outline" style="text-decoration:none;">✏️ Düzenle</a>
+    {% endif %}
+  </div>
+</div>
+
+{# ── AP Özet Kartları ─────────────────────────────────────────── #}
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px;">
+  <div class="section-card" style="padding:16px;text-align:center;border-left:4px solid {{ ap_renkler.H.bg }};">
+    <div style="font-size:28px;font-weight:800;color:{{ ap_renkler.H.bg }};">{{ ozet.H }}</div>
+    <div style="font-size:12px;color:var(--text-secondary);">🔴 HIGH</div>
+  </div>
+  <div class="section-card" style="padding:16px;text-align:center;border-left:4px solid {{ ap_renkler.M.bg }};">
+    <div style="font-size:28px;font-weight:800;color:{{ ap_renkler.M.bg }};">{{ ozet.M }}</div>
+    <div style="font-size:12px;color:var(--text-secondary);">🟡 MEDIUM</div>
+  </div>
+  <div class="section-card" style="padding:16px;text-align:center;border-left:4px solid {{ ap_renkler.L.bg }};">
+    <div style="font-size:28px;font-weight:800;color:{{ ap_renkler.L.bg }};">{{ ozet.L }}</div>
+    <div style="font-size:12px;color:var(--text-secondary);">🟢 LOW</div>
+  </div>
+  <div class="section-card" style="padding:16px;text-align:center;">
+    <div style="font-size:28px;font-weight:800;">{{ ozet.toplam }}</div>
+    <div style="font-size:12px;color:var(--text-secondary);">TOPLAM</div>
+  </div>
+</div>
+
+{# ── 7-Adım İlerleme Çubuğu ─────────────────────────────────── #}
+<div class="section-card mb-16" style="padding:16px;">
+  <div style="font-size:13px;font-weight:600;margin-bottom:10px;">7-Adım İlerleme</div>
+  <div style="display:flex;gap:4px;align-items:stretch;">
+    {% for a in adimlar %}
+    {% set aktif = (fmea.mevcut_adim == a) %}
+    {% set idx_mevcut = adimlar.index(fmea.mevcut_adim or '1-Planlama') %}
+    {% set idx_adim = loop.index0 %}
+    {% set tamamlandi = (idx_adim < idx_mevcut) %}
+    <div style="flex:1;text-align:center;padding:8px 4px;border-radius:6px;font-size:11px;font-weight:{{ '700' if aktif else '400' }};
+      background:{{ '#3b82f6' if aktif else ('#e0f2fe' if tamamlandi else 'var(--bg-tertiary)') }};
+      color:{{ '#fff' if aktif else ('#0369a1' if tamamlandi else 'var(--text-secondary)') }};">
+      {{ a }}
+    </div>
+    {% endfor %}
+  </div>
+  {% if session.rol in ('Admin','Doküman Kontrol') %}
+  <form method="post" action="{{ url_for('fmea_step', fmea_id=fmea.id) }}" class="d-flex align-center" style="gap:8px;margin-top:10px;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <select name="adim" class="form-control" style="width:auto;font-size:12px;">
+      {% for a in adimlar %}
+      <option value="{{ a }}" {{ 'selected' if fmea.mevcut_adim == a }}>{{ a }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-outline" style="padding:4px 12px;font-size:12px;">Adımı Güncelle</button>
+  </form>
+  {% endif %}
+</div>
+
+{# ── FMEA Satırları ─────────────────────────────────────────── #}
+<div class="section-card">
+  <div class="d-flex align-center justify-between" style="padding:16px 16px 12px;">
+    <h3 style="font-size:16px;font-weight:700;margin:0;">Hata Analizi Satırları</h3>
+    {% if session.rol in ('Admin','Doküman Kontrol') %}
+    <button type="button" class="btn btn-primary" style="font-size:13px;padding:6px 16px;" onclick="document.getElementById('addItemModal').style.display='flex'">
+      ＋ Satır Ekle
+    </button>
+    {% endif %}
+  </div>
+
+  {% if items %}
+  <div class="data-table-wrapper">
+  <table class="data-table" style="font-size:12px;">
+  <thead>
+    <tr>
+      <th style="width:30px;">#</th>
+      <th>Fonksiyon</th>
+      <th>Hata Türü</th>
+      <th>Etki</th>
+      <th style="text-align:center;width:30px;" title="Severity">S</th>
+      <th>Neden</th>
+      <th style="text-align:center;width:30px;" title="Occurrence">O</th>
+      <th>Önleme K.</th>
+      <th>Tespit K.</th>
+      <th style="text-align:center;width:30px;" title="Detection">D</th>
+      <th style="text-align:center;width:40px;" title="Action Priority">AP</th>
+      <th>Önerilen Aksiyon</th>
+      <th style="text-align:center;width:50px;">Revize AP</th>
+      <th style="width:90px;"></th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for item in items %}
+  {% set ap = item.action_priority %}
+  {% set ap_r = ap_renk(ap) %}
+  {% set yeni_ap = item.yeni_action_priority %}
+  <tr>
+    <td>{{ loop.index }}</td>
+    <td>{{ item.fonksiyon or '—' }}
+      {% if item.ozel_karakteristik %}
+        <span style="color:#dc2626;font-weight:700;font-size:10px;" title="{{ item.ozel_karakteristik_tip or 'SC' }}">◆{{ item.ozel_karakteristik_tip or '' }}</span>
+      {% endif %}
+    </td>
+    <td>{{ item.hata_turu or '—' }}</td>
+    <td>{{ item.etki or '—' }}</td>
+    <td style="text-align:center;font-weight:700;">{{ item.siddet }}</td>
+    <td>{{ item.neden or '—' }}</td>
+    <td style="text-align:center;font-weight:700;">{{ item.olusma }}</td>
+    <td>{{ item.onleme_kontrolu or item.mevcut_kontrol or '—' }}</td>
+    <td>{{ item.tespit_kontrolu or '—' }}</td>
+    <td style="text-align:center;font-weight:700;">{{ item.tespit }}</td>
+    <td style="text-align:center;">
+      <span style="display:inline-block;padding:2px 8px;border-radius:4px;font-weight:700;font-size:11px;background:{{ ap_r.bg }};color:{{ ap_r.fg }};">{{ ap }}</span>
+    </td>
+    <td style="max-width:180px;">
+      {{ item.onerilen_aksiyon or '—' }}
+      {% if item.aksiyon_durumu %}
+        <br><span class="badge" style="font-size:10px;padding:1px 6px;background:{{ '#16a34a' if item.aksiyon_durumu == 'Tamamlandı' else '#f59e0b' }};color:#fff;border-radius:3px;">{{ item.aksiyon_durumu }}</span>
+      {% endif %}
+    </td>
+    <td style="text-align:center;">
+      {% if yeni_ap %}
+        {% set yeni_r = ap_renk(yeni_ap) %}
+        <span style="display:inline-block;padding:2px 8px;border-radius:4px;font-weight:700;font-size:11px;background:{{ yeni_r.bg }};color:{{ yeni_r.fg }};">{{ yeni_ap }}</span>
+        <span class="text-muted" style="font-size:10px;display:block;">{{ item.yeni_siddet }}/{{ item.yeni_olusma }}/{{ item.yeni_tespit }}</span>
+      {% else %}
+        <span class="text-muted">—</span>
+      {% endif %}
+    </td>
+    <td style="white-space:nowrap;">
+      {% if session.rol in ('Admin','Doküman Kontrol') %}
+      <button type="button" class="btn btn-outline" style="padding:2px 8px;font-size:11px;" onclick="openActionModal({{ item.id }}, '{{ item.aksiyon_durumu or '' }}', '{{ (item.aksiyon_alinan or '')|replace("'", "\\'") }}')">⚡ Aksiyon</button>
+      <form method="post" action="{{ url_for('fmea_item_delete', fmea_id=fmea.id, item_id=item.id) }}" style="display:inline;" onsubmit="return confirm('Bu satırı silmek istediğinize emin misiniz?')">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="btn btn-outline" style="padding:2px 8px;font-size:11px;color:#dc2626;">🗑</button>
+      </form>
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+  </tbody>
+  </table>
+  </div>
+  {% else %}
+  <div class="empty-state" style="padding:40px;">
+    <div class="empty-icon">📊</div>
+    <h3>Henüz satır eklenmedi</h3>
+    <p class="text-muted">Hata analizi satırı eklemek için yukarıdaki butonu kullanın.</p>
+  </div>
+  {% endif %}
+</div>
+
+{# ═══════════════════════════════════════════════════════════════════ #}
+{#  Yeni Satır Ekleme Modal                                          #}
+{# ═══════════════════════════════════════════════════════════════════ #}
+<div id="addItemModal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;">
+  <div class="section-card" style="width:90%;max-width:800px;max-height:90vh;overflow-y:auto;padding:24px;">
+    <div class="d-flex align-center justify-between mb-16">
+      <h3 style="font-size:16px;font-weight:700;margin:0;">Yeni FMEA Satırı</h3>
+      <button type="button" onclick="document.getElementById('addItemModal').style.display='none'" style="background:none;border:none;font-size:20px;cursor:pointer;">✕</button>
+    </div>
+    <form method="post" action="{{ url_for('fmea_item_new', fmea_id=fmea.id) }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="form-group" style="grid-column:span 2;">
+          <label class="form-label">Fonksiyon / Gereklilik</label>
+          <input type="text" name="fonksiyon" class="form-control" placeholder="Proses adımı veya fonksiyon...">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Hata Türü (Failure Mode)</label>
+          <input type="text" name="hata_turu" class="form-control" placeholder="Potansiyel hata türü...">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Hata Etkisi (Effect)</label>
+          <input type="text" name="etki" class="form-control" placeholder="Hatanın etkisi...">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Şiddet (S) 1-10 *</label>
+          <input type="number" name="siddet" class="form-control" min="1" max="10" value="1" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Hata Nedeni (Cause)</label>
+          <input type="text" name="neden" class="form-control" placeholder="Potansiyel neden...">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Oluşma (O) 1-10 *</label>
+          <input type="number" name="olusma" class="form-control" min="1" max="10" value="1" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Önleme Kontrolü (PC)</label>
+          <input type="text" name="onleme_kontrolu" class="form-control" placeholder="Prevention Control...">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Tespit Kontrolü (DC)</label>
+          <input type="text" name="tespit_kontrolu" class="form-control" placeholder="Detection Control...">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Tespit (D) 1-10 *</label>
+          <input type="number" name="tespit" class="form-control" min="1" max="10" value="1" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" style="display:flex;align-items:center;gap:8px;">
+            <input type="checkbox" name="ozel_karakteristik" value="1"> Özel Karakteristik
+          </label>
+          <select name="ozel_karakteristik_tip" class="form-control" style="margin-top:4px;">
+            <option value="">— Tip —</option>
+            {% for t in ozel_tipleri %}
+            <option value="{{ t }}">{{ t }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group" style="grid-column:span 2;">
+          <label class="form-label">Önerilen Aksiyon</label>
+          <textarea name="onerilen_aksiyon" class="form-control" rows="2" placeholder="Önerilen iyileştirme aksiyonu..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Sorumlu</label>
+          <select name="sorumlu_id" class="form-control">
+            <option value="">— Seçiniz —</option>
+            {% for u in users %}
+            <option value="{{ u.id }}">{{ u.ad_soyad }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Filtre Kodu</label>
+          <input type="text" name="filtre_kodu" class="form-control" placeholder="Opsiyonel filtre kodu">
+        </div>
+      </div>
+
+      <div class="d-flex justify-end" style="margin-top:16px;gap:8px;">
+        <button type="button" class="btn btn-outline" onclick="document.getElementById('addItemModal').style.display='none'">İptal</button>
+        <button type="submit" class="btn btn-primary">✓ Ekle</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{# ═══════════════════════════════════════════════════════════════════ #}
+{#  Aksiyon Modal                                                     #}
+{# ═══════════════════════════════════════════════════════════════════ #}
+<div id="actionModal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;">
+  <div class="section-card" style="width:90%;max-width:600px;padding:24px;">
+    <div class="d-flex align-center justify-between mb-16">
+      <h3 style="font-size:16px;font-weight:700;margin:0;">⚡ Aksiyon & Yeniden Değerlendirme</h3>
+      <button type="button" onclick="document.getElementById('actionModal').style.display='none'" style="background:none;border:none;font-size:20px;cursor:pointer;">✕</button>
+    </div>
+    <form id="actionForm" method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      <div class="form-group">
+        <label class="form-label">Aksiyon Durumu</label>
+        <select name="aksiyon_durumu" id="aksiyon_durumu_field" class="form-control">
+          <option value="">— Seçiniz —</option>
+          {% for d in aksiyon_durumlari %}
+          <option value="{{ d }}">{{ d }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Alınan Aksiyon Açıklaması</label>
+        <textarea name="aksiyon_alinan" id="aksiyon_alinan_field" class="form-control" rows="3"></textarea>
+      </div>
+
+      <div id="reassessSection" style="display:none;border-top:1px solid var(--border);padding-top:16px;margin-top:16px;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:12px;color:#059669;">🔄 Yeniden Değerlendirme (Aksiyon Sonrası)</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+          <div class="form-group">
+            <label class="form-label">Yeni S (1-10)</label>
+            <input type="number" name="yeni_siddet" class="form-control" min="1" max="10">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Yeni O (1-10)</label>
+            <input type="number" name="yeni_olusma" class="form-control" min="1" max="10">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Yeni D (1-10)</label>
+            <input type="number" name="yeni_tespit" class="form-control" min="1" max="10">
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex justify-end" style="margin-top:16px;gap:8px;">
+        <button type="button" class="btn btn-outline" onclick="document.getElementById('actionModal').style.display='none'">İptal</button>
+        <button type="submit" class="btn btn-primary">✓ Kaydet</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+function openActionModal(itemId, durum, alinan) {
+  var f = document.getElementById('actionForm');
+  f.action = '/iatf/fmea/{{ fmea.id }}/item/' + itemId + '/action';
+  document.getElementById('aksiyon_durumu_field').value = durum || '';
+  document.getElementById('aksiyon_alinan_field').value = alinan || '';
+  document.getElementById('actionModal').style.display = 'flex';
+  toggleReassess();
+}
+
+document.getElementById('aksiyon_durumu_field').addEventListener('change', toggleReassess);
+
+function toggleReassess() {
+  var v = document.getElementById('aksiyon_durumu_field').value;
+  document.getElementById('reassessSection').style.display = (v === 'Tamamlandı') ? 'block' : 'none';
+}
+</script>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Modül Yönetimi{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><span>Modül Yönetimi</span>{% endblock %}
+{% block content %}
+<div class="d-flex align-center justify-between mb-24" style="flex-wrap:wrap;gap:12px;">
+  <div>
+    <h2 style="font-size:20px;font-weight:700;">Modül Yönetimi</h2>
+    <p class="text-muted" style="font-size:13px;">Sol menüde görünecek modülleri seçin. Kapatılan modül menüden kalkar ve adresine erişilemez;
+      <strong>kod ve kayıtlar silinmez</strong>, tekrar işaretleyerek geri açabilirsiniz. Değişiklikler işlem kaydına yazılır.</p>
+  </div>
+</div>
+<form method="POST">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="d-flex mb-16" style="gap:8px;">
+    <button class="btn btn-primary" type="submit">Kaydet</button>
+    <button class="btn btn-outline" type="button" onclick="document.querySelectorAll('input[name=acik]:not(:disabled)').forEach(c=>c.checked=true)">Tümünü aç</button>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;">
+  {% for bolum, mods in bolumler %}
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-title">{{ bolum }}</span>
+      <label style="font-size:12px;"><input type="checkbox" onchange="this.closest('.section-card').querySelectorAll('input[name=acik]:not(:disabled)').forEach(c=>c.checked=this.checked)" checked> bölümün tamamı</label>
+    </div>
+    <div class="section-body" style="padding:8px 16px;">
+      {% for m in mods %}
+      <label style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border-color);font-size:13px;">
+        <input type="checkbox" name="acik" value="{{ m.id }}" {% if m.zorunlu or m.id not in kapali %}checked{% endif %} {% if m.zorunlu %}disabled{% endif %}>
+        <span style="flex:1;">{{ m.ad }}</span>
+        <span class="text-muted" style="font-size:11px;">{{ m.url }}</span>
+        {% if m.zorunlu %}<span class="status-badge gray" title="Sisteme erişim için gerekli">Zorunlu</span>
+        {% elif m.id in kapali %}<span class="status-badge red">Kapalı</span>
+        {% else %}<span class="status-badge green">Açık</span>{% endif %}
+      </label>
+      {% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+  </div>
+</form>
+{% endblock %}

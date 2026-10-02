@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% block title %}Tedarikçi Yönetimi & Onaylı Tedarikçi Listesi{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><span>Tedarikçiler</span>{% endblock %}
+
+{% block content %}
+<div class="d-flex align-center justify-between mb-24" style="flex-wrap:wrap;gap:12px;">
+  <div>
+    <h2 style="font-size:20px;font-weight:700;">Onaylı Tedarikçi Listesi (ASL)</h2>
+    <p class="text-muted" style="font-size:13px;">IATF 16949 § 8.4 Dışarıdan Tedarik Edilen Proses, Ürün ve Hizmetlerin Kontrolü. Toplam <strong>{{ kayitlar|length }}</strong> tedarikçi.</p>
+  </div>
+  {% if can_edit %}
+  <div class="d-flex gap-8" style="flex-wrap:wrap;">
+    <a href="{{ url_for('suppliers_import_template') }}" class="btn btn-outline">📥 Şablon İndir</a>
+    <a href="{{ url_for('suppliers_import') }}" class="btn btn-outline">📤 Excel'den İçe Aktar</a>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Tedarikçi Listesi Tablosu -->
+<div class="section-card mb-24">
+{% if kayitlar %}
+<div class="data-table-wrapper">
+<table class="data-table">
+<thead>
+    <tr>
+        <th>Tedarikçi Kodu</th>
+        <th>Firma Adı / Unvanı</th>
+        <th>Kategori</th>
+        <th>Risk Sınıfı</th>
+        <th style="text-align:center;">Performans Puanı</th>
+        <th style="text-align:center;">ISO/IATF 16949</th>
+        <th>Sertifika Geçerlilik</th>
+        <th>İletişim Bilgileri</th>
+        <th style="text-align:center;">Onay Durumu</th>
+    </tr>
+</thead>
+<tbody>
+{% for r in kayitlar %}
+<tr>
+    <td><code style="color:var(--text-accent); font-weight:700;">{{ r.kod }}</code></td>
+    <td><strong>{{ r.ad }}</strong></td>
+    <td>{{ r.kategori }}</td>
+    <td>
+        <span class="badge" style="font-size:10px; font-weight:700; background:{{ '#fee2e2' if r.risk_sinifi=='Yüksek' else ('#fef3c7' if r.risk_sinifi=='Orta' else '#d1fae5') }}; color:{{ '#991b1b' if r.risk_sinifi=='Yüksek' else ('#92400e' if r.risk_sinifi=='Orta' else '#065f46') }};">
+            {{ r.risk_sinifi or 'Değerlendirilmedi' }}
+        </span>
+    </td>
+    <td class="text-center" style="font-family:monospace; font-weight:700;">
+        {% set puan = r.guncel_puan %}
+        {% if puan is not none %}
+        <span style="color:{{ '#ef4444' if puan < 70 else ('#f59e0b' if puan < 85 else '#10b981') }};">
+            {{ puan }}
+        </span>
+        {% else %}
+        <span class="text-muted">—</span>
+        {% endif %}
+    </td>
+    <td class="text-center">
+        {{ '✅ Evet' if r.iatf_sertifikali else '❌ Hayır' }}
+    </td>
+    <td style="font-size:12px; font-family:monospace;">{{ r.sertifika_bitis.strftime('%Y-%m-%d') if r.sertifika_bitis else '—' }}</td>
+    <td style="font-size:12px; color:var(--text-muted);">{{ r.iletisim or '—' }}</td>
+    <td class="text-center">
+        <span class='status-badge {{ r.onay_durumu|slug }}'>{{ r.onay_durumu }}</span>
+    </td>
+</tr>
+{% endfor %}
+</tbody></table>
+</div>
+{% else %}
+<div class="empty-state"><div class="empty-icon">📋</div><h3>Kayıt yok</h3></div>
+{% endif %}
+</div>
+
+<!-- Yeni Tedarikçi Ekleme Formu -->
+{% if can_edit %}
+<div class="section-card">
+    <div class="section-header" style="border-bottom:1px solid var(--border); padding:12px 20px;">
+        <span class="section-title">➕ Yeni Tedarikçi Kartı Ekle</span>
+    </div>
+    <div class="section-body" style="padding:20px;">
+        <form method="POST" action="{{ url_for('iatf_suppliers') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:16px; margin-bottom:16px;">
+                <div class="form-group">
+                    <label class="form-label">Tedarikçi Kodu *</label>
+                    <input type="text" name="kod" class="form-control" required placeholder="Örn: TED-103, T-908">
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label">Firma Adı / Ticari Unvan *</label>
+                    <input type="text" name="ad" class="form-control" required placeholder="Örn: Akme Plastik Kalıp A.Ş.">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Kategori *</label>
+                    <select name="kategori" class="form-control" required>
+                        <option value="Hammadde">Hammadde</option>
+                        <option value="Yarı Mamul">Yarı Mamul</option>
+                        <option value="Kaplama/Isıl İşlem">Kaplama / Isıl İşlem</option>
+                        <option value="Lojistik">Lojistik</option>
+                        <option value="Diğer">Diğer</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Risk Sınıfı *</label>
+                    <select name="risk_sinifi" class="form-control" required>
+                        <option value="Düşük" selected>Düşük Risk</option>
+                        <option value="Orta">Orta Risk</option>
+                        <option value="Yüksek">Yüksek Risk</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">ISO / IATF 16949 Sertifikalı?</label>
+                    <select name="iatf_sertifikali" class="form-control">
+                        <option value="0">Hayır</option>
+                        <option value="1" selected>Evet (Geçerli Sertifikalı)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Sertifika Bitiş Tarihi</label>
+                    <input type="date" name="sertifika_bitis" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Onay Durumu *</label>
+                    <select name="onay_durumu" class="form-control" required>
+                        <option value="Aday">Aday Tedarikçi</option>
+                        <option value="Onaylı" selected>Onaylı Tedarikçi</option>
+                        <option value="Koşullu Onaylı">Koşullu Onaylı</option>
+                        <option value="Yasaklı">Yasaklı / Engelli</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label">İletişim Bilgileri (Telefon, E-posta, Adres)</label>
+                    <input type="text" name="iletisim" class="form-control" placeholder="Örn: info@akmeplastik.com, +90 224 ...">
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label">Açıklama / Değerlendirme Notları</label>
+                    <input type="text" name="aciklama" class="form-control" placeholder="Kapasite, makine parkuru veya genel yetkinlik notları...">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" style="padding:10px 24px;">💾 Tedarikçiyi Kaydet</button>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

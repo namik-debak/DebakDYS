@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% block title %}Denetim Yönetimi{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><a href="{{ request.script_root }}/audits">İç Tetkik</a><span class="separator">›</span><span>Denetim Yönetimi</span>{% endblock %}
+{% block content %}
+<style>
+.hz-row{display:flex;gap:10px;align-items:flex-start;padding:10px 14px;border-bottom:1px solid var(--border);font-size:13px;}
+.hz-row:last-child{border-bottom:none;}
+.hz-dot{flex:0 0 auto;font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap;}
+.hz-kritik{background:rgba(239,68,68,.15);color:var(--color-danger,#ef4444);}
+.hz-uyari{background:var(--color-warning-bg,rgba(245,158,11,.15));color:var(--color-warning,#f59e0b);}
+.hz-bilgi{background:rgba(100,116,139,.15);color:#64748b;}
+.oto-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;}
+.oto-kpi{background:var(--bg-secondary);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center;}
+.oto-kpi b{display:block;font-size:22px;}
+.oto-kpi span{font-size:11px;color:var(--text-muted);text-transform:uppercase;}
+.dongu{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;font-size:12px;}
+.dongu div{border-left:3px solid var(--color-primary);padding:6px 10px;background:var(--bg-secondary);border-radius:4px;}
+</style>
+<div class="d-flex align-center justify-between mb-16" style="flex-wrap:wrap;gap:12px;">
+  <div>
+    <h2 style="font-size:20px;font-weight:700;">Denetim Yönetimi{% if secili %} — {{ secili.baslik }}{% endif %}</h2>
+    <p class="text-muted" style="font-size:13px;">{% if secili %}{{ secili.aciklama }}{% else %}Yıllık plan (Y01.6 F06) → tetkik açma → yetkin ve bağımsız denetçi ataması → soru listesi → bulgu → DÖF.{% endif %} Son çalışma: <strong>{{ ozet.son }}</strong></p>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+    <a class="btn btn-outline" href="{{ request.script_root }}/audits/program">📅 Denetim Planı</a>
+    <a class="btn btn-outline" href="{{ request.script_root }}/audits/auditors">🎓 İç Denetçiler</a>
+    <a class="btn btn-outline" href="{{ request.script_root }}/audits/checklists">📝 Soru Listeleri</a>
+    {% if can_edit %}
+    <form method="POST" style="display:inline;"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="calistir">
+      <button class="btn btn-primary" type="submit" title="Tarihi gelen plan kalemleri için denetim açar, bulguları ve DÖF'leri eşitler">▶️ Planı çalıştır</button></form>
+    {% endif %}
+  </div>
+</div>
+
+<style>
+.dt-sekme{display:flex;gap:4px;flex-wrap:wrap;border-bottom:1px solid var(--border);margin-bottom:14px;}
+.dt-sekme a{padding:9px 14px;text-decoration:none;color:var(--text-secondary,var(--text-muted));font-size:13.5px;border-bottom:3px solid transparent;display:flex;gap:7px;align-items:center;}
+.dt-sekme a.aktif{color:var(--color-primary);border-bottom-color:var(--color-primary);font-weight:700;}
+.dt-sekme .say{font-size:11px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:10px;padding:0 7px;}
+.dt-sekme .kr{background:rgba(239,68,68,.15);color:var(--color-danger,#ef4444);border-color:transparent;}
+.dt-tb{width:100%;border-collapse:collapse;font-size:12.5px;} .dt-tb th,.dt-tb td{padding:7px 9px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top;}
+.dt-tb th{font-size:11px;text-transform:uppercase;color:var(--text-muted);} .gec{color:var(--color-danger,#ef4444);font-weight:700;}
+</style>
+<div class="dt-sekme">
+  <a href="{{ url_for('audit_automation') }}" class="{{ 'aktif' if not tur }}">📋 Tümü{% if toplam_kritik %}<span class="say kr">{{ toplam_kritik }}</span>{% endif %}</a>
+  {% for s in sekmeler %}<a href="{{ url_for('audit_automation', tur=s.kod) }}" class="{{ 'aktif' if tur == s.kod }}">{{ {'Süreç': '🔄', 'Proses': '⚙️', 'Ürün': '📦', 'Saha': '🦺'}[s.kod] }} {{ 'Saha (İSG – 5S)' if s.kod == 'Saha' else s.kod }}
+    <span class="say" title="{{ yil }} plan kalemi / açılmış">{{ s.acilan }}/{{ s.kalem }}</span>{% if s.kritik %}<span class="say kr" title="kritik uyarı">{{ s.kritik }}</span>{% endif %}</a>{% endfor %}
+</div>
+
+<div class="section-card mb-16"><div class="section-body">
+  <div class="oto-grid">
+  {% if secili %}
+    <div class="oto-kpi"><b>{{ ozet.kalem }}</b><span>{{ yil }} plan kalemi</span></div>
+    <div class="oto-kpi"><b>{{ ozet.acilan }}</b><span>Denetimi açılmış</span></div>
+    <div class="oto-kpi"><b>{{ ozet.tamam }}</b><span>Tamamlanan</span></div>
+    <div class="oto-kpi"><b style="{{ 'color:var(--color-danger,#ef4444);' if ozet.geciken }}">{{ ozet.geciken }}</b><span>Geciken</span></div>
+    <div class="oto-kpi"><b style="{{ 'color:var(--color-danger,#ef4444);' if ozet.bulgu }}">{{ ozet.bulgu }}</b><span>DÖF'süz uygunsuzluk</span></div>
+    <div class="oto-kpi"><b style="color:var(--color-danger,#ef4444);">{{ tum|selectattr('seviye','equalto','kritik')|list|length }}</b><span>Kritik uyarı</span></div>
+  {% else %}
+    <div class="oto-kpi"><b>{{ ozet.kalem }}</b><span>{{ yil }} plan kalemi</span></div>
+    <div class="oto-kpi"><b>{{ ozet.ic }}</b><span>İç denetim (DYS'de yürütülen)</span></div>
+    <div class="oto-kpi"><b>{{ ozet.acilan }}</b><span>Denetimi açılmış</span></div>
+    <div class="oto-kpi"><b>{{ ozet.oto }}</b><span>Plandan açılan</span></div>
+    <div class="oto-kpi"><b>{{ ozet.denetci }}</b><span>Aktif iç denetçi</span></div>
+    <div class="oto-kpi"><b style="color:var(--color-danger,#ef4444);">{{ tum|selectattr('seviye','equalto','kritik')|list|length }}</b><span>Kritik uyarı</span></div>
+  {% endif %}
+  </div>
+</div></div>
+
+{% if secili %}
+<div class="section-card mb-16">
+  <div class="section-header"><span class="section-title">📅 {{ yil }} {{ secili.baslik }} planı ({{ plan|length }})</span></div>
+  <div class="section-body" style="padding:0;overflow:auto;">
+  <table class="dt-tb"><thead><tr><th>Plan tarihi</th>
+    <th>{{ {'Süreç': 'Süreç', 'Proses': 'Proses / hat', 'Ürün': 'Ürün / parça', 'Saha': 'Alan / bölüm'}[tur] }}</th>
+    {% if tur == 'Ürün' %}<th>Ürün adı</th>{% endif %}{% if tur == 'Süreç' %}<th>Standart</th>{% endif %}
+    <th>Denetçi</th><th>Durum</th><th>Denetim</th></tr></thead><tbody>
+  {% for x in plan %}{% set i = x.i %}
+    <tr><td class="{{ 'gec' if x.gec }}">{{ x.tarih.strftime('%d.%m.%Y') if x.tarih else '—' }}{{ ' ⚠' if x.gec }}</td>
+      <td>{{ i.kalem_adi or i.denetim_tipi }}{% if i.surec %}<div class="text-muted" style="font-size:11px;">{{ i.surec.kod }} {{ i.surec.ad }}</div>{% endif %}</td>
+      {% if tur == 'Ürün' %}<td>{{ i.urun_adi or '' }}</td>{% endif %}{% if tur == 'Süreç' %}<td>{{ i.ilgili_standart or '' }}</td>{% endif %}
+      <td>{{ i.tetkik_eden.ad_soyad if i.tetkik_eden else (i.denetci_metin or '—') }}</td>
+      <td>{{ i.durum or 'Planlandı' }}</td>
+      <td>{% if i.audit_id %}<a href="{{ request.script_root }}/audits/{{ i.audit_id }}">Denetimi aç →</a>
+          {% elif can_edit and i.durum not in ('Tamamlandı', 'İptal') %}<form method="POST" action="{{ request.script_root }}/audits/program/item/{{ i.id }}/ac" style="display:inline;"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-sm btn-outline" type="submit">▶ Denetim aç</button></form>{% endif %}</td></tr>
+  {% else %}<tr><td colspan="7" class="text-muted">{{ yil }} planında bu türde kalem yok.</td></tr>{% endfor %}
+  </tbody></table></div>
+</div>
+<div class="section-card mb-16">
+  <div class="section-header"><span class="section-title">🔍 {{ secili.baslik }} ({{ denetimler|length }})</span></div>
+  <div class="section-body" style="padding:0;overflow:auto;">
+  <table class="dt-tb"><thead><tr><th>No</th><th>Başlık</th><th>Plan</th><th>Gerçekleşen</th><th>Denetçi</th><th>Bulgu</th><th>Durum</th></tr></thead><tbody>
+  {% for a in denetimler %}
+    <tr><td><a href="{{ request.script_root }}/audits/{{ a.id }}"><strong>{{ a.tetkik_no }}</strong></a></td><td>{{ a.baslik }}{% if a.urun_adi %}<div class="text-muted" style="font-size:11px;">{{ a.urun_adi }}</div>{% endif %}</td>
+      <td>{{ a.planlanan_tarih.strftime('%d.%m.%Y') if a.planlanan_tarih else '' }}</td><td>{{ a.gerceklesen_tarih.strftime('%d.%m.%Y') if a.gerceklesen_tarih else '' }}</td>
+      <td>{{ a.tetkik_eden.ad_soyad if a.tetkik_eden else '—' }}</td><td>{{ a.findings|length }}</td><td>{{ a.durum }}</td></tr>
+  {% else %}<tr><td colspan="7" class="text-muted">Bu türde açılmış denetim yok.</td></tr>{% endfor %}
+  </tbody></table></div>
+</div>
+{% endif %}
+
+{% if benim %}
+<div class="section-card mb-16" style="border-left:4px solid var(--color-primary);">
+  <div class="section-header"><span class="section-title">🔔 Size ait hatırlatmalar ({{ benim|length }})</span></div>
+  <div class="section-body" style="padding:0;">
+    {% for h in benim %}<div class="hz-row"><span class="hz-dot hz-{{ h.seviye }}">{{ h.tur }}</span><a href="{{ request.script_root }}{{ h.url }}">{{ h.mesaj }}</a></div>{% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<div class="section-card mb-16">
+  <div class="section-header"><span class="section-title">📋 {{ 'Hatırlatmalar' if secili else 'Tüm hatırlatmalar' }} ({{ tum|length }})</span></div>
+  <div class="section-body" style="padding:0;max-height:520px;overflow:auto;">
+    {% for h in tum %}<div class="hz-row"><span class="hz-dot hz-{{ h.seviye }}">{{ h.tur }}</span><a href="{{ request.script_root }}{{ h.url }}">{{ h.mesaj }}</a></div>
+    {% else %}<div class="hz-row text-muted">Hatırlatma yok — her şey yolunda.</div>{% endfor %}
+  </div>
+</div>
+
+<div class="section-card mb-16">
+  <div class="section-header"><span class="section-title">⚙️ Denetim döngüsü</span></div>
+  <div class="section-body">
+    <div class="dongu">
+      <div><b>1. Plan</b><br>Y01.6 F06 yıllık planı içe aktarılır; her kalemin ayı, günü, kategorisi ve denetçi kodları tutulur.</div>
+      <div><b>2. Denetimin açılması</b><br>Plan tarihinden {{ ayarlar.denetim_gun_once }} gün önce tetkik kaydı açılır ve 11 süreçlik yapıya uygun soru listesi bağlanır.</div>
+      <div><b>3. Ekip</b><br>Plandaki denetçi yetkin değilse (IATF / Core Tools / 14001 / 27001, S-P-Ü türü, geçerlilik) veya kendi sürecini denetleyecekse, yükü en az olan yetkin ve bağımsız denetçi atanır.</div>
+      <div><b>4. Bulgu → DÖF</b><br>"Uygunsuz" ve "Kısmen Uygun" cevaplar bulgu olarak kaydedilir; denetim "Tamamlandı" olunca uygunsuzluklar için DÖF açılır.</div>
+      <div><b>5. Hatırlatma</b><br>Her gün ilgili denetçiye e-posta gider (SMTP tanımlıysa); üst menüde ve bu sayfada rozet olarak görünür.</div>
+    </div>
+  </div>
+</div>
+
+{% if can_edit %}
+<div class="section-card mb-16">
+  <div class="section-header"><span class="section-title">Ayarlar</span></div>
+  <div class="section-body">
+    <form method="POST" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;align-items:end;">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="ayarlar">
+      <label><input type="checkbox" name="denetim_otomatik" value="1" {% if ayarlar.denetim_otomatik == '1' %}checked{% endif %}> Plan tarihi gelince denetimi aç</label>
+      <label><input type="checkbox" name="denetim_dof_otomatik" value="1" {% if ayarlar.denetim_dof_otomatik == '1' %}checked{% endif %}> Tamamlanan denetimde uygunsuzluk → DÖF</label>
+      <label><input type="checkbox" name="denetim_eposta" value="1" {% if ayarlar.denetim_eposta == '1' %}checked{% endif %}> Hatırlatma e-postası gönder</label>
+      <div class="form-group"><label class="form-label">Plan tarihinden kaç gün önce açılsın</label><input type="number" min="0" max="90" name="denetim_gun_once" value="{{ ayarlar.denetim_gun_once }}" class="form-control"></div>
+      <div class="form-group"><label class="form-label">Yaklaşan denetim uyarısı (gün)</label><input type="number" min="1" max="60" name="denetim_hatirlatma_gun" value="{{ ayarlar.denetim_hatirlatma_gun }}" class="form-control"></div>
+      <button class="btn btn-primary" type="submit">Kaydet</button>
+    </form>
+  </div>
+</div>
+<div class="section-card">
+  <div class="section-header"><span class="section-title">Plan ve soru listesi içe aktar</span></div>
+  <div class="section-body">
+    <form method="POST" enctype="multipart/form-data" class="filters-bar" style="flex-wrap:wrap;gap:10px;">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="ice_aktar">
+      <input type="file" name="dosyalar" accept=".json" multiple required>
+      <label style="font-size:13px;"><input type="checkbox" name="degistir" value="1"> Plan varsa yeniden yükle (açılmış denetimler korunur)</label>
+      <button class="btn btn-primary" type="submit">İçe aktar</button>
+    </form>
+    <p class="text-muted" style="font-size:12px;margin-top:8px;">'YENİ YAPI\DYS Aktarım\Denetim' klasöründeki <code>soru_listeleri.json</code> (16 eski listeden birleştirilmiş 11 süreç listesi), <code>saha_soru_listeleri.json</code> (Y01.6 F07 saha listeleri: İSG ve Çevre, Üretim, Kalıphane, Kalite &amp; Ara İşlem), <code>proses_urun_soru_listeleri.json</code> (Y01.6 F08 Proses, Y01.6 F10 Ürün) ve <code>denetim_plani_YYYY.json</code> (F06 yıl sayfası + denetçi kalifikasyon matrisi). Cevap verilmiş soru listeleri değiştirilmez.</p>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

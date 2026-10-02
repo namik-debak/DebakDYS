@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Atıf Bütünlüğü{% endblock %}
+
+{% block breadcrumb %}
+<span class="separator">›</span>
+<a href="{{ request.script_root }}/reports">Raporlar</a>
+<span class="separator">›</span>
+<span>Atıf Bütünlüğü</span>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex align-center justify-between mb-24" style="flex-wrap:wrap;gap:12px;">
+    <div>
+        <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 4px;">🔗 Atıf Bütünlüğü Raporu</h2>
+        <p class="text-muted" style="font-size: 13px;">Yürürlükteki ve taslak dokümanların DYS içeriğinde verilen atıflardan, DYS'de olmayan, Eskimiş / İptal ya da hariç tutulan dokümanı gösterenler.
+        {{ ozet.taranan }} doküman, {{ ozet.atif }} atıf tarandı. Eski koda bilgi amaçlı yapılan anmalar ("eski: …") sayılmaz; Word / Excel dosya içleri taranmaz.</p>
+    </div>
+    <span class="d-flex gap-8">
+        <a href="{{ url_for('rapor_atiflar_csv') }}" class="btn btn-outline">⬇ Excel (CSV)</a>
+        <a href="{{ request.script_root }}/reports" class="btn btn-secondary">← Raporlar</a>
+    </span>
+</div>
+
+<form method="GET" class="d-flex gap-8 mb-24" style="align-items:center;">
+    <label class="text-muted" style="font-size:13px;">Sorun türü</label>
+    <select name="sorun" class="form-control" style="max-width:320px;" onchange="this.form.submit()">
+        <option value="">Tümü</option>
+        {% for t in turler %}<option value="{{ t }}" {{ 'selected' if t == tur else '' }}>{{ t }}</option>{% endfor %}
+    </select>
+</form>
+
+<div class="section-card">
+    {% if satirlar %}
+    <div class="data-table-wrapper">
+        <table class="data-table">
+            <thead><tr><th>Kaynak doküman</th><th>Başlık</th><th>Durum</th><th>Atıf yapılan kod</th><th>Sorun</th><th>Öneri</th></tr></thead>
+            <tbody>
+            {% for s in satirlar %}
+            <tr>
+                <td><a href="{{ url_for('document_detail', doc_id=s.kaynak.id) }}"><code>{{ s.kaynak.dokuman_no }}</code></a></td>
+                <td>{{ s.kaynak.baslik }}</td>
+                <td class="text-muted">{{ s.kaynak.durum }}</td>
+                <td><code style="color: var(--text-accent);">{{ s.kod }}</code></td>
+                <td>{{ s.sorun }}</td>
+                <td class="text-muted">{{ s.oneri }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <p class="text-muted" style="font-size:12px;padding:8px 12px;">{{ satirlar|length }} sorunlu atıf.</p>
+    {% else %}
+    <div class="empty-state"><div class="empty-icon">✅</div><h3>Sorunlu atıf yok</h3><p>Tüm atıflar DYS'deki yürürlükteki / taslak dokümanları gösteriyor.</p></div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}Risk Kaydı{% endblock %}
+
+{% block breadcrumb %}
+<span class="separator">›</span>
+<span>Risk Kaydı</span>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex align-center justify-between mb-24">
+    <div>
+        <h2 style="font-size: 20px; font-weight: 700;">Risk Kaydı</h2>
+        <p class="text-muted" style="font-size: 13px;">Toplam <strong style="color: var(--text-primary);">{{ kayitlar|length }}</strong> risk</p>
+    </div>
+    <a href="{{ request.script_root }}/risks/new" class="btn btn-primary">➕ Yeni Risk</a>
+</div>
+
+<div style="display:grid; grid-template-columns: 1.6fr 1fr; gap: 16px; align-items: start;">
+    <!-- Risk tablosu -->
+    <div>
+        <div class="section-card mb-16">
+            <div class="section-body" style="padding: 12px 16px;">
+                <form method="GET" action="{{ request.script_root }}/risks" class="filters-bar">
+                    <div class="filter-group">
+                        <label class="filter-label">Kategori:</label>
+                        <select name="kategori" class="filter-select" onchange="this.form.submit()">
+                            <option value="">Tümü</option>
+                            {% for k in kategoriler %}
+                            <option value="{{ k }}" {{ 'selected' if request.args.get('kategori') == k }}>{{ k|enum }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Durum:</label>
+                        <select name="durum" class="filter-select" onchange="this.form.submit()">
+                            <option value="">Tümü</option>
+                            {% for d in durumlar %}
+                            <option value="{{ d }}" {{ 'selected' if request.args.get('durum') == d }}>{{ d|enum }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="section-card">
+            {% if kayitlar %}
+            <div class="data-table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Risk No</th><th>Tanım</th><th>Kategori</th><th>O×E</th><th>Skor</th><th>Seviye</th><th>Durum</th><th></th></tr>
+                    </thead>
+                    <tbody>
+                        {% for r in kayitlar %}
+                        <tr>
+                            <td><code style="color: var(--text-accent);">{{ r.risk_no }}</code></td>
+                            <td>{{ r.tanim[:60] }}{{ '…' if r.tanim|length > 60 }}</td>
+                            <td style="font-size:12px;">{{ r.kategori|enum }}</td>
+                            <td class="text-center" style="font-size:12px;">{{ r.olasilik }}×{{ r.etki }}</td>
+                            <td class="text-center"><strong>{{ r.risk_skoru }}</strong></td>
+                            <td><span class="risk-badge {{ r.risk_seviyesi|slug }}">{{ r.risk_seviyesi|enum }}</span></td>
+                            <td><span class="status-badge {{ r.durum|slug }}">{{ r.durum|enum }}</span></td>
+                            <td><a href="{{ request.script_root }}/risks/{{ r.id }}/edit" class="btn btn-sm btn-outline">Düzenle</a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">⚠️</div>
+                <h3>Risk kaydı bulunamadı</h3>
+                <a href="{{ request.script_root }}/risks/new" class="btn btn-primary">Yeni Risk Ekle</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Isı haritası -->
+    <div class="section-card">
+        <div class="section-header" style="padding: 12px 16px;"><strong>Risk Isı Haritası</strong></div>
+        <div class="section-body" style="padding: 16px;">
+            <table class="risk-heatmap">
+                <thead>
+                    <tr><th></th><th colspan="5" style="font-weight:600;">Etki →</th></tr>
+                    <tr><th>Olasılık ↓</th>{% for e in range(1,6) %}<th>{{ e }}</th>{% endfor %}</tr>
+                </thead>
+                <tbody>
+                    {% for o in range(5,0,-1) %}
+                    <tr>
+                        <th>{{ o }}</th>
+                        {% for e in range(1,6) %}
+                        {% set skor = o * e %}
+                        {% set adet = heatmap[(o, e)] %}
+                        {% set cls = 'hm-high' if skor >= 15 else ('hm-mid' if skor >= 8 else 'hm-low') %}
+                        <td class="hm-cell {{ cls if adet > 0 else 'hm-empty' }}">{{ adet if adet > 0 else '' }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <p class="text-muted" style="font-size: 11px; margin-top: 10px;">
+                Hücrelerdeki sayılar, o olasılık/etki bileşimindeki açık risk adedidir.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

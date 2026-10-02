@@ -1,0 +1,249 @@
+{% extends "base.html" %}
+{% block title %}{{ _('Panel') }}{% endblock %}
+
+{% block content %}
+<!-- Compliance Banner -->
+<div class="compliance-banner">
+    <span class="banner-icon">🛡️</span>
+    <span class="banner-text">{{ _('Bu sistem IATF 16949, ISO 14001, ISO 45001 ve ISO 27001 doküman kontrolü (Madde 7.5) gerekliliklerini karşılamaktadır.') }}</span>
+    <div class="banner-standards">
+        <span class="std-badge iatf">IATF 16949</span>
+        <span class="std-badge iso14001">ISO 14001</span>
+        <span class="std-badge iso45001">ISO 45001</span>
+        <span class="std-badge iso27001">ISO 27001</span>
+    </div>
+</div>
+
+<!-- Bana Atanan Görevler (kişiselleştirilmiş) -->
+{% if benim and (benim.onaylarim or benim.acik_dof or benim.okunmamis or benim.toplam) %}
+<div class="section-card mb-16" style="border-left: 4px solid var(--primary);">
+    <div class="section-header" style="padding:12px 16px;">
+        <span class="section-title">📌 {{ _('Bana Atanan Görevler') }}</span>
+        {% if benim.toplam is not none %}<a href="{{ request.script_root }}/islerim" class="btn btn-sm btn-primary">📥 {{ _('İşlerim') }}: <strong>{{ benim.toplam }}</strong> →</a>{% endif %}
+    </div>
+    <div class="section-body" style="padding:12px 16px; display:flex; gap:12px; flex-wrap:wrap;">
+        {% if benim.onaylarim %}
+        <a href="{{ request.script_root }}/approvals" class="btn btn-outline btn-sm">✅ {{ _('Bekleyen Onaylarım') }}: <strong>{{ benim.onaylarim }}</strong></a>
+        {% endif %}
+        {% if benim.acik_dof %}
+        <a href="{{ request.script_root }}/capa" class="btn btn-outline btn-sm">🛠️ {{ _('Açık DÖF') }}: <strong>{{ benim.acik_dof }}</strong></a>
+        {% endif %}
+        {% if benim.okunmamis %}
+        <a href="{{ request.script_root }}/distributions" class="btn btn-outline btn-sm">📨 {{ _('Okunmamış Dağıtım') }}: <strong>{{ benim.okunmamis }}</strong></a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Stats -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon blue">📄</div>
+        <div class="stat-value">{{ stats.toplam_dokuman }}</div>
+        <div class="stat-label">{{ _('Toplam Doküman') }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon green">✅</div>
+        <div class="stat-value">{{ stats.onayli }}</div>
+        <div class="stat-label">{{ _('Onaylı Doküman') }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon yellow">⏳</div>
+        <div class="stat-value">{{ stats.bekleyen_onay }}</div>
+        <div class="stat-label">{{ _('Onay Bekleyen') }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon orange">🗓️</div>
+        <div class="stat-value">{{ stats.gozden_gecirme }}</div>
+        <div class="stat-label">{{ _('Gözden Geçirme Yaklaşan') }}</div>
+    </div>
+    <div class="stat-card {{ 'stat-card-alert' if stats.gecikmis else '' }}">
+        <div class="stat-icon red">⚠️</div>
+        <div class="stat-value">{{ stats.gecikmis }}</div>
+        <div class="stat-label">{{ _('Gecikmiş Gözden Geçirme') }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon purple">🔄</div>
+        <div class="stat-value">{{ stats.surec_sayisi }}</div>
+        <div class="stat-label">{{ _('Aktif Süreç') }}</div>
+    </div>
+</div>
+
+<!-- Kalite Sistemi Özeti -->
+<div class="stats-grid mb-24">
+    <a href="{{ request.script_root }}/capa" class="stat-card" style="text-decoration:none;">
+        <div class="stat-icon yellow">🛠️</div>
+        <div class="stat-value">{{ stats.acik_dof }}</div>
+        <div class="stat-label">{{ _('Açık DÖF') }}</div>
+    </a>
+    <a href="{{ request.script_root }}/risks" class="stat-card" style="text-decoration:none;">
+        <div class="stat-icon red">⚠️</div>
+        <div class="stat-value">{{ stats.acik_risk }}</div>
+        <div class="stat-label">{{ _('Açık Riskler') }}</div>
+    </a>
+    <a href="{{ request.script_root }}/audits" class="stat-card" style="text-decoration:none;">
+        <div class="stat-icon blue">🕵️</div>
+        <div class="stat-value">{{ stats.planli_tetkik }}</div>
+        <div class="stat-label">{{ _('Planlı Tetkikler') }}</div>
+    </a>
+</div>
+
+<!-- Charts Row -->
+<div class="dashboard-grid mb-24">
+    <!-- Status Distribution -->
+    <div class="section-card">
+        <div class="section-header">
+            <span class="section-title">📊 {{ _('Doküman Durumu Dağılımı') }}</span>
+        </div>
+        <div class="section-body">
+            <div class="chart-container">
+                <canvas id="statusChart" data-values='{{ status_data | tojson }}'></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Standard Distribution -->
+    <div class="section-card">
+        <div class="section-header">
+            <span class="section-title">🛡️ {{ _('Standart Bazında Dağılım') }}</span>
+        </div>
+        <div class="section-body">
+            <div class="chart-container">
+                <canvas id="standardChart" data-values='{{ standard_data | tojson }}'></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Process Chart + Recent Documents -->
+<div class="dashboard-grid mb-24">
+    <!-- Process Distribution -->
+    <div class="section-card">
+        <div class="section-header">
+            <span class="section-title">🔄 {{ _('Süreç Bazında Doküman Sayıları') }}</span>
+        </div>
+        <div class="section-body">
+            <div class="chart-container">
+                <canvas id="processChart" data-values='{{ process_data | tojson }}'></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Documents -->
+    <div class="section-card">
+        <div class="section-header">
+            <span class="section-title">📄 {{ _('Son Eklenen Dokümanlar') }}</span>
+            <a href="{{ request.script_root }}/documents" class="btn btn-sm btn-outline">{{ _('Tümünü Gör') }}</a>
+        </div>
+        <div class="section-body">
+            {% if recent_documents %}
+            <ul class="recent-list">
+                {% for doc in recent_documents %}
+                <li class="recent-item">
+                    <div class="recent-item-icon" style="background: var(--color-info-bg); color: var(--color-info);">📄</div>
+                    <div class="recent-item-info">
+                        <a href="{{ request.script_root }}/documents/{{ doc.id }}" class="recent-item-title">{{ doc.baslik }}</a>
+                        <div class="recent-item-sub">{{ doc.dokuman_no }} · {{ doc.surec.kod }}</div>
+                    </div>
+                    <span class="status-badge {{ doc.durum|slug }}">{{ doc.durum|enum }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <div class="empty-state" style="padding: 30px;">
+                <div class="empty-icon">📄</div>
+                <p>{{ _('Henüz doküman eklenmemiş.') }}</p>
+                <a href="{{ request.script_root }}/documents/new" class="btn btn-sm btn-primary">{{ _('İlk Dokümanı Ekle') }}</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Pending Approvals -->
+{% if pending_approval_docs %}
+<div class="section-card">
+    <div class="section-header">
+        <span class="section-title">⏳ {{ _('Onay Bekleyen Dokümanlar') }}</span>
+        <a href="{{ request.script_root }}/approvals" class="btn btn-sm btn-outline">{{ _('Tümünü Gör') }}</a>
+    </div>
+    <div class="section-body">
+        <div class="data-table-wrapper">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>{{ _('Doküman No') }}</th>
+                        <th>{{ _('Başlık') }}</th>
+                        <th>{{ _('Süreç') }}</th>
+                        <th>{{ _('Onay Adımı') }}</th>
+                        <th>{{ _('Tarih') }}</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for approval in pending_approval_docs %}
+                    <tr>
+                        <td><code>{{ approval.document.dokuman_no }}</code></td>
+                        <td>
+                            <a href="{{ request.script_root }}/documents/{{ approval.document.id }}">{{ approval.document.baslik }}</a>
+                        </td>
+                        <td>{{ approval.document.surec.kod }}</td>
+                        <td><span class="status-badge incelemede">{{ approval.onay_adimi|enum }}</span></td>
+                        <td class="text-muted">{{ approval.tarih.strftime('%d.%m.%Y') if approval.tarih else '-' }}</td>
+                        <td>
+                            <a href="{{ request.script_root }}/approvals" class="btn btn-sm btn-primary">{{ _('İncele') }}</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Upcoming Reviews Warning -->
+{% if upcoming_reviews %}
+<div class="section-card mt-24">
+    <div class="section-header">
+        <span class="section-title">⚠️ {{ _('Gözden Geçirme Tarihi Yaklaşan Dokümanlar') }}</span>
+    </div>
+    <div class="section-body">
+        <div class="data-table-wrapper">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>{{ _('Doküman No') }}</th>
+                        <th>{{ _('Başlık') }}</th>
+                        <th>{{ _('Süreç') }}</th>
+                        <th>{{ _('Gözden Geçirme Tarihi') }}</th>
+                        <th>{{ _('Kalan Gün') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for doc, remaining_days in upcoming_reviews %}
+                    <tr>
+                        <td><code>{{ doc.dokuman_no }}</code></td>
+                        <td>
+                            <a href="{{ request.script_root }}/documents/{{ doc.id }}">{{ doc.baslik }}</a>
+                        </td>
+                        <td>{{ doc.surec.kod }}</td>
+                        <td>{{ doc.sonraki_gozden_gecirme.strftime('%d.%m.%Y') }}</td>
+                        <td>
+                            {% if remaining_days <= 7 %}
+                            <span style="color: var(--color-danger); font-weight: 700;">{{ remaining_days }} {{ _('gün') }}</span>
+                            {% elif remaining_days <= 30 %}
+                            <span style="color: var(--color-warning); font-weight: 600;">{{ remaining_days }} {{ _('gün') }}</span>
+                            {% else %}
+                            <span class="text-muted">{{ remaining_days }} {{ _('gün') }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

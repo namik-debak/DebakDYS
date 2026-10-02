@@ -1,0 +1,2710 @@
+{
+ "Y01 F02": {
+  "eski": "Y02 F02",
+  "ad": "K01- Bölüm 01- Stratejik Planlama Tabloları 2025",
+  "sekil": "DYS modülü",
+  "modul": "Stratejik Planlama",
+  "ekran": "/strateji",
+  "not": "Excel tabloları yerine modül (30.09.2026)"
+ },
+ "Y01 F03": {
+  "eski": "Y02 F03",
+  "ad": "K01- Bölüm 02- İSG ve Çevre Stratejik Planlama Tabloları",
+  "sekil": "DYS modülü",
+  "modul": "Stratejik Planlama",
+  "ekran": "/strateji",
+  "not": "Excel tabloları yerine modül (30.09.2026)"
+ },
+ "Y01 F04": {
+  "eski": "Y02 F04",
+  "ad": "K01- Bölüm 03- Debak Proses Haritası",
+  "sekil": "Şablon",
+  "modul": "Şablon",
+  "ekran": "—",
+  "not": "El kitabı bölümü (proses haritası) — doküman olarak yayımlanır."
+ },
+ "Y01 F05": {
+  "eski": "Y02 F05",
+  "ad": "K01- Bölüm 04- IATF PROSES STANDARD MADDELERİ İLİŞKİLENDİRME MATRİSİ",
+  "sekil": "Şablon",
+  "modul": "Şablon",
+  "ekran": "—",
+  "not": "El kitabı bölümü (IATF proses – standart maddeleri) — doküman olarak yayımlanır."
+ },
+ "Y01 F06": {
+  "eski": "Y02 F06",
+  "ad": "K01- Bölüm 05- İSG - Çevre PROSES STANDARD MADDELERİ İLİŞKİLENDİRME MATRİSİ",
+  "sekil": "Şablon",
+  "modul": "Şablon",
+  "ekran": "—",
+  "not": "El kitabı bölümü (İSG – Çevre proses – standart maddeleri) — doküman olarak yayımlanır."
+ },
+ "Y01 F07": {
+  "eski": "Y02 F07",
+  "ad": "K01- Bölüm 06- Debak A.Ş. Organizasyon Şeması",
+  "sekil": "Şablon",
+  "modul": "Şablon",
+  "ekran": "—",
+  "not": "El kitabı bölümü (organizasyon şeması) — doküman olarak yayımlanır."
+ },
+ "Y01 F08": {
+  "eski": "Y02 F08",
+  "ad": "K01- Bölüm 07- Debak Kurumsal Karne",
+  "sekil": "DYS modülü",
+  "modul": "Performans Değerlendirme (KPI)",
+  "ekran": "/performans"
+ },
+ "Y01 F09": {
+  "eski": "Y02 F09",
+  "ad": "KURUMSAL SORUMLULUK MATRİSİ",
+  "sekil": "DYS modülü",
+  "modul": "Kalibrasyon",
+  "ekran": "/iatf/calibration"
+ },
+ "Y01.1 F01": {
+  "eski": "Y02.1 F01",
+  "ad": "Finansal Rasyolar",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—",
+  "not": "Kısıtlı form (KVKK): kayıtları yalnız kaydı giren, yetkililer ve Admin görür"
+ },
+ "Y01.2 F01": {
+  "eski": "Y02.2 F01",
+  "ad": "Acil Önlem Planı",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "Y01.2 F02": {
+  "eski": "Y02.2 F02",
+  "ad": "ACİL DURUM TATBİKAT RAPORU",
+  "sekil": "DYS modülü",
+  "modul": "İSG Tatbikat",
+  "ekran": "/ohs/drills"
+ },
+ "Y01.3 F01": {
+  "eski": "Y02.3 F01",
+  "ad": "ALT YAPI VE ÇALIŞMA ORTAMI RİSK DEĞERLENDİRME",
+  "sekil": "DYS modülü",
+  "modul": "Risk Kaydı",
+  "ekran": "/risks"
+ },
+ "Y01.3 F02": {
+  "eski": "Y02.3 F02",
+  "ad": "BAKIM ONARIM PROSESİ RİSK DEĞERLENDİRME",
+  "sekil": "DYS modülü",
+  "modul": "Risk Kaydı",
+  "ekran": "/risks"
+ },
+ "Y01.3 F03": {
+  "eski": "Y02.3 F03",
+  "ad": "BİLGİ GÜVENLİĞİ RİSK DEĞERLENDİRME",
+  "sekil": "DYS modülü",
+  "modul": "Risk Kaydı",
+  "ekran": "/risks"
+ },
+ "Y01.3 F04": {
+  "eski": "Y02.3 F04",
+  "ad": "INSAN KAYNAKLARI RİSK DEĞERLENDİRME",
+  "sekil": "DYS modülü",
+  "modul": "Risk Kaydı",
+  "ekran": "/risks"
+ },
+ "Y01.3 F05": {
+  "eski": "Y02.3 F05",
+  "ad": "İZLEME VE ÖLÇME TECHİZATIN KONTROLÜ RİSK DEĞERLENDİRME",
+  "sekil": "DYS modülü",
+  "modul": "Risk Kaydı",
+  "ekran": "/risks"
+ },
+ "Y01.3 F06": {
+  "eski": "Y02.3 F06",
+  "ad": "KALİTE KONTROL PROSESİ RİSK DEĞERLENDİRME",
+  "sekil": "DYS modülü",
+  "modul": "Risk Kaydı",
+  "ekran": "/risks"
+ },
+ "Y01.3 F07": {
+  "eski": "Y02.3 F07",
+  "ad": "KALİTE YÖNETİM PROSESİ RİSK DEĞERLENDİRME",
+  "sekil": "DYS modülü",
+  "modul": "Risk Kaydı",
+  "ekran": "/risks"
+ },
+ "Y01.3 F08": {
+  "eski": "Y02.3 F08",
+  "ad": "Risk Değerlendirme Formu Şablon",
+  "sekil": "DYS modülü",
+  "modul": "Risk Kaydı",
+  "ekran": "/risks"
+ },
+ "Y01.3 F09": {
+  "eski": "Y02.3 F09",
+  "ad": "SATINALMA RİSK DEĞERLENDİRME",
+  "sekil": "DYS modülü",
+  "modul": "Risk Kaydı",
+  "ekran": "/risks"
+ },
+ "Y01.3 F10": {
+  "eski": "Y02.3 F10",
+  "ad": "SATIŞ VE PROJELERİ RİSK DEĞERLENDİRME",
+  "sekil": "DYS modülü",
+  "modul": "Risk Kaydı",
+  "ekran": "/risks"
+ },
+ "Y01.3 F11": {
+  "eski": "Y02.3 F11",
+  "ad": "SEVKİYAT YÖNETİMİ RİSK DEĞERLENDİRME",
+  "sekil": "DYS modülü",
+  "modul": "Risk Kaydı",
+  "ekran": "/risks"
+ },
+ "Y01.3 F12": {
+  "eski": "Y02.3 F12",
+  "ad": "SÜREKLİ İYİLEŞTİRME PROSESİ RİSK DEĞERLENDİRME",
+  "sekil": "DYS modülü",
+  "modul": "Risk Kaydı",
+  "ekran": "/risks"
+ },
+ "Y01.3 F13": {
+  "eski": "Y02.3 F13",
+  "ad": "YENİ ÜRÜN DEVREYE ALMA RİSK DEĞERLENDİRME",
+  "sekil": "DYS modülü",
+  "modul": "Risk Kaydı",
+  "ekran": "/risks"
+ },
+ "Y01.3 F14": {
+  "eski": "Y02.3 F14",
+  "ad": "YÖNETİM SORUMLULUĞU RİSK DEĞERLENDİRME",
+  "sekil": "DYS modülü",
+  "modul": "Risk Kaydı",
+  "ekran": "/risks"
+ },
+ "Y01.3 F15": {
+  "eski": "Y02.3 F15",
+  "ad": "ÇEVRE YÖNETİMİ RİSK DEĞERLENDİRME",
+  "sekil": "DYS modülü",
+  "modul": "Risk Kaydı",
+  "ekran": "/risks"
+ },
+ "Y01.3 F16": {
+  "eski": "Y02.3 F16",
+  "ad": "ÜRETİM PLANLAMA RİSK DEĞERLENDİRME",
+  "sekil": "DYS modülü",
+  "modul": "Risk Kaydı",
+  "ekran": "/risks"
+ },
+ "Y01.3 F17": {
+  "eski": "Y02.3 F17",
+  "ad": "ÜRETİM YÖNETİMİ RİSK DEĞERLENDİRME",
+  "sekil": "DYS modülü",
+  "modul": "Risk Kaydı",
+  "ekran": "/risks"
+ },
+ "Y01.4 F01": {
+  "eski": "Y02.4 F01",
+  "ad": "Günlük Toplantı Raporu Kalite( QRQC)",
+  "sekil": "DYS modülü",
+  "modul": "QRQC",
+  "ekran": "/qrqc"
+ },
+ "Y01.4 F02": {
+  "eski": "Y02.4 F02",
+  "ad": "Günlük Toplantı Üretim&Bakım",
+  "sekil": "DYS modülü",
+  "modul": "Toplantı Tutanakları",
+  "ekran": "/toplantilar"
+ },
+ "Y01.4 F03": {
+  "eski": "Y02.4 F03",
+  "ad": "İç Paydaş Toplantı Tutanağı",
+  "sekil": "DYS modülü",
+  "modul": "Toplantı Tutanakları",
+  "ekran": "/toplantilar"
+ },
+ "Y01.4 F04": {
+  "eski": "Y02.4 F04",
+  "ad": "Toplantı Tutanağı",
+  "sekil": "DYS modülü",
+  "modul": "Toplantı Tutanakları",
+  "ekran": "/toplantilar"
+ },
+ "Y01.5 F01": {
+  "eski": "Y02.5 F01",
+  "ad": "Süreç Yönetim Gözden Geçirme Raporu",
+  "sekil": "DYS modülü",
+  "modul": "Yönetim Gözden Geçirme",
+  "ekran": "/ims/reviews"
+ },
+ "Y01.5 F02": {
+  "eski": "Y02.5 F02",
+  "ad": "YGG Gündem Maddeleri",
+  "sekil": "DYS modülü",
+  "modul": "Yönetim Gözden Geçirme",
+  "ekran": "/ims/reviews"
+ },
+ "Y01.6 F01": {
+  "eski": "Y03.1 F01",
+  "ad": "Y03 Sürekli İyileştirme Prosesi",
+  "sekil": "DYS modülü",
+  "modul": "Denetim Yönetimi",
+  "ekran": "/audits/automation"
+ },
+ "Y01.6 F02": {
+  "eski": "Y03.1 F02",
+  "ad": "Denetim Özet Raporu",
+  "sekil": "DYS modülü",
+  "modul": "Denetim Yönetimi",
+  "ekran": "/audits/automation"
+ },
+ "Y01.6 F03": {
+  "eski": "Y03.1 F03",
+  "ad": "İç denetim risk hesaplama analizi",
+  "sekil": "DYS modülü",
+  "modul": "Denetim Yönetimi",
+  "ekran": "/audits/automation"
+ },
+ "Y01.6 F04": {
+  "eski": "Y03.1 F04",
+  "ad": "İç Denetçi Yetkinlik Değerlendirme",
+  "sekil": "DYS modülü",
+  "modul": "İç Denetçiler",
+  "ekran": "/audits/auditors"
+ },
+ "Y01.6 F05": {
+  "eski": "Y03.1 F05",
+  "ad": "İç Denetçi Yetkinlik Matrisi",
+  "sekil": "DYS modülü",
+  "modul": "İç Denetçiler",
+  "ekran": "/audits/auditors"
+ },
+ "Y01.6 F06": {
+  "eski": "Y03.1 F06",
+  "ad": "İç&Dış Denetim Planı",
+  "sekil": "DYS modülü",
+  "modul": "Denetim Yönetimi",
+  "ekran": "/audits/automation"
+ },
+ "Y01.6 F07": {
+  "eski": "Y03.1 F07",
+  "ad": "İşletme Genel Denetim Kontrol Listesi 2026",
+  "sekil": "DYS modülü",
+  "modul": "Denetim / Denetim Programı",
+  "ekran": "/audits"
+ },
+ "Y01.6 F08": {
+  "eski": "Y03.1 F08",
+  "ad": "Proses Denetim Soru Listesi",
+  "sekil": "DYS modülü",
+  "modul": "Denetim / Denetim Programı",
+  "ekran": "/audits"
+ },
+ "Y01.6 F09": {
+  "eski": "Y03.1 F09",
+  "ad": "Tedarikçi Denetim Soruları",
+  "sekil": "DYS modülü",
+  "modul": "Denetim / Denetim Programı",
+  "ekran": "/audits"
+ },
+ "Y01.6 F10": {
+  "eski": "Y03.1 F10",
+  "ad": "Ürün Denetim Soru Listesi",
+  "sekil": "DYS modülü",
+  "modul": "Denetim / Denetim Programı",
+  "ekran": "/audits"
+ },
+ "Y01.7 F01": {
+  "eski": "Y03.2 F01",
+  "ad": "Düzeltici Faaliyet Formu - english",
+  "sekil": "DYS modülü",
+  "modul": "DÖF (Düzeltici Faaliyet)",
+  "ekran": "/capa"
+ },
+ "Y01.7 F02": {
+  "eski": "Y03.2 F02",
+  "ad": "Düzeltici Faaliyet Formu-türkçe",
+  "sekil": "DYS modülü",
+  "modul": "DÖF (Düzeltici Faaliyet)",
+  "ekran": "/capa"
+ },
+ "Y01.7 F03": {
+  "eski": "Y03.2 F03",
+  "ad": "Müşteri kalite vakaları",
+  "sekil": "DYS modülü",
+  "modul": "Müşteri Şikayet Listesi",
+  "ekran": "/kalite/musteri",
+  "not": "Kalite modülünde tutulur; A4 PDF rapor (TR / EN)"
+ },
+ "Y01.8 F01": {
+  "eski": "Y03.3 F01",
+  "ad": "AR-GE Talep – İş Takip Listesi",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "Y01.8 F02": {
+  "eski": "Y03.3 F02",
+  "ad": "Markalar",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "Y01.8 F03": {
+  "eski": "Y03.3 F03",
+  "ad": "Patent – Faydalı Model Çalışmaları",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "Y01.8 F04": {
+  "eski": "Y03.3 F04",
+  "ad": "Endüstri 4.0 Uyum Endeksi",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "Y01.8 F05": {
+  "eski": "Y03.3 F05",
+  "ad": "Geliştirme Öneri Formu (Sürekli İyileştirme)",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "Y01.8 F06": {
+  "eski": "Y03.3 F06",
+  "ad": "İyileştirme Projeleri Takip Listesi",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "Y01.8 F07": {
+  "eski": "Y03.3 F07",
+  "ad": "İade Maliyetleri Takip Listesi",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "Y01.8 F08": {
+  "eski": "Y03.3 F08",
+  "ad": "Kaizen Çalışmaları (İyileştirme Projesi)",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "Y01.8 F09": {
+  "eski": "Y03.3 F09",
+  "ad": "Kayıp Maliyeti İzleme Tablosu (Kalitesizlik Maliyetleri)",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "Y01.8 F10": {
+  "eski": "Y03.3 F10",
+  "ad": "Destek / Teşvik Projeleri Takip Listesi",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "Y01.8 F11": {
+  "eski": "Y03.3 F11",
+  "ad": "Tüm Süreçler Performans İzleme Tablosu",
+  "sekil": "DYS modülü",
+  "modul": "Performans Değerlendirme (KPI)",
+  "ekran": "/performans"
+ },
+ "M01 F01": {
+  "eski": "M01 F01",
+  "ad": "Customer Satisfaction Questionaire",
+  "sekil": "Şablon",
+  "modul": "Şablon",
+  "ekran": "—",
+  "not": "Müşteri memnuniyet anketi (EN) — müşteriye gönderilir; müşteri memnuniyeti ayrı modül olarak ele alınacak."
+ },
+ "M01 F02": {
+  "eski": "M01 F02",
+  "ad": "Fiyat Kalkulasyon Formu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "M01 F03": {
+  "eski": "M01 F03",
+  "ad": "Gizlilik Sözleşmesi",
+  "sekil": "Şablon",
+  "modul": "Şablon",
+  "ekran": "—",
+  "not": "Gizlilik sözleşmesi — imzalı hali müşteri dosyasında."
+ },
+ "M01 F04": {
+  "eski": "M01 F04",
+  "ad": "Müşteri Bilgileri Listesi",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "M01 F05": {
+  "eski": "M01 F05",
+  "ad": "Müşteri memnuniyet anketi",
+  "sekil": "Şablon",
+  "modul": "Şablon",
+  "ekran": "—",
+  "not": "Müşteri memnuniyet anketi — müşteriye gönderilir; müşteri memnuniyeti ayrı modül olarak ele alınacak."
+ },
+ "M01 F07": {
+  "eski": "M01 F07",
+  "ad": "Potansiyel saha İadeleri & etkileri analizi",
+  "sekil": "DYS modülü",
+  "modul": "Garanti",
+  "ekran": "/iatf/warranty"
+ },
+ "M01 F08": {
+  "eski": "M01 F08",
+  "ad": "Sales Agreement",
+  "sekil": "Şablon",
+  "modul": "Şablon",
+  "ekran": "—",
+  "not": "Satış sözleşmesi (Sales Agreement) — imzalı hali müşteri dosyasında."
+ },
+ "M01 F09": {
+  "eski": "M01 F09",
+  "ad": "Sipariş Onayı / Order Confirmation",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "M02 F01": {
+  "eski": "M02 F01",
+  "ad": "Ürün Kapasite Planlama / Product Capacity Planning",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "M02 F02": {
+  "eski": "M02 F02",
+  "ad": "Control Plan-İngilizce",
+  "sekil": "DYS modülü",
+  "modul": "Kontrol Planları",
+  "ekran": "/iatf/control-plans"
+ },
+ "M02 F03": {
+  "eski": "M02 F03",
+  "ad": "Flow chart",
+  "sekil": "Şablon",
+  "modul": "Şablon",
+  "ekran": "—",
+  "not": "Akış şeması (flow chart) — ürün bazında doküman; APQP projesine eklenir."
+ },
+ "M02 F04": {
+  "eski": "M02 F04",
+  "ad": "Kontrol Plan-Turkce",
+  "sekil": "DYS modülü",
+  "modul": "Kontrol Planı",
+  "ekran": "/iatf/control-plans"
+ },
+ "M02 F05": {
+  "eski": "M02 F05",
+  "ad": "Ölçüm Cihazları Listesi / List of Measuring Devices",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "M02 F06": {
+  "eski": "M02 F06",
+  "ad": "PFMEA-İngilizce",
+  "sekil": "DYS modülü",
+  "modul": "FMEA",
+  "ekran": "/iatf/fmea"
+ },
+ "M02 F07": {
+  "eski": "M02 F07",
+  "ad": "PFMEA-Turkce",
+  "sekil": "DYS modülü",
+  "modul": "FMEA",
+  "ekran": "/iatf/fmea"
+ },
+ "M02 F08": {
+  "eski": "M02 F08",
+  "ad": "Potansiyel saha İadeleri & etkileri analizi",
+  "sekil": "DYS modülü",
+  "modul": "Garanti",
+  "ekran": "/iatf/warranty"
+ },
+ "M02 F09": {
+  "eski": "M02 F09",
+  "ad": "Project planning",
+  "sekil": "DYS modülü",
+  "modul": "APQP",
+  "ekran": "/iatf/apqp",
+  "not": "Proje planlama APQP modülünde"
+ },
+ "M02 F10": {
+  "eski": "M02 F10",
+  "ad": " Yeni Ürün Fizibilite Raporu",
+  "sekil": "DYS modülü",
+  "modul": "APQP",
+  "ekran": "/iatf/apqp"
+ },
+ "M02 F11": {
+  "eski": "M02 F11",
+  "ad": "PSW",
+  "sekil": "DYS modülü",
+  "modul": "PPAP",
+  "ekran": "/ppap"
+ },
+ "M02 F12": {
+  "eski": "M02 F12",
+  "ad": "APQP Planlama Tablosu",
+  "sekil": "DYS modülü",
+  "modul": "APQP",
+  "ekran": "/iatf/apqp"
+ },
+ "M02 F13": {
+  "eski": "M02 F13",
+  "ad": "Tam Gün Onay Raporu / Full Production Day Report (FPD)",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "M02 F14": {
+  "eski": "M02 F14",
+  "ad": "Özel Karakteristik Belirleme Tablosu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "M02 F16": {
+  "eski": "M02 F16",
+  "ad": "Kalıp Formu / Tooling Form",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "M02 F17": {
+  "eski": "M02 F17",
+  "ad": "Yeni Ürün Devreye Alma İzleme Listesi",
+  "sekil": "DYS modülü",
+  "modul": "APQP",
+  "ekran": "/iatf/apqp",
+  "not": "YÜDA izleme listesi APQP projeleri"
+ },
+ "M02 F18": {
+  "eski": "M02 F18",
+  "ad": "Yeni Ürün Fizibilite Raporu Takip Listesi",
+  "sekil": "DYS modülü",
+  "modul": "APQP",
+  "ekran": "/iatf/apqp"
+ },
+ "M02 F19": {
+  "eski": "M02 F19",
+  "ad": "Ürün Güvenliği İzleme Tablosu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "M02 F21": {
+  "eski": "M02 F21",
+  "ad": "Ürün Uygunluk Protokolü",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "M03 F01": {
+  "eski": "M04 F01",
+  "ad": "Aylık Enjeksiyon Fire Oranları (Enjeksiyon Kalite Raporu)",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "M03 F02": {
+  "eski": "M04 F02",
+  "ad": "FIRIN PROSES KONTROL KARTLARI",
+  "sekil": "DYS modülü",
+  "modul": "SPC",
+  "ekran": "/iatf/spc"
+ },
+ "M03 F03": {
+  "eski": "M04 F03",
+  "ad": "Hammadde Besleme Kutusu Kontrol Formu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "M03 F04": {
+  "eski": "M04 F04",
+  "ad": "Makine Parkı",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "M03 F05": {
+  "eski": "M04 F05",
+  "ad": "Termoplast Hammadde Kurutma Takip Çizelgesi",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "M03 F06": {
+  "eski": "M04 F06",
+  "ad": "Çapak Alma Parametre Listesi",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "M03 F07": {
+  "eski": "M04 F07",
+  "ad": "Çapak Alma Proses Kontrol Kartı",
+  "sekil": "DYS modülü",
+  "modul": "SPC",
+  "ekran": "/iatf/spc"
+ },
+ "M03 F08": {
+  "eski": "M04 F08–F21",
+  "ad": "Ürün Enjeksiyon Parametreleri",
+  "sekil": "DYS modülü",
+  "modul": "Enjeksiyon Parametreleri",
+  "ekran": "/uretim/enjeksiyon-parametreleri"
+ },
+ "M04.1 F01": {
+  "eski": "M03 F01",
+  "ad": "Hava Kargo Takip Listesi",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "M04.1 F02": {
+  "eski": "M03 F02",
+  "ad": "Yükleme Kontrol Listesi",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "M04.2 F01": {
+  "eski": "M05 F01",
+  "ad": "AYLIK BLOK ABONMAN LİSTESİ",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "M04.2 F02": {
+  "eski": "M05 F02",
+  "ad": "Ihracat ATR",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "M04.2 F03": {
+  "eski": "M05 F03",
+  "ad": "Ihracat COO",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "M04.2 F04": {
+  "eski": "M05 F04",
+  "ad": "Ihracat delivery note",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "M04.2 F05": {
+  "eski": "M05 F05",
+  "ad": "Ihracat ihracat bilgi formu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "M04.2 F06": {
+  "eski": "M05 F06",
+  "ad": "Ihracat invoice",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "M04.2 F07": {
+  "eski": "M05 F07",
+  "ad": "Ihracat packinglist",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "M04.2 F08": {
+  "eski": "M05 F08",
+  "ad": "Valeo fransa palet etiketi",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "M04.2 F09": {
+  "eski": "M05 F09",
+  "ad": "Valeo fransa paletleme",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "M04.2 F10": {
+  "eski": "M05 F10",
+  "ad": "Valeo POLONYA nakliye sipariş form",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "M04.2 F11": {
+  "eski": "M05 F11",
+  "ad": "Y.İÇİ Y.DIŞI FATURA İRSALİYE TAKİP LİSTESİ",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D01 F01": {
+  "eski": "D01 F01",
+  "ad": "Personel Memnuniyet Anketi Değerlendirme Raporu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D01 F02": {
+  "eski": "D01 F02",
+  "ad": "Personel Memnuniyet Anketi",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D01 F03": {
+  "eski": "D01 F03",
+  "ad": "Belirsiz Süreli İş Sözleşmesi",
+  "sekil": "Şablon",
+  "modul": "Şablon",
+  "ekran": "—",
+  "not": "Yasal / özlük belgesi: güncel şablon DYS'den indirilir; imzalı hali personel özlük dosyasında saklanır, DYS'de kaydı tutulmaz (KVKK)."
+ },
+ "D01 F04": {
+  "eski": "D01 F04",
+  "ad": "Devamsızlık Tutanağı",
+  "sekil": "Şablon",
+  "modul": "Şablon",
+  "ekran": "—",
+  "not": "Yasal / özlük belgesi: güncel şablon DYS'den indirilir; imzalı hali personel özlük dosyasında saklanır, DYS'de kaydı tutulmaz (KVKK)."
+ },
+ "D01 F05": {
+  "eski": "D01 F05",
+  "ad": "Devamsızlık ve İşgücü Devir Oranı",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D01 F06": {
+  "eski": "D01 F06",
+  "ad": "Duyuru Şablonu",
+  "sekil": "Şablon",
+  "modul": "Şablon",
+  "ekran": "—",
+  "not": "Duyuru şablonu: duyurular bu şablonla hazırlanır; DYS'de kaydı tutulmaz."
+ },
+ "D01 F07": {
+  "eski": "D01 F07",
+  "ad": "Fazla Mesai Formu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—",
+  "not": "Kısıtlı form (KVKK): kayıtları yalnız kaydı giren, İK yetkilileri ve Admin görür"
+ },
+ "D01 F08": {
+  "eski": "D01 F08",
+  "ad": "Fazla Çalışma İzin Onay Yazısı",
+  "sekil": "Şablon",
+  "modul": "Şablon",
+  "ekran": "—",
+  "not": "Yasal / özlük belgesi: güncel şablon DYS'den indirilir; imzalı hali personel özlük dosyasında saklanır, DYS'de kaydı tutulmaz (KVKK)."
+ },
+ "D01 F09": {
+  "eski": "D01 F09",
+  "ad": "Fesih Bildirgesi",
+  "sekil": "Şablon",
+  "modul": "Şablon",
+  "ekran": "—",
+  "not": "Yasal / özlük belgesi: güncel şablon DYS'den indirilir; imzalı hali personel özlük dosyasında saklanır, DYS'de kaydı tutulmaz (KVKK)."
+ },
+ "D01 F10": {
+  "eski": "D01 F10",
+  "ad": "Geliştirme Önerisi",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D01 F11": {
+  "eski": "D01 F11",
+  "ad": "Görevlendirme Formu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—",
+  "not": "Kısıtlı form (KVKK): kayıtları yalnız kaydı giren, İK yetkilileri ve Admin görür"
+ },
+ "D01 F12": {
+  "eski": "D01 F12",
+  "ad": "İbraname",
+  "sekil": "Şablon",
+  "modul": "Şablon",
+  "ekran": "—",
+  "not": "Yasal / özlük belgesi: güncel şablon DYS'den indirilir; imzalı hali personel özlük dosyasında saklanır, DYS'de kaydı tutulmaz (KVKK)."
+ },
+ "D01 F13": {
+  "eski": "D01 F13",
+  "ad": "İzin Kurulu Atama Yazısı",
+  "sekil": "Şablon",
+  "modul": "Şablon",
+  "ekran": "—",
+  "not": "Yasal / özlük belgesi: güncel şablon DYS'den indirilir; imzalı hali personel özlük dosyasında saklanır, DYS'de kaydı tutulmaz (KVKK)."
+ },
+ "D01 F14": {
+  "eski": "D01 F14",
+  "ad": "İş Başvuru Formu",
+  "sekil": "Şablon",
+  "modul": "Şablon",
+  "ekran": "—",
+  "not": "Aday kişisel verisi (KVKK): başvurular İK'da saklanır; DYS'de kaydı tutulmaz. Başvuru formundaki gizlilik / aydınlatma metni KVKK dokümanlarındadır."
+ },
+ "D01 F15": {
+  "eski": "D01 F15",
+  "ad": "İşe Alım Mülakat Soruları",
+  "sekil": "Şablon",
+  "modul": "Şablon",
+  "ekran": "—",
+  "not": "Mülakat rehberi (soru listesi); doldurulmuş mülakat notları aday dosyasında saklanır."
+ },
+ "D01 F16": {
+  "eski": "D01 F16",
+  "ad": "İşe Girişte İstenen Belgeler",
+  "sekil": "Şablon",
+  "modul": "Şablon",
+  "ekran": "—",
+  "not": "Bilgi listesi (işe girişte istenen belgeler); kaydı tutulmaz."
+ },
+ "D01 F17": {
+  "eski": "D01 F17",
+  "ad": "İşten Ayrılan Anket Sonuçları (Yıllık)",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D01 F18": {
+  "eski": "D01 F18",
+  "ad": "İşten Ayrılan Personel Anketi",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—",
+  "not": "Kısıtlı form (KVKK): kayıtları yalnız kaydı giren, İK yetkilileri ve Admin görür"
+ },
+ "D01 F19": {
+  "eski": "D01 F19",
+  "ad": "Personel Geliştirme Önerileri Takip Listesi",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D01 F20": {
+  "eski": "D01 F20",
+  "ad": "Personel Gizlilik Sözleşmesi",
+  "sekil": "Şablon",
+  "modul": "Şablon",
+  "ekran": "—",
+  "not": "Yasal / özlük belgesi: güncel şablon DYS'den indirilir; imzalı hali personel özlük dosyasında saklanır, DYS'de kaydı tutulmaz (KVKK)."
+ },
+ "D01 F22": {
+  "eski": "D01 F22",
+  "ad": "Personel İhtiyaç Bildirim Formu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D01 F23": {
+  "eski": "D01 F23",
+  "ad": "Personel İzin Formu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—",
+  "not": "Kısıtlı form (KVKK): kayıtları yalnız kaydı giren, İK yetkilileri ve Admin görür"
+ },
+ "D01 F25": {
+  "eski": "D01 F25",
+  "ad": "Personel İşe Giriş Protokolü",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—",
+  "not": "Kısıtlı form (KVKK): kayıtları yalnız kaydı giren, İK yetkilileri ve Admin görür"
+ },
+ "D01 F26": {
+  "eski": "D01 F26",
+  "ad": "Personel İşten Ayrılma Protokolü",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—",
+  "not": "Kısıtlı form (KVKK): kayıtları yalnız kaydı giren, İK yetkilileri ve Admin görür"
+ },
+ "D01 F27": {
+  "eski": "D01 F27",
+  "ad": "Personel Memnuniyetini İzleme Tablosu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D01 F29": {
+  "eski": "D01 F29",
+  "ad": "Stajyer Protokolü",
+  "sekil": "Şablon",
+  "modul": "Şablon",
+  "ekran": "—",
+  "not": "Yasal / özlük belgesi: güncel şablon DYS'den indirilir; imzalı hali personel özlük dosyasında saklanır, DYS'de kaydı tutulmaz (KVKK)."
+ },
+ "D01 F30": {
+  "eski": "D01 F30",
+  "ad": "Temizlik Takip Çizelgesi",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D01 F32": {
+  "eski": "D01 F32",
+  "ad": "Çalışma Belgesi",
+  "sekil": "Şablon",
+  "modul": "Şablon",
+  "ekran": "—",
+  "not": "Yasal / özlük belgesi: güncel şablon DYS'den indirilir; imzalı hali personel özlük dosyasında saklanır, DYS'de kaydı tutulmaz (KVKK)."
+ },
+ "D01.1 F01": {
+  "eski": "D01.1 F01",
+  "ad": "Eğitim Katılım ve Etkinlik Değerlendirme Formu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D01.1 F02": {
+  "eski": "D01.1 F02",
+  "ad": "İdari Personel Oryantasyon Eğitim Formu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D01.1 F03": {
+  "eski": "D01.1 F03",
+  "ad": "İşe Başlama (Oryantasyon) Eğitim Formu — Mavi Yaka",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D01.1 F04": {
+  "eski": "D01.1 F04",
+  "ad": "Mavi Yaka Personel Asgari Yetkinlik Tablosu",
+  "sekil": "DYS modülü",
+  "modul": "Yetkinlik",
+  "ekran": "/competency"
+ },
+ "D01.1 F05": {
+  "eski": "D01.1 F05",
+  "ad": "Oryantasyon Değerlendirme Formu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—",
+  "not": "Kısıtlı form (KVKK): kayıtları yalnız kaydı giren, İK yetkilileri ve Admin görür"
+ },
+ "D01.1 F06": {
+  "eski": "D01.1 F06",
+  "ad": "Oryantasyon Eğitimi Sınav Soruları",
+  "sekil": "Şablon",
+  "modul": "Şablon",
+  "ekran": "—",
+  "not": "Soru bankası; doldurulmuş sınav kâğıdı personelin eğitim / özlük dosyasında saklanır."
+ },
+ "D01.1 F07": {
+  "eski": "D01.1 F07",
+  "ad": "Personel Yetkinlik İzleme Tablosu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—",
+  "not": "Kısıtlı form (KVKK): kayıtları yalnız kaydı giren, İK yetkilileri ve Admin görür"
+ },
+ "D01.1 F08": {
+  "eski": "D01.1 F08",
+  "ad": "Teknik Personel Oryantasyon Eğitim Formu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D01.1 F09": {
+  "eski": "D01.1 F09",
+  "ad": "Yıllık Eğitim Planı",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D01.1 F10": {
+  "eski": "D01.1 F10",
+  "ad": "Çok Görevlilik Tablosu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D01.2 F01": {
+  "eski": "D01.2 F01",
+  "ad": "Acil Durum Ekipleri",
+  "sekil": "DYS modülü",
+  "modul": "İSG Tatbikat",
+  "ekran": "/ohs/drills"
+ },
+ "D01.2 F02": {
+  "eski": "D01.2 F02",
+  "ad": "Atama Yazısı — Çalışan Temsilcisi",
+  "sekil": "Şablon",
+  "modul": "Şablon",
+  "ekran": "—",
+  "not": "Atama yazısı: imzalı hali İSG / özlük dosyasında; DYS'de kaydı tutulmaz."
+ },
+ "D01.2 F03": {
+  "eski": "D01.2 F03",
+  "ad": "Atama Yazısı — İş Sağlığı ve Güvenliği Kurulu",
+  "sekil": "Şablon",
+  "modul": "Şablon",
+  "ekran": "—",
+  "not": "Atama yazısı: imzalı hali İSG kurulu dosyasında; DYS'de kaydı tutulmaz."
+ },
+ "D01.2 F05": {
+  "eski": "D01.2 F05",
+  "ad": "Debak Risk Değerlendirmesi 2024.02.12",
+  "sekil": "DYS modülü",
+  "modul": "İSG Tehlike / Risk",
+  "ekran": "/ohs/hazards"
+ },
+ "D01.2 F06": {
+  "eski": "D01.2 F06",
+  "ad": "Ecza Dolabı Kontrol Formu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D01.2 F07": {
+  "eski": "D01.2 F07",
+  "ad": "Dış Hizmet Kontrol Formu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D01.2 F08": {
+  "eski": "D01.2 F08",
+  "ad": "Güvenlik Giriş – Çıkış Çizelgesi",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—",
+  "not": "Kısıtlı form (KVKK): kayıtları yalnız kaydı giren, İK yetkilileri ve Admin görür"
+ },
+ "D01.2 F09": {
+  "eski": "D01.2 F09",
+  "ad": "İSG Performansı İzleme Tablosu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D01.2 F10": {
+  "eski": "D01.2 F10",
+  "ad": "İSG Yasal Şartlara Uyum Kontrol Tablosu",
+  "sekil": "DYS modülü",
+  "modul": "Yasal Şartlar",
+  "ekran": "/ims/legal"
+ },
+ "D01.2 F11": {
+  "eski": "D01.2 F11",
+  "ad": "İş güvenliği Amaç ve Hedefler Tablosu",
+  "sekil": "DYS modülü",
+  "modul": "Performans (KPI)",
+  "ekran": "/performance"
+ },
+ "D01.2 F12": {
+  "eski": "D01.2 F12",
+  "ad": "İSG Programı",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D01.2 F13": {
+  "eski": "D01.2 F13",
+  "ad": "İş Güvenliği Kitapçığı Teslim Formu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D01.2 F14": {
+  "eski": "D01.2 F14",
+  "ad": "Çalışma İzin Formu (Geçici Görevlendirme ile Çalışacak Firma)",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D01.2 F15": {
+  "eski": "D01.2 F15",
+  "ad": "İş Kazası Riski (Güvensiz Durum ve Yakın Kaza) Kartı",
+  "sekil": "DYS modülü",
+  "modul": "İSG Tehlike / Risk",
+  "ekran": "/ohs/hazards"
+ },
+ "D01.2 F16": {
+  "eski": "D01.2 F16",
+  "ad": "İş Kazası Tutanağı",
+  "sekil": "DYS modülü",
+  "modul": "İSG Olayları",
+  "ekran": "/ohs/incidents"
+ },
+ "D01.2 F17": {
+  "eski": "D01.2 F17",
+  "ad": "İş Kazası ve Ramak Kala İzleme Tablosu",
+  "sekil": "DYS modülü",
+  "modul": "İSG Olayları",
+  "ekran": "/ohs/incidents"
+ },
+ "D01.2 F18": {
+  "eski": "D01.2 F18",
+  "ad": "Kişisel Koruyucu Kullanım Planı",
+  "sekil": "DYS modülü",
+  "modul": "İSG KKD",
+  "ekran": "/ohs/ppe"
+ },
+ "D01.2 F19": {
+  "eski": "D01.2 F19",
+  "ad": "KİŞİSEL KORUYUCU TESLİMAT FORMU",
+  "sekil": "DYS modülü",
+  "modul": "İSG KKD",
+  "ekran": "/ohs/ppe"
+ },
+ "D01.2 F20": {
+  "eski": "D01.2 F20",
+  "ad": "Meslek Hastalığı İzleme Tablosu",
+  "sekil": "DYS modülü",
+  "modul": "İSG Olayları",
+  "ekran": "/ohs/incidents"
+ },
+ "D01.2 F21": {
+  "eski": "D01.2 F21",
+  "ad": "Ortam Ölçümleri İzleme Tablosu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D01.2 F22": {
+  "eski": "D01.2 F22",
+  "ad": "Ortam Şartları Bildirim Formu",
+  "sekil": "DYS modülü",
+  "modul": "Çalışan Katılımı",
+  "ekran": "/ohs/participation"
+ },
+ "D01.2 F23": {
+  "eski": "D01.2 F23",
+  "ad": "Periyodik Kontrol İzleme Tablosu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D01.2 F24": {
+  "eski": "D01.2 F24",
+  "ad": "Refakatçi Görevlendirme Formu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—",
+  "not": "Kısıtlı form (KVKK): kayıtları yalnız kaydı giren, İK yetkilileri ve Admin görür"
+ },
+ "D01.2 F25": {
+  "eski": "D01.2 F25",
+  "ad": "Saha Kontrol Listesi",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D01.2 F26": {
+  "eski": "D01.2 F26",
+  "ad": "Tutanak Formu",
+  "sekil": "Dinamik Form (DYS'ye eklenecek)",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D01.2 F27": {
+  "eski": "D01.2 F27",
+  "ad": "Yangınla Mücadele Kontrol Listesi",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D01.2 F28": {
+  "eski": "D01.2 F28",
+  "ad": "Ziyaretçi Kayıt Defteri",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—",
+  "not": "Kısıtlı form (KVKK): kayıtları yalnız kaydı giren, İK yetkilileri ve Admin görür"
+ },
+ "D01.2 F29": {
+  "eski": "D01.2 F29",
+  "ad": "Ziyaretçi Koruyucu Ekipman Teslim & İade Formu",
+  "sekil": "DYS modülü",
+  "modul": "İSG KKD",
+  "ekran": "/ohs/ppe"
+ },
+ "D01.2 F30": {
+  "eski": "D01.2 F30",
+  "ad": "Çalışan Tehlike Anket Formu",
+  "sekil": "DYS modülü",
+  "modul": "İSG Tehlike / Risk",
+  "ekran": "/ohs/hazards"
+ },
+ "D01.2 F31": {
+  "eski": "D01.2 F31",
+  "ad": "Çalışan Temsilcisi Yetki Bildirimi",
+  "sekil": "Şablon",
+  "modul": "Şablon",
+  "ekran": "—",
+  "not": "Yetki bildirimi: imzalı hali İSG dosyasında; DYS'de kaydı tutulmaz."
+ },
+ "D01.2 F32": {
+  "eski": "D01.2 F32",
+  "ad": "Çevre ve İSG Yönetim Temsilcisi Atama Yazısı",
+  "sekil": "Şablon",
+  "modul": "Şablon",
+  "ekran": "—",
+  "not": "Atama yazısı: imzalı hali yönetim sistemi dosyasında; DYS'de kaydı tutulmaz."
+ },
+ "D01.2 F33": {
+  "eski": "D01.2 F33",
+  "ad": "Şirket Araçları İzleme Tablosu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D01.2 F34": {
+  "eski": "D01.2 F34",
+  "ad": "İSG İç Paydaş Anketi",
+  "sekil": "DYS modülü",
+  "modul": "Bağlam / İlgili Taraflar",
+  "ekran": "/ims/context"
+ },
+ "D01.2 F35": {
+  "eski": "D01.2 F35",
+  "ad": "İSG Dış Paydaş Anketi",
+  "sekil": "DYS modülü",
+  "modul": "Bağlam / İlgili Taraflar",
+  "ekran": "/ims/context"
+ },
+ "D01.2 F36": {
+  "eski": "D01.2 F36",
+  "ad": "Tatbikat Formu",
+  "sekil": "DYS modülü",
+  "modul": "İSG Tatbikat",
+  "ekran": "/ohs/drills"
+ },
+ "D02 F01": {
+  "eski": "D05 F01",
+  "ad": "Satınalma Sözleşmesi Kaydı",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D02 F02": {
+  "eski": "D05 F02",
+  "ad": "Malzeme İhtiyaç Formu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D02 F03": {
+  "eski": "D05 F03",
+  "ad": "Onaylı Tedarikçi Listesi",
+  "sekil": "DYS modülü",
+  "modul": "Tedarikçi",
+  "ekran": "/iatf/suppliers"
+ },
+ "D02 F04": {
+  "eski": "D05 F04",
+  "ad": "Purchase Order Form",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D02 F05": {
+  "eski": "D05 F05",
+  "ad": "Satınalma Talep Formu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D02 F06": {
+  "eski": "D05 F06",
+  "ad": "Satınalma Teklif Değerlendirme Formu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D02 F07": {
+  "eski": "D05 F07",
+  "ad": "Sipariş Formu - Hizmet Tipi",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D02 F08": {
+  "eski": "D05 F08",
+  "ad": "Sipariş Formu - Mal Tipi",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D02 F09": {
+  "eski": "D05 F09",
+  "ad": "Tedarikçi Bilgi Formu / Supplier Profile",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—",
+  "not": "Tedarikçi modülündeki tedarikçi kaydıyla birlikte kullanılır"
+ },
+ "D02 F10": {
+  "eski": "D05 F10",
+  "ad": "Tedarikçi Gizlilik Sözleşmesi",
+  "sekil": "DYS modülü",
+  "modul": "Tedarikçi",
+  "ekran": "/iatf/suppliers"
+ },
+ "D02 F11": {
+  "eski": "D05 F11",
+  "ad": "Tedarikçi Kalite Vakası Bildirim Formu / Supplier Quality Complaint",
+  "sekil": "DYS modülü",
+  "modul": "Tedarikçi Uygunsuzlukları",
+  "ekran": "/kalite/tedarikci",
+  "not": "Kalite modülünde tutulur; A4 PDF rapor (TR / EN)"
+ },
+ "D02 F12": {
+  "eski": "D05 F12",
+  "ad": "Tedarikçi Performans Bildirim Formu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—",
+  "not": "Tedarikçi modülündeki tedarikçi kaydıyla birlikte kullanılır"
+ },
+ "D02 F13": {
+  "eski": "D05 F13",
+  "ad": "Tedarikçi Seçim Risk Analizi",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—",
+  "not": "Tedarikçi modülündeki tedarikçi kaydıyla birlikte kullanılır"
+ },
+ "D02 F14": {
+  "eski": "D05 F14",
+  "ad": "Tedarikçi Değerlendirme Tablosu ve Geliştirme Planı",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—",
+  "not": "Geliştirme aksiyonları Tedarikçi Geliştirme modülünde izlenir"
+ },
+ "D02 F15": {
+  "eski": "D05 F15",
+  "ad": "Teklif Alma Formu - Hizmet Tipi",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D02 F16": {
+  "eski": "D05 F16",
+  "ad": "Teklif Alma Formu - Mal Tipi",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D03.1 F01": {
+  "eski": "D02.1 F01",
+  "ad": "Yatırım İzleme Formu (Altyapı Yatırım Planlaması)",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D03.2 F01": {
+  "eski": "D02.2 F01",
+  "ad": "Arıza Bakım Maliyetleri",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D03.2 F02": {
+  "eski": "D02.2 F02",
+  "ad": "İş gücü makine yedekleme planı",
+  "sekil": "DYS modülü",
+  "modul": "BGYS Yedekleme",
+  "ekran": "/isms/backups"
+ },
+ "D03.2 F03": {
+  "eski": "D02.2 F03",
+  "ad": "İş gücü yedekleme LİSTESİ",
+  "sekil": "DYS modülü",
+  "modul": "BGYS Yedekleme",
+  "ekran": "/isms/backups"
+ },
+ "D03.2 F06": {
+  "eski": "D02.2 F06",
+  "ad": "Kalıp Devreye Alma Formu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D03.2 F07": {
+  "eski": "D02.2 F07",
+  "ad": "Kalıp Tasarım Formu (Tasarım Gözden Geçirme Soru Listesi)",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D04 F01": {
+  "eski": "D04 F01",
+  "ad": "Akredite Olmayan Laboratuvar Değerlendirme Formu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D04 F02": {
+  "eski": "D04 F02",
+  "ad": "Cihaz MSA Sonuç Kontrol Listesi",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—",
+  "not": "Kalibrasyon modülündeki cihaz kaydıyla birlikte kullanılır (cihaz kodu)"
+ },
+ "D04 F04": {
+  "eski": "D04 F04",
+  "ad": "Fikstür Doğrulama Kaydı",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D04 F05": {
+  "eski": "D04 F05",
+  "ad": "Günlük Sıcaklık Nem Kontrol Çizelgesi",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D04 F07": {
+  "eski": "D04 F07",
+  "ad": "Kalibrasyon Risk Değerlendirme Formu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—",
+  "not": "Kalibrasyon modülündeki cihaz kaydıyla birlikte kullanılır (cihaz kodu)"
+ },
+ "D04 F08": {
+  "eski": "D04 F08",
+  "ad": "Kalibrasyon Raporu Değerlendirme Formu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—",
+  "not": "Kalibrasyon modülündeki cihaz kaydıyla birlikte kullanılır (cihaz kodu)"
+ },
+ "D04 F09": {
+  "eski": "D04 F09",
+  "ad": "Laboratuvar Kapsamı",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D04 F10": {
+  "eski": "D04 F10",
+  "ad": "MSA Formu (Nicel)",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—",
+  "not": "Kalibrasyon modülündeki cihaz kaydıyla birlikte kullanılır (cihaz kodu)"
+ },
+ "D04 F11": {
+  "eski": "D04 F11",
+  "ad": "MSA Formu (Nitel)",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—",
+  "not": "Kalibrasyon modülündeki cihaz kaydıyla birlikte kullanılır (cihaz kodu)"
+ },
+ "D04 F12": {
+  "eski": "D04 F12",
+  "ad": "MSA İzleme Listesi",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—",
+  "not": "Kalibrasyon modülündeki cihaz kaydıyla birlikte kullanılır (cihaz kodu)"
+ },
+ "D04 F13": {
+  "eski": "D04 F13",
+  "ad": "SPC Aksiyon Takip Listesi",
+  "sekil": "DYS modülü",
+  "modul": "SPC",
+  "ekran": "/iatf/spc"
+ },
+ "D04 F16": {
+  "eski": "D04 F16",
+  "ad": "Uygun Olmayan Cihaz Değerlendirme Formu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—",
+  "not": "Kalibrasyon modülündeki cihaz kaydıyla birlikte kullanılır (cihaz kodu)"
+ },
+ "D04.1 F01": {
+  "eski": "D06.1 F01",
+  "ad": "Girdi Kontrol Raporu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D04.3 F02": {
+  "eski": "D06.3 F02",
+  "ad": "Kamera Kontrol Sistemi Periyodik Doğrulama Formu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D04.4 F01": {
+  "eski": "D06.4 F01",
+  "ad": "SPC Formu",
+  "sekil": "DYS modülü",
+  "modul": "SPC",
+  "ekran": "/iatf/spc"
+ },
+ "D04.5 F01": {
+  "eski": "D06 F01",
+  "ad": "Ayıklama Kontrol Listesi",
+  "sekil": "DYS modülü",
+  "modul": "Uygun Olmayan Ürün",
+  "ekran": "/iatf/nonconforming"
+ },
+ "D04.5 F02": {
+  "eski": "D06 F02",
+  "ad": "Karantina Listesi-Uygun Olmayan Ürün",
+  "sekil": "DYS modülü",
+  "modul": "Uygun Olmayan Ürün",
+  "ekran": "/iatf/nonconforming"
+ },
+ "D04.5 F03": {
+  "eski": "D06 F03",
+  "ad": "Proses Geçici Değişiklik Kaydı",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D04.5 F04": {
+  "eski": "D06 F04",
+  "ad": "Uygun Olmayan Ürün Kartı",
+  "sekil": "DYS modülü",
+  "modul": "Uygun Olmayan Ürün",
+  "ekran": "/iatf/nonconforming"
+ },
+ "D04.5 F05": {
+  "eski": "D06 F05",
+  "ad": "Ürün Uygunluk Raporu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D04.5 F06": {
+  "eski": "D06 F06",
+  "ad": "YENİDEN İŞLEM TAKİP LİSTESİ",
+  "sekil": "DYS modülü",
+  "modul": "Uygun Olmayan Ürün",
+  "ekran": "/iatf/nonconforming"
+ },
+ "D04.6 F01": {
+  "eski": "Y01 F01",
+  "ad": "Ana Doküman Listesi",
+  "sekil": "DYS modülü",
+  "modul": "Doküman Yönetimi",
+  "ekran": "/documents"
+ },
+ "D04.6 F02": {
+  "eski": "Y01 F02",
+  "ad": "Değişikliklerin Yönetimi Tablosu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D04.6 F03": {
+  "eski": "Y01 F03",
+  "ad": "Dış Kaynaklı doküman Listesi",
+  "sekil": "DYS modülü",
+  "modul": "Doküman Yönetimi",
+  "ekran": "/documents"
+ },
+ "D04.6 F04": {
+  "eski": "Y01 F04",
+  "ad": "KayıtLar Listesi",
+  "sekil": "DYS modülü",
+  "modul": "Doküman Yönetimi",
+  "ekran": "/documents"
+ },
+ "D04.6 F05": {
+  "eski": "Y01 F05",
+  "ad": "Çevre & İSG Değişikliklerinin Yönetimi Tablosu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D04.6 F06": {
+  "eski": "Y01 F06",
+  "ad": "Ürün / Proses Değişikliği İzleme Tablosu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D04.6 F07": {
+  "eski": "Y01 F07",
+  "ad": "Ürün / Proses Değişiklik Yönetim Seti",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D05 F01": {
+  "eski": "D07 F01",
+  "ad": "Atık & Enerji Kullanımı Tablosu",
+  "sekil": "DYS modülü",
+  "modul": "Çevre Ölçümleri",
+  "ekran": "/env/measurements"
+ },
+ "D05 F02": {
+  "eski": "D07 F02",
+  "ad": "Atık Miktarları İzleme Tablosu",
+  "sekil": "DYS modülü",
+  "modul": "Çevre Ölçümleri",
+  "ekran": "/env/measurements"
+ },
+ "D05 F03": {
+  "eski": "D07 F03",
+  "ad": "Atık yonetim plani",
+  "sekil": "DYS modülü",
+  "modul": "Çevre",
+  "ekran": "/env/aspects"
+ },
+ "D05 F04": {
+  "eski": "D07 F04",
+  "ad": "Çevre Risk Değerlendirme Tablosu",
+  "sekil": "DYS modülü",
+  "modul": "Çevre Boyut & Etki",
+  "ekran": "/env/aspects"
+ },
+ "D05 F06": {
+  "eski": "D07 F06",
+  "ad": "Doğalgaz- ELEKTRİK-SU FATURA TAKİP LİSTESİ",
+  "sekil": "DYS modülü",
+  "modul": "Çevre Ölçümleri",
+  "ekran": "/env/measurements"
+ },
+ "D05 F07": {
+  "eski": "D07 F07",
+  "ad": "Enerji Verimliliği İzleme Tablosu",
+  "sekil": "DYS modülü",
+  "modul": "Çevre Ölçümleri",
+  "ekran": "/env/measurements"
+ },
+ "D05 F08": {
+  "eski": "D07 F08",
+  "ad": "Kimyasal Miktarları İzleme Tablosu",
+  "sekil": "DYS modülü",
+  "modul": "Çevre Ölçümleri",
+  "ekran": "/env/measurements"
+ },
+ "D05 F09": {
+  "eski": "D07 F09",
+  "ad": "Kimyasal Tehlike Tanımlama Listesi",
+  "sekil": "DYS modülü",
+  "modul": "Yasal Şartlar",
+  "ekran": "/ims/legal"
+ },
+ "D05 F10": {
+  "eski": "D07 F10",
+  "ad": "Kimyasalların Güvenlik Bilgi Formu (MSDS) Takip Listesi",
+  "sekil": "DYS modülü",
+  "modul": "Yasal Şartlar",
+  "ekran": "/ims/legal"
+ },
+ "D05 F11": {
+  "eski": "D07 F11",
+  "ad": "Müşteri Şartlarına Uyum Kontrol Tablosu",
+  "sekil": "DYS modülü",
+  "modul": "Müşteriye Özgü Şartlar",
+  "ekran": "/iatf/csr",
+  "not": "Müşteri şartlarına uyum izleme CSR modülünde"
+ },
+ "D05 F12": {
+  "eski": "D07 F12",
+  "ad": "Tatbikat Formu",
+  "sekil": "DYS modülü",
+  "modul": "Acil Durum Hazırlığı ve Tatbikat",
+  "ekran": "/ohs/drills"
+ },
+ "D05 F13": {
+  "eski": "D07 F13",
+  "ad": "Tedarikçi İSG ve Çevre Yasal Şartlar Uyum Kontrol Listesi",
+  "sekil": "DYS modülü",
+  "modul": "Tedarikçi",
+  "ekran": "/iatf/suppliers"
+ },
+ "D05 F14": {
+  "eski": "D07 F14",
+  "ad": "Tedarikçi Performans Tablosu - İSG ve Çevre",
+  "sekil": "DYS modülü",
+  "modul": "Tedarikçi",
+  "ekran": "/iatf/suppliers"
+ },
+ "D05 F15": {
+  "eski": "D07 F15",
+  "ad": "Yeni Ekipman Değerlendirme Formu (Çevre – İSG)",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D05 F16": {
+  "eski": "D07 F16",
+  "ad": "Çevre Amaç ve Hedefleri Tablosu",
+  "sekil": "DYS modülü",
+  "modul": "Performans (KPI)",
+  "ekran": "/performance"
+ },
+ "D05 F17": {
+  "eski": "D07 F17",
+  "ad": "Çevre Kazası Kayıt Formu",
+  "sekil": "DYS modülü",
+  "modul": "Çevre Olayları",
+  "ekran": "/env/incidents"
+ },
+ "D05 F18": {
+  "eski": "D07 F18",
+  "ad": "Çevre Kontrol Listesi",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D05 F19": {
+  "eski": "D07 F19",
+  "ad": "Çevre Programı Formu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D05 F20": {
+  "eski": "D07 F20",
+  "ad": "Çevre Yasal Şartlara Uyum Kontrol Tablosu",
+  "sekil": "DYS modülü",
+  "modul": "Yasal Şartlar",
+  "ekran": "/ims/legal"
+ },
+ "D06 F01": {
+  "eski": "D08 F01",
+  "ad": "Arşiv İndeksi",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D06 F02": {
+  "eski": "D08 F02",
+  "ad": "BGYS Acil Durum Tatbikat Planlama ve Raporlama Formu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D06 F03": {
+  "eski": "D08 F03",
+  "ad": "BGYS Aksiyonları Listesi",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D06 F04": {
+  "eski": "D08 F04",
+  "ad": "BGYS Açıklık Temelli Risk Değerlendirmesi",
+  "sekil": "DYS modülü",
+  "modul": "BGYS Risk",
+  "ekran": "/isms/risks"
+ },
+ "D06 F05": {
+  "eski": "D08 F05",
+  "ad": "BGYS Disiplin Kararı ve Bildirim Formu",
+  "sekil": "Şablon",
+  "modul": "Şablon",
+  "ekran": "—",
+  "not": "Disiplin kararı — özlük belgesi (KVKK): imzalı hali özlük dosyasında; DYS'de kaydı tutulmaz."
+ },
+ "D06 F06": {
+  "eski": "D08 F06",
+  "ad": "BGYS Disiplin Tutanağı",
+  "sekil": "Şablon",
+  "modul": "Şablon",
+  "ekran": "—",
+  "not": "Disiplin tutanağı — özlük belgesi (KVKK): imzalı hali özlük dosyasında; DYS'de kaydı tutulmaz."
+ },
+ "D06 F07": {
+  "eski": "D08 F07",
+  "ad": "BGYS İyileştirme Programı",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D06 F08": {
+  "eski": "D08 F08",
+  "ad": "BGYS Olay Kayıt Formu",
+  "sekil": "DYS modülü",
+  "modul": "BGYS Olayları",
+  "ekran": "/isms/incidents"
+ },
+ "D06 F09": {
+  "eski": "D08 F09",
+  "ad": "BGYS Olay Kayıt İzleme Tablosu",
+  "sekil": "DYS modülü",
+  "modul": "BGYS Olayları",
+  "ekran": "/isms/incidents"
+ },
+ "D06 F10": {
+  "eski": "D08 F10",
+  "ad": "BGYS Sorumlusu ve Bilgi Güvenliği Yönetim Sistemi (BGYS) Ekibi Atama Yazısı",
+  "sekil": "Şablon",
+  "modul": "Şablon",
+  "ekran": "—",
+  "not": "Atama yazısı: imzalı hali BGYS dosyasında."
+ },
+ "D06 F11": {
+  "eski": "D08 F11",
+  "ad": "BGYS Stratejik Planlama",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D06 F12": {
+  "eski": "D08 F12",
+  "ad": "BGYS Yönetim Gözden Geçirme Formu",
+  "sekil": "DYS modülü",
+  "modul": "Yönetim Gözden Geçirme",
+  "ekran": "/ims/reviews"
+ },
+ "D06 F13": {
+  "eski": "D08 F13",
+  "ad": "Bilgi Güvenliği Mevzuatı İzleme Listesi",
+  "sekil": "DYS modülü",
+  "modul": "Yasal Şartlar",
+  "ekran": "/ims/legal"
+ },
+ "D06 F14": {
+  "eski": "D08 F14",
+  "ad": "Bilgi İşlem Altyapısı Bakım Programı",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D06 F15": {
+  "eski": "D08 F15",
+  "ad": "Bilgi İşlem Sistemleri Değişiklikleri İzleme ve Kontrol Formu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D06 F16": {
+  "eski": "D08 F16",
+  "ad": "Bilgi İşleme Araçları Sisteme Giriş ve Yetkilendirme Listesi",
+  "sekil": "DYS modülü",
+  "modul": "BGYS Erişim Gözden Geçirme",
+  "ekran": "/isms/access-reviews"
+ },
+ "D06 F17": {
+  "eski": "D08 F17",
+  "ad": "Bilgi Teknolojileri Kullanıcı Açma Formu",
+  "sekil": "DYS modülü",
+  "modul": "BGYS Erişim Gözden Geçirme",
+  "ekran": "/isms/access-reviews"
+ },
+ "D06 F18": {
+  "eski": "D08 F18",
+  "ad": "Bilgi Teknolojileri Kullanıcı Kapama Formu",
+  "sekil": "DYS modülü",
+  "modul": "BGYS Erişim Gözden Geçirme",
+  "ekran": "/isms/access-reviews"
+ },
+ "D06 F19": {
+  "eski": "D08 F19",
+  "ad": "BT Donanım Teslim Formu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D06 F20": {
+  "eski": "D08 F20",
+  "ad": "BT Hizmet Tedarikçileri Performans Değerlendirme Formu",
+  "sekil": "DYS modülü",
+  "modul": "Tedarikçi",
+  "ekran": "/iatf/suppliers"
+ },
+ "D06 F21": {
+  "eski": "D08 F21",
+  "ad": "BT Tedarikci Bilgi Formu",
+  "sekil": "Şablon",
+  "modul": "Şablon",
+  "ekran": "—",
+  "not": "BT tedarikçi bilgi formu — tedarikçiye gönderilir, doldurulmuş hali tedarikçi dosyasında (Tedarikçi modülü)."
+ },
+ "D06 F22": {
+  "eski": "D08 F22",
+  "ad": "BT Tedarikci Bilgi Formu-Metronet",
+  "sekil": "Şablon",
+  "modul": "Şablon",
+  "ekran": "—",
+  "not": "Doldurulmuş BT tedarikçi bilgi formu (Metronet) — tedarikçi dosyası; şablon D06 F21."
+ },
+ "D06 F23": {
+  "eski": "D08 F23",
+  "ad": "BT Varlıklarının Kullanımı İçin Değişiklik Başvurusu",
+  "sekil": "DYS modülü",
+  "modul": "BGYS Varlık",
+  "ekran": "/isms/assets"
+ },
+ "D06 F24": {
+  "eski": "D08 F24",
+  "ad": "DEBAK AĞ HARITASI (KROKİLİ)",
+  "sekil": "Şablon",
+  "modul": "Şablon",
+  "ekran": "—",
+  "not": "Ağ haritası (kroki) — doküman; GİZLİ sınıfta yayımlanmalı (bilgi güvenliği)."
+ },
+ "D06 F25": {
+  "eski": "D08 F25",
+  "ad": "Değişiklikler İçin Yönetim Onayı Kaydı",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D06 F26": {
+  "eski": "D08 F26",
+  "ad": "Donanım Listesi",
+  "sekil": "DYS modülü",
+  "modul": "BGYS Varlıkları",
+  "ekran": "/isms/assets",
+  "not": "Donanım listesi varlık envanterinde"
+ },
+ "D06 F27": {
+  "eski": "D08 F27",
+  "ad": "ISO 27001 BGYS Şartları ve Dokümanları Karşılaştırma",
+  "sekil": "DYS modülü",
+  "modul": "Uygulanabilirlik Bildirgesi (SoA)",
+  "ekran": "/isms/soa",
+  "not": "ISO 27001 şartları ve dokümanları SoA'da"
+ },
+ "D06 F28": {
+  "eski": "D08 F28",
+  "ad": "Kişisel Veri Envanteri",
+  "sekil": "DYS modülü",
+  "modul": "BGYS Varlık",
+  "ekran": "/isms/assets"
+ },
+ "D06 F29": {
+  "eski": "D08 F29",
+  "ad": "Kişisel Veri Envanterinde Belirlenen İdari ve Teknik Kontroller İçin Denetim Soru Listesi ve Raporu",
+  "sekil": "DYS modülü",
+  "modul": "BGYS Varlık",
+  "ekran": "/isms/assets"
+ },
+ "D06 F30": {
+  "eski": "D08 F30",
+  "ad": "Kişisel Veri İhlal Bildirim Formu",
+  "sekil": "DYS modülü",
+  "modul": "BGYS Olayları",
+  "ekran": "/isms/incidents"
+ },
+ "D06 F31": {
+  "eski": "D08 F31",
+  "ad": "Kişisel Veri İmha Tutanağı",
+  "sekil": "DYS modülü",
+  "modul": "Doküman Yönetimi",
+  "ekran": "/documents"
+ },
+ "D06 F32": {
+  "eski": "D08 F32",
+  "ad": "Kişisel Veri Paydaş Analizi",
+  "sekil": "DYS modülü",
+  "modul": "Bağlam / İlgili Taraflar",
+  "ekran": "/ims/context"
+ },
+ "D06 F33": {
+  "eski": "D08 F33",
+  "ad": "Kişisel Veriler İçin Talep ve Değerlendirme Formu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—",
+  "not": "Kısıtlı form (KVKK): kayıtları yalnız kaydı giren, yetkililer ve Admin görür"
+ },
+ "D06 F34": {
+  "eski": "D08 F34",
+  "ad": "Kişisel Veriler İçin Talep, İhlal, Uygunsuzluk İzleme Tablosu",
+  "sekil": "DYS modülü",
+  "modul": "BGYS Olayları",
+  "ekran": "/isms/incidents"
+ },
+ "D06 F35": {
+  "eski": "D08 F35",
+  "ad": "Kişisel Veriler Çalışma Grubu Yıllık Gözden Geçirme Raporu ve VERBİS Durum Değerlendirmesi",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D06 F36": {
+  "eski": "D08 F36",
+  "ad": "Kullanıcı ve Erişim Yetkileri Gözden Geçirme Listesi",
+  "sekil": "DYS modülü",
+  "modul": "BGYS Erişim Gözden Geçirme",
+  "ekran": "/isms/access-reviews"
+ },
+ "D06 F37": {
+  "eski": "D08 F37",
+  "ad": "Kurum Dışı Kullanıcı Taahhütnamesi",
+  "sekil": "DYS modülü",
+  "modul": "BGYS Erişim Gözden Geçirme",
+  "ekran": "/isms/access-reviews"
+ },
+ "D06 F38": {
+  "eski": "D08 F38",
+  "ad": "Ortak Kullanıcı Hesapları Takip Formu",
+  "sekil": "DYS modülü",
+  "modul": "BGYS Erişim Gözden Geçirme",
+  "ekran": "/isms/access-reviews"
+ },
+ "D06 F39": {
+  "eski": "D08 F39",
+  "ad": "Penetrasyon Testi (Pentest) Planlama ve Raporlama Formu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D06 F40": {
+  "eski": "D08 F40",
+  "ad": "Personel Kimlik ve Yetkinlik Doğrulama Formu",
+  "sekil": "DYS modülü",
+  "modul": "BGYS Erişim Gözden Geçirme",
+  "ekran": "/isms/access-reviews"
+ },
+ "D06 F41": {
+  "eski": "D08 F41",
+  "ad": "Personel Zimmet Formu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—",
+  "not": "Kısıtlı form (KVKK): kayıtları yalnız kaydı giren, yetkililer ve Admin görür"
+ },
+ "D06 F42": {
+  "eski": "D08 F42",
+  "ad": "Sistem Kapasite Yönetimi Tablosu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D06 F43": {
+  "eski": "D08 F43",
+  "ad": "Sistem Kullanım Kayıtları (Log) İnceleme Formu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D06 F44": {
+  "eski": "D08 F44",
+  "ad": "Sistem Odası Ziyaretçi Formu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—",
+  "not": "Kısıtlı form (KVKK): kayıtları yalnız kaydı giren, yetkililer ve Admin görür"
+ },
+ "D06 F45": {
+  "eski": "D08 F45",
+  "ad": "Sunucu Odası Giriş – Çıkış Çizelgesi",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—",
+  "not": "Kısıtlı form (KVKK): kayıtları yalnız kaydı giren, yetkililer ve Admin görür"
+ },
+ "D06 F46": {
+  "eski": "D08 F46",
+  "ad": "Tedarikçi Bilgi Güvenliği Yeterliliği Kontrol Formu",
+  "sekil": "DYS modülü",
+  "modul": "Tedarikçi",
+  "ekran": "/iatf/suppliers"
+ },
+ "D06 F47": {
+  "eski": "D08 F47",
+  "ad": "Tedarikçi Hizmet Alımında Bilgi Güvenliği Sözleşmesi",
+  "sekil": "DYS modülü",
+  "modul": "Tedarikçi",
+  "ekran": "/iatf/suppliers"
+ },
+ "D06 F48": {
+  "eski": "D08 F48",
+  "ad": "Teknik Açıklıkların Kontrolü Formu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D06 F49": {
+  "eski": "D08 F49",
+  "ad": "Uzmanlık Grupları ile İletişim Listesi",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D06 F50": {
+  "eski": "D08 F50",
+  "ad": "Varlık İmha Formu",
+  "sekil": "DYS modülü",
+  "modul": "BGYS Varlık",
+  "ekran": "/isms/assets"
+ },
+ "D06 F51": {
+  "eski": "D08 F51",
+  "ad": "Web Portal&E-İmza&Şirket Dışı Yetki Listesi",
+  "sekil": "DYS modülü",
+  "modul": "BGYS Erişim Gözden Geçirme",
+  "ekran": "/isms/access-reviews"
+ },
+ "D06 F52": {
+  "eski": "D08 F52",
+  "ad": "Yasal ve Müşteri Gerekliliklerine Uyum İzleme Tablosu",
+  "sekil": "DYS modülü",
+  "modul": "Yasal Şartlar",
+  "ekran": "/ims/legal"
+ },
+ "D06 F53": {
+  "eski": "D08 F53",
+  "ad": "Yazılım Listesi",
+  "sekil": "DYS modülü",
+  "modul": "BGYS Varlıkları",
+  "ekran": "/isms/assets",
+  "not": "Yazılım listesi varlık envanterinde"
+ },
+ "D06 F54": {
+  "eski": "D08 F54",
+  "ad": "Yazılım Yükleme ve Devreye Alma Formu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D06 F55": {
+  "eski": "D08 F55",
+  "ad": "Yedekleme Programı ve Kontrol Formu",
+  "sekil": "DYS modülü",
+  "modul": "BGYS Yedekleme",
+  "ekran": "/isms/backups"
+ },
+ "D06 F56": {
+  "eski": "D08 F56",
+  "ad": "Yeni veya Mevcut Donanım Devreye Alma Formu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D06 F57": {
+  "eski": "D08 F57",
+  "ad": "Ziyaretçi Aydınlatma ve Açık Rıza Formu",
+  "sekil": "Şablon",
+  "modul": "Şablon",
+  "ekran": "—",
+  "not": "Ziyaretçi aydınlatma ve açık rıza metni — ziyaretçiye imzalatılır; kayıt D01.2 F28 ile."
+ },
+ "D06 F58": {
+  "eski": "D08 F58",
+  "ad": "Ziyaretçi Kayıt Formu",
+  "sekil": "Şablon",
+  "modul": "Şablon",
+  "ekran": "—",
+  "not": "Ziyaretçi kaydı D01.2 F28 Ziyaretçi Kayıt Defteri (kısıtlı form) ile tutulur."
+ },
+ "D04.3 F03": {
+  "eski": "D06.3 F03",
+  "ad": "Aylık Final Kontrol Fire Oranları",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D01 F34": {
+  "eski": "D01.3 F01",
+  "ad": "Araç Bakım Onarım Formu",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "D06.1 F01": {
+  "eski": "D01.3 F07",
+  "ad": "Kişisel Veriler İçin Yetki Matrisi ve Yetkilerin Yönetimi",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form",
+  "ekran": "—"
+ },
+ "Y01.7 F32": {
+  "eski": "Y01.7 F32",
+  "sekil": "DYS modülü",
+  "modul": "Müşteri Şikayet Listesi",
+  "ekran": "/kalite/musteri",
+  "not": "8D kaydı Kalite › Müşteri Şikayet Listesi'nde; dosya örnek 8D kaydıdır"
+ },
+ "Y01.6 F11": {
+  "eski": "Y01.6 F11",
+  "sekil": "DYS modülü",
+  "modul": "Denetim Soru Listeleri",
+  "ekran": "/audits/checklists",
+  "not": "Süreç denetim soru listesi Denetim Yönetimi'nde"
+ },
+ "Y01.6 F14": {
+  "eski": "Y01.6 F14",
+  "sekil": "DYS modülü",
+  "modul": "Denetim Soru Listeleri",
+  "ekran": "/audits/checklists",
+  "not": "Süreç denetim soru listesi Denetim Yönetimi'nde"
+ },
+ "Y01.6 F15": {
+  "eski": "Y01.6 F15",
+  "sekil": "DYS modülü",
+  "modul": "Denetim Soru Listeleri",
+  "ekran": "/audits/checklists",
+  "not": "Süreç denetim soru listesi Denetim Yönetimi'nde"
+ },
+ "Y01.6 F16": {
+  "eski": "Y01.6 F16",
+  "sekil": "DYS modülü",
+  "modul": "Denetim Soru Listeleri",
+  "ekran": "/audits/checklists",
+  "not": "Süreç denetim soru listesi Denetim Yönetimi'nde"
+ },
+ "Y01.6 F19": {
+  "eski": "Y01.6 F19",
+  "sekil": "DYS modülü",
+  "modul": "Denetim Soru Listeleri",
+  "ekran": "/audits/checklists",
+  "not": "Süreç denetim soru listesi Denetim Yönetimi'nde"
+ },
+ "Y01.6 F21": {
+  "eski": "Y01.6 F21",
+  "sekil": "DYS modülü",
+  "modul": "Denetim Soru Listeleri",
+  "ekran": "/audits/checklists",
+  "not": "Süreç denetim soru listesi Denetim Yönetimi'nde"
+ },
+ "Y01.6 F28": {
+  "eski": "Y01.6 F28",
+  "sekil": "DYS modülü",
+  "modul": "Denetim Soru Listeleri",
+  "ekran": "/audits/checklists",
+  "not": "Süreç denetim soru listesi Denetim Yönetimi'nde"
+ },
+ "Y01.6 F29": {
+  "eski": "Y01.6 F29",
+  "sekil": "DYS modülü",
+  "modul": "Denetim Soru Listeleri",
+  "ekran": "/audits/checklists",
+  "not": "Süreç denetim soru listesi Denetim Yönetimi'nde"
+ },
+ "Y01.6 F33": {
+  "eski": "Y01.6 F33",
+  "sekil": "DYS modülü",
+  "modul": "Denetim Soru Listeleri",
+  "ekran": "/audits/checklists",
+  "not": "Süreç denetim soru listesi Denetim Yönetimi'nde"
+ },
+ "Y01.6 F34": {
+  "eski": "Y01.6 F34",
+  "sekil": "DYS modülü",
+  "modul": "Denetim Soru Listeleri",
+  "ekran": "/audits/checklists",
+  "not": "Süreç denetim soru listesi Denetim Yönetimi'nde"
+ },
+ "M03 F25": {
+  "eski": "M03 F25",
+  "sekil": "Şablon",
+  "modul": "Şablon",
+  "ekran": "—",
+  "not": "M03 F01 ile aynı başlıkta ikinci dosya — kayıt M03 F01'de; revizyonda birleştirilecek."
+ },
+ "D04.5 F07": {
+  "eski": "D04.5 F07",
+  "ekran": "—",
+  "sekil": "Dinamik Form",
+  "modul": "Dinamik Form"
+ },
+ "D04.4 F02": {
+  "eski": "D06.4 F02",
+  "ad": "Teknik Resim Takip Listesi",
+  "sekil": "DYS modülü",
+  "modul": "Teknik Resimler",
+  "ekran": "/teknik-resim",
+  "not": "Excel takip listesi yerine modül: müşteri → ürün → revizyon, manuel yükleme, dağıtım ve değişiklik değerlendirmesi (01.10.2026)"
+ },
+ "D03 F01": {
+  "ad": "1. Seviye Kalıp Periyodik Bakım Formu",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F02": {
+  "ad": "Makine Günlük Bakım Kontrol Listesi",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F04": {
+  "ad": "2. Seviye Kalıp Periyodik Bakım Formu",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F05": {
+  "ad": "Arburg 1500 Saat Bakımı",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F06": {
+  "ad": "Engel 1500 Saat Bakımı",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F07": {
+  "ad": "Arburg 200 Saat Bakımı",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F08": {
+  "ad": "Engel 200 Saat Bakımı",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F09": {
+  "ad": "Arburg 3000 Saat Bakımı",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F10": {
+  "ad": "Engel 3000 Saat Bakımı",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F11": {
+  "ad": "Arburg 500 Saat Bakımı",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F12": {
+  "ad": "Arburg 5000 Saat Bakımı",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F13": {
+  "ad": "Engel 5000 Saat Bakımı",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F14": {
+  "ad": "Arburg 6 Yıllık Bakım",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F15": {
+  "ad": "Engel 6 Yıllık Bakım",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F16": {
+  "ad": "Arburg 6000 Saat Bakımı",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F17": {
+  "ad": "Engel 6000 Saat Bakımı",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F18": {
+  "ad": "CNC Tezgahları Günlük Bakım Kontrol Listesi",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F19": {
+  "ad": "CNC Torna Günlük Bakım Kontrol Listesi",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F20": {
+  "ad": "Dalma Erozyon Günlük Bakım Kontrol Listesi",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F21": {
+  "ad": "Engel 500 Saat Bakımı",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F22": {
+  "ad": "Hidromode 6 Aylık Bakım",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F23": {
+  "ad": "Hidromode Aylık Bakım",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F24": {
+  "ad": "Hidromode Yıllık Bakım",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F25": {
+  "ad": "Hızlı Delik Delme Günlük Bakım Kontrol Listesi",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F26": {
+  "ad": "CNC Tezgahlar 3 Aylık Bakım",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F27": {
+  "ad": "Dalma Erozyon 6 Aylık Bakım",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F28": {
+  "ad": "Elektro Erozyon Bakım Kartı",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F29": {
+  "ad": "Erozyon Tezgahı Bakım Kartı",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F30": {
+  "ad": "Freze Bakım Kartı",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F31": {
+  "ad": "Planya Bakım Kartı",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F32": {
+  "ad": "Sütunlu Matkap Bakım Kartı",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F33": {
+  "ad": "Tel Erozyon 6 Aylık Bakım",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F34": {
+  "ad": "Torna (Büyük) Bakım Kartı",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F35": {
+  "ad": "Torna (Küçük) Bakım Kartı",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F36": {
+  "ad": "Yüzey Taşlama Bakım Kartı",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F39": {
+  "ad": "Kalıp Güçlendirilmiş Periyodik Bakım Formu",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F41": {
+  "ad": "Punta Kaynak Makinesi Bakımı",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F42": {
+  "ad": "Kaynak Makinesi Bakımı",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F43": {
+  "ad": "Konveyör Bakım Kartı",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F44": {
+  "ad": "Krauss Maffei 10000 Saat Bakımı",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F45": {
+  "ad": "Krauss Maffei 3000 Saat Bakımı",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F46": {
+  "ad": "Krauss Maffei 500 Saat Bakımı",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F47": {
+  "ad": "Krauss Maffei 8000 Saat Bakımı",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F48": {
+  "ad": "Makine Rezistans Kontrol Formu",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F49": {
+  "ad": "Sepro Robot Bakım Kartı",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F50": {
+  "ad": "Staubli Robot Bakım Kontrol Kartı",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F51": {
+  "ad": "Trafo Bakım Kartı",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F52": {
+  "ad": "Taşlama Günlük Bakım Kontrol Listesi",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F53": {
+  "ad": "Tel Erozyon Günlük Bakım Kontrol Listesi",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F54": {
+  "ad": "Termoregülatör 6 Aylık Bakım",
+  "sekil": "DYS modülü",
+  "modul": "Bakım Formu",
+  "ekran": "/bakim",
+  "not": "Tek Bakım Formu ekranında şablon (01.10.2026)"
+ },
+ "D03 F03": {
+  "ad": "Kritik ekipman ve yedek parça listesi (liste)",
+  "sekil": "Şablon",
+  "not": "Bakım Formu şablonu değil — liste / talimat; doküman olarak yayımlanır (01.10.2026)"
+ },
+ "D03 F37": {
+  "ad": "Kalıp bağlama / bakım sorumluları listesi",
+  "sekil": "Şablon",
+  "not": "Bakım Formu şablonu değil — liste / talimat; doküman olarak yayımlanır (01.10.2026)"
+ },
+ "D03 F38": {
+  "ad": "Kalıp bakım talimatı (talimat niteliğinde — D03 T olarak numaralandırılması önerilir)",
+  "sekil": "Şablon",
+  "not": "Bakım Formu şablonu değil — liste / talimat; doküman olarak yayımlanır (01.10.2026)"
+ },
+ "D03 F40": {
+  "ad": "Kalıp kritik ölçüler / bakım ölçü kriterleri listesi",
+  "sekil": "Şablon",
+  "not": "Bakım Formu şablonu değil — liste / talimat; doküman olarak yayımlanır (01.10.2026)"
+ },
+ "D03 F55": {
+  "ad": "Yedek malzeme stok listesi",
+  "sekil": "Şablon",
+  "not": "Bakım Formu şablonu değil — liste / talimat; doküman olarak yayımlanır (01.10.2026)"
+ }
+}

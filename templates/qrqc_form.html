@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% block title %}{{ _('Düzenle: ') + qrqc.qrqc_no if qrqc else _('Yeni QRQC Kaydı') }}{% endblock %}
+
+{% block breadcrumb %}
+<span class="separator">›</span>
+<a href="{{ request.script_root }}/qrqc">{{ _('QRQC') }}</a>
+<span class="separator">›</span>
+<span>{{ qrqc.qrqc_no if qrqc else _('Yeni Kayıt') }}</span>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex align-center justify-between mb-24">
+    <div>
+        <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 4px;">
+            ⚡ {{ _('QRQC Olay Kaydı Düzenle') if qrqc else _('Yeni QRQC Olay Kaydı') }}
+        </h2>
+        <p class="text-muted" style="font-size: 13px;">
+            {{ _('Saha ve üretim hatlarında oluşan kalite/iş güvenliği/lojistik problemlerini hızlıca kaydedin.') }}
+        </p>
+    </div>
+    <div>
+        <a href="{{ request.script_root }}/qrqc" class="btn btn-outline">✕ {{ _('İptal') }}</a>
+    </div>
+</div>
+
+<form method="POST" class="section-card" style="padding:24px;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="form-grid mb-16" style="display:grid; grid-template-columns: 2fr 1fr 1fr; gap:16px;">
+        <div class="form-group">
+            <label class="form-label required">{{ _('Problem Başlığı') }}</label>
+            <input type="text" name="baslik" class="form-control" required value="{{ qrqc.baslik if qrqc else '' }}" placeholder="{{ _('Ör. Enjeksiyon makinesinde çapaklanma ve ölçü sapması') }}">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label required">{{ _('Kategori') }}</label>
+            <select name="kategori" class="form-control" required>
+                {% for k in kategoriler %}
+                <option value="{{ k }}" {{ 'selected' if qrqc and qrqc.kategori == k }}>{{ k }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label required">{{ _('Seviye') }}</label>
+            <select name="seviye" class="form-control" required>
+                {% for s in seviyeler %}
+                <option value="{{ s }}" {{ 'selected' if qrqc and qrqc.seviye == s }}>{{ s }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <div class="form-grid mb-16" style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:16px;">
+        <div class="form-group">
+            <label class="form-label">{{ _('Hat / İstasyon / Lokasyon') }}</label>
+            <input type="text" name="hat_istasyon" class="form-control" value="{{ qrqc.hat_istasyon if qrqc else '' }}" placeholder="{{ _('Ör. Enjeksiyon-04 / Montaj A') }}">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">{{ _('Vardiya') }}</label>
+            <select name="vardiya" class="form-control">
+                <option value="">-- {{ _('Seçiniz') }} --</option>
+                {% for v in vardiyalar %}
+                <option value="{{ v }}" {{ 'selected' if qrqc and qrqc.vardiya == v }}>{{ v }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">{{ _('İlgili Süreç') }}</label>
+            <select name="surec_id" class="form-control">
+                <option value="">-- {{ _('Seçiniz') }} --</option>
+                {% for proc in surecler %}
+                <option value="{{ proc.id }}" {{ 'selected' if qrqc and qrqc.surec_id == proc.id }}>
+                    {{ proc.kod }} — {{ proc.ad }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">{{ _('Sorumlu Kişi') }}</label>
+            <select name="sorumlu_id" class="form-control">
+                <option value="">-- {{ _('Seçiniz') }} --</option>
+                {% for u in users %}
+                <option value="{{ u.id }}" {{ 'selected' if qrqc and qrqc.sorumlu_id == u.id }}>
+                    {{ u.ad_soyad }} ({{ u.departman or '' }})
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <div class="form-grid mb-16" style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:16px;">
+        <div class="form-group">
+            <label class="form-label">{{ _('Etkilenen Miktar (Adet)') }}</label>
+            <input type="number" name="etkilenen_miktar" class="form-control" value="{{ qrqc.etkilenen_miktar if qrqc else 0 }}" min="0">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">{{ _('Hedef Kapanış Tarihi') }}</label>
+            <input type="date" name="hedef_kapanis_tarihi" class="form-control" value="{{ qrqc.hedef_kapanis_tarihi if qrqc and qrqc.hedef_kapanis_tarihi else '' }}">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">{{ _('Durum') }}</label>
+            <select name="durum" class="form-control">
+                {% for d in durumlar %}
+                <option value="{{ d }}" {{ 'selected' if qrqc and qrqc.durum == d }}>{{ d }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group mb-16">
+        <label class="form-label">{{ _('Problem Tanımı (5W2H / Detay)') }}</label>
+        <textarea name="problem_tanimi" class="form-control" rows="3" placeholder="{{ _('Problem nerede, ne zaman, kaç adet ve nasıl tespit edildi?') }}">{{ qrqc.problem_tanimi if qrqc else '' }}</textarea>
+    </div>
+
+    <div class="form-group mb-16">
+        <label class="form-label text-danger" style="font-weight:700;">🚨 {{ _('24 Saatlik Acil Müdahale & Karantina Tedbiri') }}</label>
+        <textarea name="gecici_onlem" class="form-control" rows="3" placeholder="{{ _('Hattın durdurulması, karantina stoku ayıklama, %100 kontrol tedbirleri...') }}">{{ qrqc.gecici_onlem if qrqc else '' }}</textarea>
+    </div>
+
+    <div class="form-grid mb-24" style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+        <div class="form-group">
+            <label class="form-label">{{ _('Kök Neden Analizi (5 Neden Özeti)') }}</label>
+            <textarea name="kok_neden" class="form-control" rows="3" placeholder="{{ _('Saha kök neden değerlendirmesi') }}">{{ qrqc.kok_neden if qrqc else '' }}</textarea>
+        </div>
+        <div class="form-group">
+            <label class="form-label">{{ _('Kalıcı İyileştirme Aksiyonu') }}</label>
+            <textarea name="kalici_aksiyon" class="form-control" rows="3" placeholder="{{ _('Kalıcı aksiyon ve standartlaşma adımları') }}">{{ qrqc.kalici_aksiyon if qrqc else '' }}</textarea>
+        </div>
+    </div>
+
+    <div class="d-flex justify-end gap-12">
+        <a href="{{ request.script_root }}/qrqc" class="btn btn-outline">{{ _('İptal') }}</a>
+        <button type="submit" class="btn btn-primary">💾 {{ _('QRQC Kaydını Kaydet') }}</button>
+    </div>
+</form>
+{% endblock %}

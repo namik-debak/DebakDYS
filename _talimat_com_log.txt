@@ -1,0 +1,297 @@
+com xls_ok=139 xls_err=104 doc_ok=52 doc_err=0
+
+ERR	Y01-T02	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+ERR	Y01-T03	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+ERR	Y03.2-T01	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+OK	Y03.2-T02	Y03.2 T02(3)_20.12.2024
+ERR	M02-T06	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+ERR	M03-T01	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+ERR	M03-T04	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+ERR	M03-T06	(-2147352567, 'Özel durum oluştu.', (0, None, None, None, 0, -2147352565), None)
+OK	M03-T07	M03 T07(2)_04.04.2025
+ERR	M03-T13	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+OK	M04-T01	M04 T01(2)_06.05.2025
+ERR	M04-T02	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+OK	M04-T03	M04 T03(2)_06.05.2025
+ERR	M04-T04	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+ERR	M04-T05	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+OK	M04-T06	M04 T06(2)_06.05.2025
+ERR	M04-T07	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+OK	M04-T08	M04 T08(2)_06.05.2025
+OK	M04-T09	M04 T09(3)_06.05.2025
+ERR	M04-T10	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+OK	M04-T11	M04 T11(3)_06.05.2025
+OK	M04-T12	M04 T12(2)_06.05.2025
+ERR	M04-T13	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+OK	M04-T14	M04 T14(3)_06.05.2025
+ERR	M04-T15	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+OK	M04-T16	M04 T16(0)_14.04.2025
+ERR	M04-T17	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+ERR	M04-T18	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+OK	M04-T20	M04 T20(3)_06.05.2025
+ERR	M04-T22	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+OK	M04-T24	M04 T24(2)_06.05.2025
+ERR	M04-T25	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+OK	M04-T27	M04 T27(2)_06.05.2025
+ERR	M04-T28	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+ERR	M04-T32	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+ERR	M04-T33	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+ERR	M04-T34	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+OK	M04-T35	M04 T35(2)_06.05.2025
+ERR	M04-T37	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+ERR	M04-T38	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+OK	M04-T39	M04 T39(1)_01.09.2008
+ERR	M04-T48	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+OK	M04-T49	M04 T49(5)_06.05.2025
+ERR	M04-T50	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+OK	M04-T53	M04 T53(2)_06.05.2025
+ERR	M04-T55	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+ERR	M05-T01	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+ERR	D01-T05	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+ERR	D01.2-T01	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+ERR	D01.2-T06	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+ERR	D01.2-T13	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+ERR	D01.2-T18	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+ERR	D01.2-T23	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+ERR	D01.2-T24	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+ERR	D01.2-T28	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+ERR	D01.2-T30	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+ERR	D01.2-T57	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+ERR	D03-T04	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+ERR	D03-T06	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+ERR	D03-T07	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+ERR	D03-T09	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+ERR	D04-T08	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+ERR	D04-T16	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+ERR	D04-T17	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+ERR	D04-T18	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+ERR	D04-T21	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+ERR	D04-T24	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+ERR	D05-T01	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+ERR	D06.1-T01	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+OK	D06.2-T01	D06.2 T01 (1)_06.05.2025
+ERR	D06.2-T02	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+OK	D06.2-T03	D06.2 T03 (1)_06.05.2025
+ERR	D06.2-T04	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+ERR	D06.2-T05	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+OK	D06.2-T06	D06.2 T06 (1)_06.05.2025
+ERR	D06.2-T07	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+ERR	D06.2-T08	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+ERR	D06.2-T09	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+OK	D06.2-T10	D06.2 T10 (1)_06.05.2025
+ERR	D06.2-T11	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+OK	D06.2-T12	D06.2 T12 (1)_06.05.2025
+OK	D06.2-T13	D06.2 T13 (1)_06.05.2025
+ERR	D06.2-T14	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+OK	D06.2-T15	D06.2 T15 (1)_06.05.2025
+ERR	D06.2-T16	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+OK	D06.2-T17	D06.2 T17 (1)_02.05.2025
+ERR	D06.2-T18	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+OK	D06.2-T19	D06.2 T19 (2)_06.05.2025
+ERR	D06.2-T20	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+OK	D06.2-T21	D06.2 T21 (1)_06.05.2025
+OK	D06.2-T22	D06.2 T22 (1)_06.05.2025
+ERR	D06.2-T23	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+OK	D06.2-T24	D06.2 T24 (1)_06.05.2025
+ERR	D06.2-T25	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+ERR	D06.2-T26	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+OK	D06.2-T27	D06.2 T27 (0)_14.02.2011
+ERR	D06.2-T28	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+OK	D06.2-T29	D06.2 T29 (1)_06.05.2025
+OK	D06.2-T30	D06.2 T30 (1)_06.05.2025
+ERR	D06.2-T31	(-2147352567, 'Özel durum oluştu.', (0, None, None, None, 0, -2147352565), None)
+OK	D06.2-T32	D06.2 T32 (1)_06.05.2025
+ERR	D06.2-T33	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+ERR	D06.2-T34	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+ERR	D06.2-T35	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+OK	D06.2-T36	D06.2 T36 (1)_06.05.2025
+ERR	D06.2-T37	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+ERR	D06.2-T38	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+OK	D06.2-T39	D06.2 T39 (1)_06.05.2025
+ERR	D06.2-T40	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+ERR	D06.2-T41	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+ERR	D06.2-T42	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+OK	D06.2-T43	D06.2 T43 (4)_06.05.2025
+OK	D06.2-T44	D06.2 T44 (1)_06.05.2025
+ERR	D06.2-T45	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+OK	D06.2-T46	D06.2 T46 (4)_06.05.2025
+ERR	D06.2-T47	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+OK	D06.2-T48	D06.2 T48 (3)_06.05.2025
+ERR	D06.2-T49	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+ERR	D06.2-T50	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+OK	D06.2-T51	D06.2 T51 (2)_06.05.2025
+OK	D06.2-T52	D06.2 T52(3)_06.05.2025
+OK	D06.2-T53	D06.2 T53 (1)_06.05.2025
+ERR	D06.2-T54	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+ERR	D06.2-T55	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+OK	D06.2-T56	D06.2 T56 (4)_06.05.2025
+ERR	D06.2-T57	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+OK	D06.2-T58	D06.2 T58 (1)_06.05.2025
+ERR	D06.2-T59	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+ERR	D06.2-T60	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+OK	D06.2-T61	D06.2 T61(3)_05.05.2025
+ERR	D06.2-T62	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+ERR	D06.2-T63	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+OK	D06.2-T64	D06.2 T64 (1)_06.05.2025
+ERR	D06.2-T65	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+OK	D06.2-T66	D06.2 T66 (1)_06.05.2025
+OK	D06.2-T67	D06.2 T67 (1)_06.05.2025
+ERR	D06.2-T68	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+OK	D06.2-T69	D06.2 T69 (1)_06.05.2025
+ERR	D06.2-T70	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+OK	D06.2-T71	D06.2 T71 (1)_06.05.2025
+ERR	D06.2-T72	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+OK	D06.2-T73	D06.2 T73(1)_06.05.2025
+ERR	D06.2-T74	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+OK	D06.2-T75	D06.2 T75 (2)_06.05.2025
+ERR	D06.2-T76	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+OK	D06.2-T77	D06.2 T77 (2)_06.05.2025
+ERR	D06.2-T78	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+OK	D06.2-T79	D06.2 T79 (2)_06.05.2025
+ERR	D06.2-T80	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+OK	D06.2-T81	D06.2 T81 (1)_06.05.2025
+ERR	D06.2-T82	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+OK	D06.2-T83	D06.2 T83 (1)_06.05.2025
+ERR	D06.2-T84	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+OK	D06.2-T85	D06.2 T85 (1)_06.05.2025
+ERR	D06.2-T86	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+ERR	D06.2-T87	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+ERR	D06.2-T88	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+OK	D06.3-T02	D06.3 T02(1)_02.05.2025
+ERR	D06.3-T03	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+OK	D06.3-T04	D06.3 T04(1)_30.04.2025
+ERR	D06.3-T05	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+ERR	D06.3-T06	(-2147418111, 'Arama aranan tarafından kabul edilmedi.', None, None)
+OK	D06.3-T07	D06.3 T07(1)_30.04.2025
+ERR	D06.3-T08	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+OK	D06.3-T09	D06.3 T09(1)_30.04.2025
+OK	D06.3-T10	D06.3 T10(1)_30.04.2025
+OK	D06.3-T11	D06.3 T11(2)_30.04.2025
+OK	D06.3-T12	D06.3 T12(1)_02.05.2025
+OK	D06.3-T13	D06.3 T13(1)_02.05.2025
+OK	D06.3-T14	D06.3 T14(1)_02.05.2025
+OK	D06.3-T15	D06.3 T15(1)_02.05.2025
+OK	D06.3-T16	D06.3 T16(1)_02.05.2025
+OK	D06.3-T17	D06.3 T17(1)_02.05.2025
+OK	D06.3-T18	D06.3 T18(1)_02.05.2025
+ERR	D06.3-T19	(-2147417848, 'çağrılan nesne istemcilerinden ayrılmış.', None, None)
+OK	D06.3-T20	D06.3 T20(1)_02.05.2025
+OK	D06.3-T21	D06.3 T21(1)_02.05.2025
+OK	D06.3-T22	D06.3 T22(1)_02.05.2025
+OK	D06.3-T23	D06.3 T23(1)_02.05.2025
+OK	D06.3-T24	D06.3 T24(1)_02.05.2025
+OK	D06.3-T25	D06.3 T25(0)_14.02.2011
+OK	D06.3-T26	D06.3 T26(0)_14.02.2011
+OK	D06.3-T27	D06.3 T27(1)_02.05.2025
+OK	D06.3-T28	D06.3 T28(1)_30.04.2025
+OK	D06.3-T29	D06.3 T29(1)_06.05.2025
+OK	D06.3-T30	D06.3 T30(1)_30.04.2025
+OK	D06.3-T31	D06.3 T31(1)_30.04.2025
+OK	D06.3-T32	D06.3 T32(1)_30.04.2025
+OK	D06.3-T33	D06.3 T33 06.05.2025
+OK	D06.3-T34	D06.3 T34(3)_25.04.2025
+OK	D06.3-T35	D06.3 T35(1)_30.04.2025
+OK	D06.3-T36	D06.3 T36(1)_30.04.2025
+OK	D06.3-T37	D06.3 T37(1)_30.04.2025
+OK	D06.3-T38	D06.3 T38(1)_25.04.2025
+OK	D06.3-T39	D06.3 T39(1)_25.04.2025
+OK	D06.3-T40	D06.3 T40(2)_25.04.2025
+OK	D06.3-T41	D06.3 T41(1)_25.04.2025
+OK	D06.3-T42	D06.3 T42(1)_25.04.2025
+OK	D06.3-T43	D06.3 T43(3)_25.04.2025
+OK	D06.3-T44	D06.3 T44(2)_25.04.2025
+OK	D06.3-T45	D06.3 T45(4)_25.04.2025
+OK	D06.3-T46	D06.3 T46(3)_25.04.2025
+OK	D06.3-T47	D06.3 T47 (1)_25.04.2025
+OK	D06.3-T48	D06.3 T48(2)_25.04.2025
+OK	D06.3-T49	D06.3 T49(3)_25.04.2025
+OK	D06.3-T50	D06.3 T50(1)_25.04.2025
+OK	D06.3-T51	D06.3 T51(1)_25.04.2025
+OK	D06.3-T52	D06.3 T52(1)_25.04.2025
+OK	D06.3-T53	D06.3 T53(1)_25.04.2025
+OK	D06.3-T54	D06.3 T54(1)_25.04.2025
+OK	D06.3-T55	D06.3 T55(1)_25.04.2025
+OK	D06.3-T56	D06.3 T56(3)_06.05.2025
+OK	D06.3-T57	D06.3 T57 06.05.2025
+OK	D06.3-T58	D06.3 T58 06.05.2025
+OK	D06.3-T59	D06.3 T59 06.05.2025
+OK	D06.3-T60	D06.3 T60 (1)_06.05.2025
+OK	D06.3-T61	D06.3 T61 06.05.2025
+OK	D06.3-T62	D06.3 T62(1)_06.05.2025
+OK	D06.3-T63	D06.3 T63(1)_06.05.2025
+OK	D06.3-T64	D06.3 T64(1)_06.05.2025
+OK	D06.3-T65	D06.3 T65(1)_06.05.2025
+OK	D06.3-T66	D06.3 T66(1)_25.04.2025
+OK	D06.3-T67	D06.3 T67(1)_25.04.2025
+OK	D06.3-T68	D06.3 T68(1)_25.04.2025
+OK	D06.3-T69	D06.3 T69 (1)_06.05.2025
+OK	D06.3-T71	D06.3 T71(1)_02.05.2025
+OK	D06.3-T72	D06.3 T72(1)_02.05.2025
+OK	D06.3-T73	D06.3 T73(1)_02.05.2025
+OK	D06.3-T74	D06.3 T74(2)_25.04.2025
+OK	D06.3-T75	D06.3 T75 (1)_30.04.2025
+OK	D06.3-T76	D06.3 T76(1)_30.04.2025
+OK	D06.3-T77	D06.3 T77(1)_30.04.2025
+OK	D06.3-T78	D06.3 T78(2)_30.04.2025
+OK	D06.3-T79	D06.3 T79(2)_30.04.2025
+OK	D06.3-T80	D06.3 T80(1)_30.04.2025
+OK	D06.3-T81	D06.3 T81 (1)_30.04.2025
+OK	D06.3-T82	D06.3 T82 (2)_10.07.2025
+OK	D06.3-T83	D06.3 T83(3)_25.04.2025
+OK	D06.3-T84	D06.3 T84(1)_30.04.2025
+OK	D06.3-T85	D06.3 T85(1)_30.04.2025
+OK	D07-T02	D07 T02(4) 02.01.2025
+OK	D07-T03	D07 T03 02.01.2025
+OK	D07-T06	D07 T06(3)_02.01.2025
+OK	Y02.2-T02	Y02.2 T02 10.01.2016
+OK	Y02.3-T01	Y02.3 T01 07.04.2025
+OK	Y03.3-T02	Y03.3 T02 20.12.2024
+OK	M01-T04	M01 T04 21.01.2008
+OK	M02-T01	M02 T01 #N/A
+OK	M03-T11	M03 T11 06.05.2025
+OK	M03-T14	M03 T14 03.03.2023
+OK	M04-T19	M04 T19 03.03.2023
+OK	M04-T23	M04 T23 06.05.2025
+OK	M04-T29	M04 T29 06.05.2025
+OK	M04-T36	M04 T36 06.05.2025
+OK	M04-T40	M04 T40 06.05.2025
+OK	M04-T41	M04 T41 06.05.2025
+OK	M04-T42	M04 T42 06.05.2025
+OK	M04-T43	M04 T43 06.05.2025
+OK	M04-T44	M04 T44 06.05.2025
+OK	M04-T45	M04 T45 06.05.2025
+OK	M04-T46	M04 T46 03.03.2023
+OK	M04-T47	M04 T47 06.05.2025
+OK	M04-T54	M04 T54 06.05.2025
+OK	D01-T01	D01 T01 14.02.2023
+OK	D01-T40	D01 T40 14.02.2023
+OK	D01-T41	D01 T41 14.02.2023
+OK	D01-T43	D01 T43 06.05.2025
+OK	D01-T51	D01 T51 14.02.2023
+OK	D01-T52	D01 T52 14.02.2023
+OK	D01-T53	D01 T53 14.02.2023
+OK	D01-T56	D01 T56 14.02.2023
+OK	D01-T57	D01 T57 14.02.2023
+OK	D01-T58	D01 T58 14.02.2023
+OK	D01-T59	D01 T59 #N/A
+OK	D01.2-T16	D01.2 T16 11.01.2025
+OK	D01.2-T22	D01.2 T22 11.01.2025
+OK	D01.2-T25	D01.2 T25 11.01.2025
+OK	D01.3-T22	D01.3 T22 14.02.2023
+OK	D03-T02	D03 T02 08.05.2019
+OK	D04-T03	D04 T03 06.05.2025
+OK	D04-T04	D04 T04 06.05.2025
+OK	D04-T15	D04 T15 06.05.2025
+OK	D04-T20	D04 T20 05.05.2025
+OK	D04-T23	D04 T23 06.05.2025
+OK	D04-T26	D04 T26 06.05.2025
+OK	D05-T02	D05 T02 10.01.2025
+OK	D06-T01	D06 T01 05.05.2025
+OK	D06-T02	D06 T02 05.05.2025
+OK	D06-T03	D06 T03 05.05.2025
+OK	D06-T04	D06 T04 05.05.2025
+OK	D06-T08	D06 T08 05.05.2025
+OK	D06-T10	D06 T10 05.05.2025
+OK	D06-T11	D06 T11 05.05.2025
+OK	D06-T12	D06 T12 05.05.2025
+OK	D07-T04	D07 T04 02.01.2025

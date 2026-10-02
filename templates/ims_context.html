@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Bağlam & Taraflar{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><a href="{{ request.script_root }}/ims">IMS</a><span class="separator">›</span><span>Bağlam</span>{% endblock %}
+{% block content %}
+<div class="mb-24"><h2 style="font-size:20px;font-weight:700;">Bağlam & İlgili Taraflar</h2></div>
+{% if can_edit %}
+<div class="section-card mb-16"><div class="section-body">
+<form method="POST" class="filters-bar" style="flex-wrap:wrap;gap:8px;">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<select name="tur" class="filter-select">{% for t in baglam_turleri %}<option>{{ t }}</option>{% endfor %}</select>
+<input name="konu" class="filter-select" placeholder="Konu" required style="min-width:200px;">
+<input name="aciklama" class="filter-select" placeholder="Açıklama" style="min-width:220px;">
+<label style="font-size:12px;"><input type="checkbox" name="iklim" value="1"> İklim</label>
+<button class="btn btn-primary" type="submit">Ekle</button>
+</form></div></div>
+{% endif %}
+<div class="dashboard-grid">
+<div class="section-card">
+  <div class="section-header"><span class="section-title">Bağlam Hususları</span></div>
+  <div class="section-body" style="padding:0;">
+  {% if baglam %}
+  <table class="data-table"><thead><tr><th>Tür</th><th>Konu</th><th>İklim</th></tr></thead>
+  <tbody>{% for b in baglam %}<tr><td>{{ b.tur }}</td><td>{{ b.konu }}</td><td>{{ 'Evet' if b.iklim_ile_ilgili else '—' }}</td></tr>{% endfor %}</tbody></table>
+  {% else %}<p class="text-muted" style="padding:16px;">Kayıt yok.</p>{% endif %}
+  </div>
+</div>
+<div class="section-card">
+  <div class="section-header"><span class="section-title">İlgili Taraflar</span></div>
+  <div class="section-body" style="padding:0;">
+  {% if taraflar %}
+  <table class="data-table"><thead><tr><th>Ad</th><th>Etki</th><th>Beklentiler</th></tr></thead>
+  <tbody>{% for t in taraflar %}<tr><td>{{ t.ad }}</td><td>{{ t.etki_derecesi or '—' }}</td><td style="font-size:12px;">{{ (t.beklentiler or '—')[:80] }}</td></tr>{% endfor %}</tbody></table>
+  {% else %}<p class="text-muted" style="padding:16px;">Kayıt yok.</p>{% endif %}
+  </div>
+</div>
+</div>
+{% endblock %}

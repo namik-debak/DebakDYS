@@ -1,0 +1,9 @@
+﻿  [OK   ] GET  /login                       -> 200 (beklenen (200,))  Giri■ sayfas²
+  [OK   ] GET  /health                      -> 200 (beklenen (200,))  Sa­l²k ucu
+  [OK   ] GET  /healthz                     -> 200 (beklenen (200,))  Haz²rl²k ucu
+  [OK   ] GET  /qrqc/1/close                -> 405 (beklenen (405,))  QRQC kapatma GET ile engellendi
+  [OK   ] GET  /qrqc/1/trigger-dof          -> 405 (beklenen (405,))  DÍF tetikleme GET ile engellendi
+  [OK   ] GET  /                            -> 302 (beklenen (301, 302))  Kimlik do­rulama zorunlu
+  [OK   ] GET  /documents                   -> 302 (beklenen (301, 302))  Dok³man listesi korunuyor
+
+Toplam: 7 ba■ar²l², 0 ba■ar²s²z

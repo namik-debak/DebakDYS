@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Yeni FMEA' if mode == 'new' else 'FMEA Düzenle — ' ~ fmea.fmea_no }}{% endblock %}
+{% block breadcrumb %}
+<span class="separator">›</span><a href="{{ url_for('fmea_list') }}">FMEA</a>
+<span class="separator">›</span><span>{{ 'Yeni' if mode == 'new' else 'Düzenle' }}</span>
+{% endblock %}
+{% block content %}
+<div class="section-card" style="max-width:720px;">
+  <h2 style="font-size:18px;font-weight:700;margin-bottom:20px;">
+    {{ '📋 Yeni FMEA — Adım 1: Planlama ve Hazırlık' if mode == 'new' else '✏️ FMEA Düzenle — ' ~ fmea.fmea_no }}
+  </h2>
+
+  <form method="post" action="{{ url_for('fmea_new') if mode == 'new' else url_for('fmea_edit', fmea_id=fmea.id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      {# Tip #}
+      <div class="form-group">
+        <label class="form-label">FMEA Tipi *</label>
+        <select name="tip" class="form-control" required>
+          {% for t in tipler %}
+          <option value="{{ t }}" {{ 'selected' if fmea and fmea.tip == t }}>{{ t }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      {# Süreç #}
+      <div class="form-group">
+        <label class="form-label">İlgili Süreç</label>
+        <select name="surec_id" class="form-control">
+          <option value="">— Seçiniz —</option>
+          {% for p in procs %}
+          <option value="{{ p.id }}" {{ 'selected' if fmea and fmea.surec_id == p.id }}>{{ p.kod }} — {{ p.ad }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      {# Kapsam #}
+      <div class="form-group" style="grid-column:span 2;">
+        <label class="form-label">Kapsam (Intent)</label>
+        <input type="text" name="kapsam" class="form-control" value="{{ fmea.kapsam or '' if fmea }}" placeholder="FMEA'nın amacı ve kapsamı...">
+      </div>
+
+      {# Parça/Proses #}
+      <div class="form-group">
+        <label class="form-label">Parça / Proses</label>
+        <input type="text" name="parca_proses" class="form-control" value="{{ fmea.parca_proses or '' if fmea }}" placeholder="Ürün veya proses adı">
+      </div>
+
+      {# Müşteri #}
+      <div class="form-group">
+        <label class="form-label">Müşteri</label>
+        <input type="text" name="musteri" class="form-control" value="{{ fmea.musteri or '' if fmea }}" placeholder="Müşteri / proje referansı">
+      </div>
+
+      {# Ekip #}
+      <div class="form-group" style="grid-column:span 2;">
+        <label class="form-label">Ekip (Team)</label>
+        <input type="text" name="ekip" class="form-control" value="{{ fmea.ekip or '' if fmea }}" placeholder="Ekip üyeleri (virgülle ayırın)">
+      </div>
+
+      {% if mode == 'edit' %}
+      {# Mevcut Adım #}
+      <div class="form-group">
+        <label class="form-label">Mevcut Adım</label>
+        <select name="mevcut_adim" class="form-control">
+          {% for a in adimlar %}
+          <option value="{{ a }}" {{ 'selected' if fmea and fmea.mevcut_adim == a }}>{{ a }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      {# Revizyon #}
+      <div class="form-group">
+        <label class="form-label">Revizyon</label>
+        <input type="text" name="revizyon" class="form-control" value="{{ fmea.revizyon or '00' if fmea }}" style="max-width:80px;">
+      </div>
+      {% endif %}
+
+      {# Açıklama #}
+      <div class="form-group" style="grid-column:span 2;">
+        <label class="form-label">Açıklama / Notlar</label>
+        <textarea name="aciklama" class="form-control" rows="3" placeholder="Genel notlar...">{{ fmea.aciklama or '' if fmea }}</textarea>
+      </div>
+    </div>
+
+    <div class="d-flex justify-between" style="margin-top:20px;">
+      <a href="{{ url_for('fmea_list') }}" class="btn btn-outline">İptal</a>
+      <button type="submit" class="btn btn-primary">
+        {{ '✓ Oluştur' if mode == 'new' else '✓ Kaydet' }}
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}

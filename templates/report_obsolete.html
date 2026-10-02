@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Eskimiş Dokümanlar{% endblock %}
+
+{% block breadcrumb %}
+<span class="separator">›</span>
+<a href="{{ request.script_root }}/reports">Raporlar</a>
+<span class="separator">›</span>
+<span>Eskimiş Dokümanlar</span>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex align-center justify-between mb-24">
+    <div>
+        <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 4px;">📛 Eskimiş / İptal Dokümanlar</h2>
+        <p class="text-muted" style="font-size: 13px;">Yürürlükten kaldırılan dokümanların kontrolü (ISO 7.5.3)</p>
+    </div>
+    <span class="d-flex gap-8">
+        <a href="{{ request.script_root }}/reports/obsolete/export.xlsx" class="btn btn-outline">⬇ Excel</a>
+        <a href="{{ request.script_root }}/reports/obsolete/export.pdf" class="btn btn-outline">⬇ PDF</a>
+        <a href="{{ request.script_root }}/reports" class="btn btn-secondary">← Raporlar</a>
+    </span>
+</div>
+
+<div class="section-card">
+    {% if documents %}
+    <div class="data-table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Doküman No</th>
+                    <th>Başlık</th>
+                    <th>Süreç</th>
+                    <th>Tip</th>
+                    <th class="text-center">Rev.</th>
+                    <th>Durum</th>
+                    <th>Son Güncelleme</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for doc in documents %}
+                <tr>
+                    <td><code style="color: var(--text-accent);">{{ doc.dokuman_no }}</code></td>
+                    <td><a href="{{ request.script_root }}/documents/{{ doc.id }}" style="color: var(--text-primary); font-weight: 600;">{{ doc.baslik }}</a></td>
+                    <td class="text-muted">{{ doc.surec.kod }}</td>
+                    <td>{{ doc.dokuman_tipi }}</td>
+                    <td class="text-center">{{ doc.revizyon_no }}</td>
+                    <td>
+                        <span class="status-badge {{ doc.durum|slug }}">{{ doc.durum|enum }}</span>
+                    </td>
+                    <td class="text-muted">{{ doc.guncelleme_tarihi.strftime('%d.%m.%Y') if doc.guncelleme_tarihi else '-' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state" style="padding: 30px;">
+        <div class="empty-icon">✅</div>
+        <h3>Eskimiş doküman yok</h3>
+        <p class="text-muted">Tüm dokümanlar güncel durumda.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}{{ t.form_kodu }} — {{ t.ad }}{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><a href="{{ request.script_root }}/forms">Formlar</a><span class="separator">›</span><span>{{ t.form_kodu }}</span>{% endblock %}
+{% block content %}
+<div class="d-flex align-center justify-between mb-24" style="flex-wrap:wrap;gap:12px;">
+  <div>
+    <h2 style="font-size:20px;font-weight:700;">{{ t.form_kodu }} · {{ t.ad }}</h2>
+    <p class="text-muted" style="font-size:13px;">
+      Süreç: {{ t.surec.kod ~ ' ' ~ t.surec.ad if t.surec else '—' }} · Rev. {{ t.revizyon_no }}
+      {% if t.eski_kod %} · Eski kod: {{ t.eski_kod }}{% endif %}
+      {% if t.document %} · Doküman kaydı: <a href="{{ request.script_root }}/documents/{{ t.document.id }}">{{ t.document.dokuman_no }}</a>{% endif %}
+    </p>
+  </div>
+  <div class="d-flex" style="gap:8px;">
+    {% if can_fill %}<a class="btn btn-primary" href="{{ request.script_root }}/forms/{{ t.id }}/new">Yeni kayıt</a>{% endif %}
+    <a class="btn btn-outline" href="{{ request.script_root }}/forms/{{ t.id }}/print" target="_blank" title="Sahada kullanım için çıktı numaralı boş form">🖨️ Boş form çıktısı</a>
+    <a class="btn btn-outline" href="{{ request.script_root }}/forms/{{ t.id }}/export">Excel'e aktar</a>
+  </div>
+</div>
+
+{% if t.kisitli %}
+<div class="alert alert-warning" style="margin-bottom:12px;">🔒 <strong>Kısıtlı form (KVKK — kişisel veri).</strong> Kayıtları yalnız kaydı giren kişi, yetkililer
+  ({{ yetkili_adlari|join(', ') or 'henüz tanımlanmadı' }}) ve sistem yöneticisi görür ve onaylar; kayıt görüntülemeleri işlem kaydına yazılır, ortak "Form Verileri" klasörüne yazılmaz.
+  {% if t.erisim.get('gerekce') %}<br><span class="text-muted" style="font-size:12px;">Gerekçe: {{ t.erisim.get('gerekce') }}</span>{% endif %}</div>
+{% endif %}
+<div class="section-card mb-16">
+  <div class="section-header"><span class="section-title">Kayıtlar{% if t.kisitli %} <span class="text-muted" style="font-size:12px;font-weight:400;">(görme yetkiniz olanlar)</span>{% endif %}</span></div>
+  <div class="section-body" style="padding:0;">
+  {% if kayitlar %}
+  <table class="data-table">
+  <thead><tr><th>Kayıt No</th><th>Durum</th><th>Oluşturan</th><th>Tarih</th><th>Onaylayan</th></tr></thead>
+  <tbody>
+  {% for k in kayitlar %}
+  <tr>
+    <td><a href="{{ request.script_root }}/forms/records/{{ k.id }}">{{ k.kayit_no }}</a></td>
+    <td><span class="status-badge {{ 'green' if k.durum == 'Onaylandı' else ('red' if k.durum == 'Reddedildi' else 'yellow') }}">{{ k.durum }}</span></td>
+    <td>{{ k.olusturan.ad_soyad if k.olusturan else '—' }}</td>
+    <td class="text-muted">{{ k.olusturma_tarihi.strftime('%d.%m.%Y %H:%M') if k.olusturma_tarihi else '—' }}</td>
+    <td>{{ k.onaylayan.ad_soyad if k.onaylayan else '—' }}</td>
+  </tr>
+  {% endfor %}
+  </tbody></table>
+  {% else %}<p class="text-muted" style="padding:16px;">Henüz kayıt yok.</p>{% endif %}
+  </div>
+</div>
+
+{% if session.get('rol') == 'Admin' %}
+<div class="section-card mb-16">
+  <div class="section-header"><span class="section-title">🔒 Erişim (KVKK)</span></div>
+  <div class="section-body">
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="islem" value="erisim">
+      <label style="font-size:13px;"><input type="checkbox" name="kisitli" value="1" {{ 'checked' if t.kisitli }}> Kısıtlı form — kayıtlar kişisel veri içerir</label>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;align-items:flex-start;">
+        <label style="font-size:12.5px;display:flex;flex-direction:column;gap:3px;">Yetkili kullanıcılar (görür ve onaylar)
+          <select name="erisim_kullanicilar" multiple size="8" class="form-control" style="min-width:280px;">
+            {% for u in erisim_kullanicilar %}<option value="{{ u.id }}" {{ 'selected' if u.id in yetkililer }}>{{ u.ad_soyad }}{% if u.departman %} — {{ u.departman }}{% endif %}</option>{% endfor %}
+          </select><span class="text-muted" style="font-size:11px;">Ctrl ile birden çok seçilir.</span></label>
+        <label style="font-size:12.5px;display:flex;flex-direction:column;gap:3px;flex:1;min-width:240px;">Gerekçe
+          <input name="gerekce" class="form-control" value="{{ t.erisim.get('gerekce', '') }}" placeholder="ör. Personel özlük verisi — yalnız İK"></label>
+      </div>
+      <button class="btn btn-primary btn-sm" type="submit" style="margin-top:8px;">Erişimi kaydet</button>
+    </form>
+  </div>
+</div>
+{% endif %}
+<div class="section-card">
+  <div class="section-header"><span class="section-title">Alanlar ({{ alanlar|length }})</span></div>
+  <div class="section-body">
+    {% if can_manage %}
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="filters-bar" style="gap:10px;flex-wrap:wrap;margin-bottom:10px;">
+        <input name="ad" value="{{ t.ad }}" class="filter-select" style="min-width:300px;" placeholder="Form adı">
+        <input name="onay_akisi" value="{{ t.onay_akisi or '' }}" class="filter-select" style="min-width:220px;" placeholder="Onay akışı">
+        <label style="font-size:12px;"><input type="checkbox" name="aktif" value="1" {% if t.aktif is none or t.aktif %}checked{% endif %}> Aktif</label>
+      </div>
+      <p class="text-muted" style="font-size:12px;">Alan tanımı (JSON listesi). Tipler: {{ tipler|join(', ') }} · alanlar: ad, tip, zorunlu (true/false), secenekler (seçim tipleri için liste), sutunlar (tablo tipi için liste)</p>
+      <textarea name="alanlar_json" rows="18" style="width:100%;font-family:Consolas,monospace;font-size:12px;">{{ alanlar_json }}</textarea>
+      <button class="btn btn-primary" type="submit" style="margin-top:8px;">Kaydet</button>
+    </form>
+    {% else %}
+    <table class="data-table"><thead><tr><th>Alan</th><th>Tip</th><th>Zorunlu</th></tr></thead><tbody>
+    {% for a in alanlar %}<tr><td>{{ a.ad }}</td><td>{{ a.tip or 'metin' }}</td><td>{{ 'Evet' if a.zorunlu else '—' }}</td></tr>{% endfor %}
+    </tbody></table>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

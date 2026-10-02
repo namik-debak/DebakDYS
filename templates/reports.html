@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% block title %}{{ _('Raporlar') }}{% endblock %}
+
+{% block breadcrumb %}
+<span class="separator">›</span>
+<span>{{ _('Raporlar') }}</span>
+{% endblock %}
+
+{% block content %}
+<div class="mb-24">
+    <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 4px;">{{ _('Raporlar') }}</h2>
+    <p class="text-muted" style="font-size: 13px;">{{ _('Standart uyumluluk, doküman envanteri ve analiz raporları') }}</p>
+</div>
+
+<!-- Report Cards -->
+<div class="report-grid mb-24">
+    <a href="{{ request.script_root }}/reports/compliance" class="report-card">
+        <div class="report-card-icon" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">🛡️</div>
+        <h3>{{ _('Standart Uyumluluk Matrisi') }}</h3>
+        <p>{{ _('Tüm standartların doküman gerekliliklerini ve mevcut durumlarını gösterir.') }}</p>
+    </a>
+    <a href="{{ request.script_root }}/reports/inventory" class="report-card">
+        <div class="report-card-icon" style="background: var(--color-info-bg); color: var(--color-info);">📊</div>
+        <h3>{{ _('Doküman Envanteri') }}</h3>
+        <p>{{ _('Süreç bazında tüm dokümanların detaylı listesi ve istatistikleri.') }}</p>
+    </a>
+    <a href="{{ request.script_root }}/reports/review-calendar" class="report-card">
+        <div class="report-card-icon" style="background: var(--color-warning-bg); color: var(--color-warning);">📅</div>
+        <h3>{{ _('Gözden Geçirme Takvimi') }}</h3>
+        <p>{{ _('Yaklaşan ve geçmiş gözden geçirme tarihleri ve planlama.') }}</p>
+    </a>
+    <a href="{{ request.script_root }}/reports/atiflar" class="report-card">
+        <div class="report-card-icon" style="background: var(--color-info-bg, var(--bg-secondary)); color: var(--color-info, var(--color-primary));">🔗</div>
+        <h3>{{ _('Atıf Bütünlüğü') }}</h3>
+        <p>{{ _("DYS'de olmayan, eskimiş ya da hariç tutulan dokümanlara verilen atıflar.") }}</p>
+    </a>
+    <a href="{{ request.script_root }}/reports/obsolete" class="report-card">
+        <div class="report-card-icon" style="background: var(--color-danger-bg); color: var(--color-danger);">📛</div>
+        <h3>{{ _('Eskimiş Dokümanlar') }}</h3>
+        <p>{{ _('İptal edilen ve eskimiş dokümanların kontrolü.') }}</p>
+    </a>
+    {% if session.get('rol') in ['Admin', 'Doküman Kontrol'] %}
+    <a href="{{ request.script_root }}/reports/audit-package" class="report-card">
+        <div class="report-card-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">📦</div>
+        <h3>{{ _('Denetim Paketi') }}</h3>
+        <p>{{ _('Gereklilik, kanıt, DÖF ve bulgu özeti — SHA-256 imzalı Excel.') }}</p>
+    </a>
+    {% endif %}
+</div>
+
+<!-- Quick Stats -->
+<div class="stats-grid mb-24">
+    <div class="stat-card">
+        <div class="stat-icon blue">📄</div>
+        <div class="stat-value">{{ stats.toplam }}</div>
+        <div class="stat-label">{{ _('Toplam Doküman') }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon green">✅</div>
+        <div class="stat-value">{{ stats.onayli }}</div>
+        <div class="stat-label">{{ _('Onaylı') }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon yellow">📝</div>
+        <div class="stat-value">{{ stats.taslak }}</div>
+        <div class="stat-label">{{ _('Taslak') }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon red">📛</div>
+        <div class="stat-value">{{ stats.eskimis }}</div>
+        <div class="stat-label">{{ _('Eskimiş/İptal') }}</div>
+    </div>
+</div>
+
+<!-- Compliance Matrix -->
+<div class="section-card mb-24">
+    <div class="section-header">
+        <span class="section-title">🛡️ {{ _('Standart × Süreç Uyumluluk Matrisi') }}</span>
+    </div>
+    <div class="section-body">
+        <div class="data-table-wrapper">
+            <table class="matrix-table">
+                <thead>
+                    <tr>
+                        <th>{{ _('Süreç') }}</th>
+                        <th>IATF 16949</th>
+                        <th>ISO 14001</th>
+                        <th>ISO 45001</th>
+                        <th>ISO 27001</th>
+                        <th>{{ _('Doküman Sayısı') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in processes %}
+                    <tr>
+                        <td>{{ p.kod }} - {{ p.ad }}</td>
+                        <td>
+                            {% if 'IATF' in (p.ilgili_standartlar or '') %}
+                            <span class="matrix-check">✓</span>
+                            {% else %}
+                            <span class="matrix-cross">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if '14001' in (p.ilgili_standartlar or '') %}
+                            <span class="matrix-check">✓</span>
+                            {% else %}
+                            <span class="matrix-cross">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if '45001' in (p.ilgili_standartlar or '') %}
+                            <span class="matrix-check">✓</span>
+                            {% else %}
+                            <span class="matrix-cross">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if '27001' in (p.ilgili_standartlar or '') %}
+                            <span class="matrix-check">✓</span>
+                            {% else %}
+                            <span class="matrix-cross">—</span>
+                            {% endif %}
+                        </td>
+                        <td><strong>{{ p.documents|length }}</strong></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Process-based Document Count -->
+<div class="section-card">
+    <div class="section-header">
+        <span class="section-title">📊 {{ _('Süreç Bazında Doküman Tipi Dağılımı') }}</span>
+    </div>
+    <div class="section-body">
+        <div class="data-table-wrapper">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>{{ _('Süreç') }}</th>
+                        <th>{{ 'Prosedür'|enum }}</th>
+                        <th>{{ 'Talimat'|enum }}</th>
+                        <th>{{ 'Form'|enum }}</th>
+                        <th>{{ 'Plan'|enum }}</th>
+                        <th>{{ _('Diğer') }}</th>
+                        <th>{{ _('Toplam') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in processes %}
+                    {% set docs = p.documents %}
+                    <tr>
+                        <td>{{ p.kod }} - {{ p.ad }}</td>
+                        <td class="text-center">{{ docs|selectattr('dokuman_tipi', 'equalto', 'Prosedür')|list|length }}</td>
+                        <td class="text-center">{{ docs|selectattr('dokuman_tipi', 'equalto', 'Talimat')|list|length }}</td>
+                        <td class="text-center">{{ docs|selectattr('dokuman_tipi', 'equalto', 'Form')|list|length }}</td>
+                        <td class="text-center">{{ docs|selectattr('dokuman_tipi', 'equalto', 'Plan')|list|length }}</td>
+                        <td class="text-center">{{ docs|length - docs|selectattr('dokuman_tipi', 'in', ['Prosedür', 'Talimat', 'Form', 'Plan'])|list|length }}</td>
+                        <td class="text-center"><strong>{{ docs|length }}</strong></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

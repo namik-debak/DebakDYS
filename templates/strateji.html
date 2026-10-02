@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% block title %}Stratejik Planlama {{ yil }}{% endblock %}
+
+{% block breadcrumb %}
+<span class="separator">›</span>
+<span>Stratejik Planlama</span>
+{% endblock %}
+
+{% block content %}
+<style>
+.st-ust{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:14px;}
+.st-sekme{display:flex;gap:4px;flex-wrap:wrap;border-bottom:1px solid var(--border-color);margin-bottom:14px;}
+.st-sekme a{padding:8px 12px;text-decoration:none;font-size:13.5px;color:var(--text-secondary);border-bottom:2px solid transparent;}
+.st-sekme a.aktif{color:var(--color-primary);border-bottom-color:var(--color-primary);font-weight:600;}
+.st-sekme a .n{font-size:11px;background:var(--bg-secondary);border-radius:10px;padding:0 6px;margin-left:4px;}
+.st-filtre{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;font-size:13px;}
+.st-filtre a{padding:3px 10px;border:1px solid var(--border-color);border-radius:14px;text-decoration:none;color:var(--text-secondary);}
+.st-filtre a.aktif{border-color:var(--color-primary);color:var(--color-primary);font-weight:600;}
+.st-etiket{font-size:11px;border-radius:10px;padding:1px 8px;white-space:nowrap;background:var(--bg-secondary);color:var(--text-secondary);}
+.st-etiket.isg{background:var(--color-success-bg,#dcfce7);color:var(--color-success,#15803d);}
+.st-etiket.ortak{background:var(--color-info-bg,#dbeafe);color:var(--color-info,#1d4ed8);}
+.swot{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px;}
+.swot .kutu{border:1px solid var(--border-color);border-radius:10px;padding:10px 12px;}
+.swot .kutu h3{font-size:14px;margin:0 0 6px;}
+.swot ol{margin:0;padding-left:20px;font-size:13px;} .swot li{margin:3px 0;}
+.st-tablo td,.st-tablo th{vertical-align:top;font-size:12.5px;}
+.st-tablo td.metin{min-width:260px;}
+.gec{color:var(--color-danger,#dc2626);font-weight:700;}
+details.st-ekle{margin-top:10px;} details.st-ekle summary{cursor:pointer;font-size:13px;color:var(--color-primary);}
+.st-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px 12px;margin-top:8px;}
+.st-form .gen{grid-column:1/-1;}
+</style>
+
+<div class="st-ust">
+  <div>
+    <h2 style="font-size:20px;font-weight:700;margin-bottom:4px;">🧭 Stratejik Planlama — {{ yil }}</h2>
+    <p class="text-muted" style="font-size:12.5px;max-width:900px;">Çevre (bağlam) analizi → paydaş analizi → SWOT → stratejiler → öncelikli stratejilerin uygulanması ve gözden geçirilmesi.
+      Kurumsal ve İSG & Çevre bakışı aynı analizde, kapsam etiketiyle (ISO 9001 / IATF 16949 4.1 · 4.2 · 6.1 · 6.2, ISO 14001 / 45001 4.1 · 4.2 · 6.1).
+      {% if donem and donem.kaynak %}<br>Kaynak: {{ donem.kaynak }}{% endif %}</p>
+  </div>
+  <div class="d-flex gap-8" style="flex-wrap:wrap;align-items:center;">
+    <form method="GET" style="display:inline;"><input type="hidden" name="sekme" value="{{ sekme }}">
+      <select name="yil" class="form-control" onchange="this.form.submit()" style="width:auto;">{% for y in yillar %}<option value="{{ y }}" {{ 'selected' if y == yil }}>{{ y }}</option>{% endfor %}</select></form>
+    <a href="{{ url_for('strateji_export', yil=yil) }}" class="btn btn-outline">⬇ Excel</a>
+    <a href="{{ url_for('strateji_yazdir', yil=yil) }}" class="btn btn-primary" target="_blank">🖨️ Rapor yazdır</a>
+    {% if can_edit %}
+    <form method="POST" action="{{ url_for('strateji_donem') }}" style="display:inline;" onsubmit="return confirm('Yeni dönem önceki yılın kalemleri kopyalanarak açılsın mı?');">
+      <input type="hidden" name="yil" value="{{ (yillar|max) + 1 }}"><input type="hidden" name="kopyala" value="{{ yillar|max }}">
+      <button class="btn btn-secondary" type="submit">➕ {{ (yillar|max) + 1 }} dönemini aç</button></form>
+    {% endif %}
+  </div>
+</div>
+
+<div class="st-sekme">
+  {% for b, ad in sekmeler %}<a href="{{ url_for('strateji', yil=yil, sekme=b, kapsam=kapsam) }}" class="{{ 'aktif' if b == sekme }}">{{ ad }}<span class="n">{{ say[b] }}</span></a>{% endfor %}
+</div>
+
+<div class="st-filtre">
+  <span class="text-muted">Kapsam:</span>
+  <a href="{{ url_for('strateji', yil=yil, sekme=sekme) }}" class="{{ 'aktif' if not kapsam }}">Tümü</a>
+  {% for k in kapsamlar %}<a href="{{ url_for('strateji', yil=yil, sekme=sekme, kapsam=k) }}" class="{{ 'aktif' if k == kapsam }}">{{ k }}</a>{% endfor %}
+  {% set gg = donem.gozden_gecirme if donem else {} %}
+  <span class="text-muted" style="margin-left:auto;">Gözden geçirme:
+    {% if gg.get(sekme) %}<strong>{{ gg.get(sekme) }}</strong>{% else %}—{% endif %}
+    {% if gg.get(sekme ~ '_isg_cevre') %} · İSG & Çevre <strong>{{ gg.get(sekme ~ '_isg_cevre') }}</strong>{% endif %}
+    {% if sekme == 'swot' and gg.get('swot_sayfa') %} <span class="st-etiket">{{ gg.get('swot_sayfa') }}{% if gg.get('swot_isg_cevre_sayfa') %} · {{ gg.get('swot_isg_cevre_sayfa') }}{% endif %}</span>{% endif %}</span>
+  {% if can_edit %}
+  <form method="POST" action="{{ url_for('strateji_donem') }}" class="d-flex gap-8" style="align-items:center;">
+    <input type="hidden" name="yil" value="{{ yil }}"><input type="hidden" name="sekme" value="{{ sekme }}">
+    <input type="date" name="gg_{{ sekme }}" value="{{ gg.get(sekme) or '' }}" class="form-control" style="width:auto;padding:3px 6px;">
+    <button class="btn btn-sm btn-outline" type="submit">Gözden geçirildi</button></form>
+  {% endif %}
+</div>
+
+{% macro kapsam_etiket(k) %}{% if k.veri.get('ortak') %}<span class="st-etiket ortak" title="Kurumsal ve İSG & Çevre tablolarında ortak">Ortak</span>{% elif k.kapsam != 'Kurumsal' %}<span class="st-etiket isg">{{ k.kapsam }}</span>{% endif %}{% endmacro %}
+{% macro duzenle(k) %}{% if can_edit %}<a href="{{ url_for('strateji_kalem', kid=k.id) }}" class="btn btn-sm btn-outline" title="Düzenle">✏️</a>{% endif %}{% endmacro %}
+
+{% if sekme == 'baglam' %}
+  {% for g, liste in gruplar.items() %}
+  <div class="section-card" style="margin-bottom:12px;">
+    <div class="section-header" style="padding:10px 14px;"><span class="section-title" style="font-size:14px;">{{ loop.index }} · {{ g }} <span class="text-muted" style="font-weight:400;">({{ liste|length }})</span></span></div>
+    <div class="data-table-wrapper"><table class="data-table st-tablo">
+      <thead><tr><th style="width:40px;">No</th><th>Çevre bileşeni / husus</th><th>Kurumsal bilginin kaynağı</th><th>İlk analiz / değişiklikler</th><th></th></tr></thead><tbody>
+      {% for k in liste %}<tr><td>{{ k.sira }}</td><td class="metin">{{ k.metin }} {{ kapsam_etiket(k) }}</td><td>{{ k.veri.get('kaynak', '') }}</td><td>{{ k.veri.get('analiz', '') }}</td><td>{{ duzenle(k) }}</td></tr>{% endfor %}
+      </tbody></table></div>
+  </div>
+  {% else %}<div class="empty-state"><h3>Bu dönem için bağlam analizi yok</h3></div>{% endfor %}
+
+{% elif sekme == 'paydas' %}
+  <div class="section-card"><div class="data-table-wrapper"><table class="data-table st-tablo">
+    <thead><tr><th style="width:40px;">No</th><th>Önemli paydaş</th><th>Statü</th><th>Etki</th><th>Kuruluş faaliyetlerine etkisi</th><th>İhtiyaç ve beklentiler</th><th>İSG ve çevre beklentileri</th><th></th></tr></thead><tbody>
+    {% for k in kalemler %}<tr><td>{{ loop.index }}</td><td><strong>{{ k.metin }}</strong> {{ kapsam_etiket(k) }}</td><td>{{ k.veri.get('statu', '') }}</td><td>{{ k.veri.get('etki', '') }}</td>
+      <td>{{ k.veri.get('faaliyet_etkisi', '') }}</td><td>{{ k.veri.get('beklenti', '') }}</td><td>{{ k.veri.get('isg_cevre_beklenti', '') }}</td><td>{{ duzenle(k) }}</td></tr>
+    {% else %}<tr><td colspan="8" class="text-muted">Bu dönem için paydaş analizi yok.</td></tr>{% endfor %}
+    </tbody></table></div></div>
+
+{% elif sekme == 'swot' %}
+  <div class="swot">
+  {% for tur in swot_turleri %}
+    {% set liste = gruplar.get(tur, []) %}
+    <div class="kutu" style="border-top:4px solid {{ {'Güçlü':'#16a34a','Zayıf':'#dc2626','Fırsat':'#2563eb','Tehdit':'#d97706'}[tur] }};">
+      <h3>{{ {'Güçlü':'💪 Güçlü yanlar','Zayıf':'⚠️ Zayıf yanlar','Fırsat':'🌱 Fırsatlar','Tehdit':'⛈️ Tehditler'}[tur] }} <span class="text-muted" style="font-weight:400;">({{ liste|length }})</span></h3>
+      <ol>{% for k in liste %}<li>{{ k.metin }} {{ kapsam_etiket(k) }} {% if can_edit %}<a href="{{ url_for('strateji_kalem', kid=k.id) }}" style="text-decoration:none;" title="Düzenle">✏️</a>{% endif %}</li>{% endfor %}</ol>
+    </div>
+  {% endfor %}
+  </div>
+
+{% elif sekme == 'strateji' %}
+  <div class="section-card"><div class="data-table-wrapper"><table class="data-table st-tablo">
+    <thead><tr><th style="width:50px;">No</th><th>Strateji</th><th>İlgili paydaş</th><th>Dayandığı SWOT maddeleri</th><th></th></tr></thead><tbody>
+    {% for k in kalemler %}<tr><td>{{ k.kod or '' }}</td><td class="metin">{{ k.metin }} {{ kapsam_etiket(k) }}</td><td>{{ k.veri.get('ilgili_paydas', '') }}</td><td>{{ k.veri.get('swot', '') }}</td><td>{{ duzenle(k) }}</td></tr>
+    {% else %}<tr><td colspan="5" class="text-muted">Bu dönem için strateji yok.</td></tr>{% endfor %}
+    </tbody></table></div></div>
+
+{% elif sekme == 'eylem' %}
+  {% if eylem_ozet %}<div class="st-filtre">{% for d in durumlar %}<span class="st-etiket">{{ d }}: <strong>{{ eylem_ozet[d] }}</strong></span>{% endfor %}
+    {% if eylem_ozet.geciken %}<span class="st-etiket gec">Terminini geçen: {{ eylem_ozet.geciken }}</span>{% endif %}</div>{% endif %}
+  <div class="section-card"><div class="data-table-wrapper"><table class="data-table st-tablo">
+    <thead><tr><th>Öncelik</th><th>No</th><th>Strateji</th><th>Kritik başarı faktörü</th><th>Planlanan termin</th><th>Kaynak</th><th>Durum</th><th>Sorumlu</th><th>Gözden geçirme</th><th>Gerçekleşen</th><th></th></tr></thead><tbody>
+    {% for k in kalemler %}{% set v = k.veri %}
+    <tr><td>{{ loop.index }}</td><td>{{ k.kod or '' }}</td><td class="metin">{{ k.metin }} {{ kapsam_etiket(k) }}</td><td>{{ v.get('kbf', '') }}</td>
+      <td class="{{ 'gec' if k.termin and k.termin < bugun and k.durum not in ['Tamamlandı', 'İptal'] }}">{{ k.termin.strftime('%d.%m.%Y') if k.termin else v.get('termin_metin', '') }}</td>
+      <td>{{ v.get('kaynak', '') }}</td><td><span class="st-etiket">{{ k.durum or 'Planlandı' }}</span></td><td>{{ k.sorumlu.ad_soyad if k.sorumlu else '' }}</td>
+      <td>{{ v.get('gg_notu', '') }}{% if v.get('gg_tarihi') %}<div class="text-muted" style="font-size:11px;">{{ v.get('gg_tarihi') }}</div>{% endif %}</td><td>{{ v.get('gerceklesen', '') }}</td><td>{{ duzenle(k) }}</td></tr>
+    {% else %}<tr><td colspan="11" class="text-muted">Bu dönem için öncelikli strateji yok.</td></tr>{% endfor %}
+    </tbody></table></div></div>
+{% endif %}
+
+{% if can_edit %}
+<details class="st-ekle section-card" style="padding:10px 14px;">
+  <summary>➕ Bu tabloya yeni satır ekle</summary>
+  <form method="POST" action="{{ url_for('strateji_kalem_yeni') }}" class="st-form">
+    <input type="hidden" name="yil" value="{{ yil }}"><input type="hidden" name="bolum" value="{{ sekme }}">
+    <label>Kapsam<select name="kapsam" class="form-control">{% for k in kapsamlar %}<option {{ 'selected' if k == (kapsam or 'Kurumsal') }}>{{ k }}</option>{% endfor %}</select></label>
+    {% if sekme == 'baglam' %}<label>Çevre bileşeni<select name="grup" class="form-control">{% for b in bilesenler %}<option>{{ b }}</option>{% endfor %}</select></label>
+    {% elif sekme == 'swot' %}<label>SWOT türü<select name="grup" class="form-control">{% for b in swot_turleri %}<option>{{ b }}</option>{% endfor %}</select></label>
+    {% elif sekme in ['strateji', 'eylem'] %}<label>No<input name="kod" class="form-control" placeholder="ör. 9.a"></label>{% endif %}
+    <label class="gen">{{ {'baglam':'Husus / konu','paydas':'Paydaş','swot':'Madde','strateji':'Strateji','eylem':'Strateji (uygulama)'}[sekme] }}<textarea name="metin" class="form-control" rows="2" required></textarea></label>
+    {% for ad, etiket, tip in alanlar %}
+      {% if tip == 'uzun' %}<label class="gen">{{ etiket }}<textarea name="{{ ad }}" class="form-control" rows="2"></textarea></label>
+      {% elif tip.startswith('secim:') %}<label>{{ etiket }}<select name="{{ ad }}" class="form-control"><option></option>{% for s in tip[6:].split(',') %}<option>{{ s }}</option>{% endfor %}</select></label>
+      {% elif tip == 'tarih' %}<label>{{ etiket }}<input type="date" name="{{ ad }}" class="form-control"></label>
+      {% else %}<label>{{ etiket }}<input name="{{ ad }}" class="form-control"></label>{% endif %}
+    {% endfor %}
+    {% if sekme == 'eylem' %}
+      <label>Planlanan termin<input type="date" name="termin" class="form-control"></label>
+      <label>Durum<select name="durum" class="form-control">{% for d in durumlar %}<option>{{ d }}</option>{% endfor %}</select></label>
+      <label>Sorumlu<select name="sorumlu_id" class="form-control"><option value="">—</option>{% for u in users %}<option value="{{ u.id }}">{{ u.ad_soyad }}</option>{% endfor %}</select></label>
+    {% endif %}
+    <div class="gen"><button class="btn btn-primary" type="submit">Ekle</button></div>
+  </form>
+</details>
+{% endif %}
+{% if donem and donem.notlar %}<p class="text-muted" style="font-size:12px;margin-top:10px;">Dönem notu: {{ donem.notlar }}</p>{% endif %}
+{% endblock %}

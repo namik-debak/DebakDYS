@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}İmha Talepleri{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><span>İmha Talepleri</span>{% endblock %}
+{% block content %}
+<div class="d-flex align-center justify-between mb-24">
+  <div><h2 style="font-size:20px;font-weight:700;">İmha Talepleri</h2>
+  <p class="text-muted" style="font-size:13px;">{{ kayitlar|length }} talep</p></div>
+</div>
+<div class="section-card">
+{% if kayitlar %}
+<table class="data-table">
+<thead><tr><th>Doküman</th><th>Talep Eden</th><th>Tarih</th><th>Gerekçe</th><th>Durum</th></tr></thead>
+<tbody>
+{% for k in kayitlar %}
+<tr>
+  <td>{% if k.document %}<a href="{{ request.script_root }}/documents/{{ k.document_id }}">{{ k.document.dokuman_no }}</a>{% else %}#{{ k.document_id }}{% endif %}</td>
+  <td>{{ k.talep_eden.ad_soyad if k.talep_eden else '—' }}</td>
+  <td class="text-muted">{{ k.talep_tarihi.strftime('%d.%m.%Y') if k.talep_tarihi else '—' }}</td>
+  <td style="font-size:13px;">{{ (k.gerekce or '—')[:80] }}</td>
+  <td><span class="status-badge {{ k.durum|slug }}">{{ k.durum|enum }}</span></td>
+</tr>
+{% endfor %}
+</tbody></table>
+{% else %}
+<div class="empty-state"><div class="empty-icon">🗑️</div><h3>İmha talebi yok</h3></div>
+{% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}{{ d.ad_soyad or 'Yeni denetçi' }} — İç Denetçi{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><a href="{{ request.script_root }}/audits">İç Tetkik</a><span class="separator">›</span><a href="{{ request.script_root }}/audits/auditors">İç Denetçiler</a><span class="separator">›</span><span>{{ d.ad_soyad or 'Yeni' }}</span>{% endblock %}
+{% block content %}
+{% set n = d.nitelikler %}
+<div class="mb-24"><h2 style="font-size:20px;font-weight:700;">🎓 {{ d.ad_soyad or 'Yeni iç denetçi' }}</h2>
+<p class="text-muted" style="font-size:13px;">Yetkinlik, bağımsızlık ve geçerlilik bilgileri otomatik denetçi atamasında kullanılır.</p></div>
+<form method="POST">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<div class="section-card mb-16"><div class="section-body">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;">
+    <div class="form-group"><label class="form-label">Ad Soyad *</label><input name="ad_soyad" class="form-control" value="{{ d.ad_soyad or '' }}"></div>
+    <div class="form-group"><label class="form-label">DYS kullanıcısı</label>
+      <select name="user_id" class="form-control"><option value="">— seçin —</option>{% for u in users %}<option value="{{ u.id }}" {% if u.id == d.user_id %}selected{% endif %}>{{ u.ad_soyad }} ({{ u.departman }})</option>{% endfor %}</select></div>
+    <div class="form-group"><label class="form-label">Plandaki denetçi no</label><input type="number" name="denetci_no" class="form-control" value="{{ d.denetci_no or '' }}"></div>
+    <div class="form-group"><label class="form-label">Rol</label><select name="rol" class="form-control">{% for r in ROLLER %}<option {% if r == d.rol %}selected{% endif %}>{{ r }}</option>{% endfor %}</select></div>
+    <div class="form-group"><label class="form-label">Yetkinlik geçerlilik sonu</label><input type="date" name="gecerlilik_tarihi" class="form-control" value="{{ d.gecerlilik_tarihi or '' }}"></div>
+    <div class="form-group"><label class="form-label">Son denetçi eğitimi</label><input type="date" name="son_egitim_tarihi" class="form-control" value="{{ d.son_egitim_tarihi or '' }}"></div>
+    <div class="form-group"><label class="form-label">Yıllık hedef denetim sayısı</label><input type="number" name="yillik_hedef" class="form-control" value="{{ d.yillik_hedef or '' }}"></div>
+    <div class="form-group"><label class="form-label">Kendi süreçleri (bağımsızlık) — ör. D04,M03</label><input name="kendi_surecleri" class="form-control" value="{{ d.kendi_surecleri or '' }}" placeholder="{{ oneri or '' }}">
+      {% if oneri %}<div class="text-muted" style="font-size:11px;">Departmana göre öneri: <strong>{{ oneri }}</strong></div>{% endif %}</div>
+  </div>
+  <div style="margin-top:12px;"><label class="form-label">Denetim türleri</label>
+    {% for t, e in [('S','Sistem / süreç'),('P','Proses'),('Ü','Ürün')] %}<label style="margin-right:16px;font-size:13px;"><input type="checkbox" name="tur_{{ t }}" value="1" {% if t in d.turler %}checked{% endif %}> {{ e }}</label>{% endfor %}</div>
+  <div style="margin-top:12px;"><label class="form-label">Nitelikler (eğitim / tecrübe)</label>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:6px;">
+    {% for k, e in NIT %}<label style="font-size:13px;"><input type="checkbox" name="nit_{{ k }}" value="1" {% if n.get(k) %}checked{% endif %}> {{ e }}</label>{% endfor %}</div></div>
+  <div class="form-group" style="margin-top:12px;"><label class="form-label">Notlar</label><textarea name="notlar" class="form-control" rows="2">{{ d.notlar or '' }}</textarea></div>
+  <label style="font-size:13px;"><input type="checkbox" name="aktif" value="1" {% if d.aktif %}checked{% endif %}> Aktif denetçi</label>
+  {% if can_edit %}<div style="margin-top:12px;"><button class="btn btn-primary" type="submit">Kaydet</button></div>{% endif %}
+</div></div>
+</form>
+
+{% if uygunluk %}
+<div class="section-card mb-16"><div class="section-header"><span class="section-title">Hangi süreçleri denetleyebilir?</span></div>
+<div class="section-body" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:6px;font-size:13px;">
+{% for p, ok, neden in uygunluk %}<div>{% if ok %}✅{% else %}⛔{% endif %} <strong>{{ p.kod }}</strong> {{ p.ad }}{% if not ok %}<div class="text-muted" style="font-size:11px;margin-left:22px;">{{ neden }}</div>{% endif %}</div>{% endfor %}
+</div></div>
+{% endif %}
+
+{% if d.user_id %}
+<div class="section-card mb-16"><div class="section-header"><span class="section-title">Eğitim kayıtları ({{ ilgili|length }} denetçilikle ilgili / {{ egitimler|length }})</span>
+  <a class="btn btn-outline" href="{{ request.script_root }}/training?kullanici={{ d.user_id }}">Eğitim modülünde aç</a></div>
+<div class="section-body" style="padding:0;">
+{% if egitimler %}<table class="data-table"><thead><tr><th>Eğitim</th><th>Tip</th><th>Tarih</th><th>Geçerlilik</th></tr></thead><tbody>
+{% for e in egitimler %}<tr {% if e in ilgili %}style="font-weight:600;"{% endif %}><td>{{ e.egitim_adi }}</td><td>{{ e.egitim_tipi }}</td><td>{{ e.egitim_tarihi.strftime('%d.%m.%Y') if e.egitim_tarihi else '—' }}</td>
+<td>{% if e.gecerlilik_tarihi %}<span style="color:{{ 'var(--color-danger,#ef4444)' if e.gecerlilik_tarihi < bugun else 'inherit' }}">{{ e.gecerlilik_tarihi.strftime('%d.%m.%Y') }}</span>{% else %}—{% endif %}</td></tr>{% endfor %}
+</tbody></table>{% else %}<p class="text-muted" style="padding:12px;">Eğitim kaydı yok.</p>{% endif %}
+</div></div>
+<div class="section-card"><div class="section-header"><span class="section-title">Denetimleri ({{ denetimler|length }})</span></div>
+<div class="section-body" style="padding:0;">
+{% if denetimler %}<table class="data-table"><thead><tr><th>No</th><th>Başlık</th><th>Tarih</th><th>Durum</th></tr></thead><tbody>
+{% for a in denetimler %}<tr><td><a href="{{ request.script_root }}/audits/{{ a.id }}">{{ a.tetkik_no }}</a></td><td>{{ a.baslik }}</td><td>{{ a.planlanan_tarih.strftime('%d.%m.%Y') if a.planlanan_tarih else '—' }}</td><td>{{ a.durum }}</td></tr>{% endfor %}
+</tbody></table>{% else %}<p class="text-muted" style="padding:12px;">Henüz denetim yok.</p>{% endif %}
+</div></div>
+{% endif %}
+{% endblock %}

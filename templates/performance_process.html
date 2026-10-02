@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% block title %}{{ kod }} — {{ _('Performans') }}{% endblock %}
+{% block breadcrumb %}
+<span class="separator">›</span>
+<a href="{{ request.script_root }}/performance">{{ _('Performans İzleme') }}</a>
+<span class="separator">›</span>
+<span>{{ kod }}</span>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex align-center justify-between mb-24" style="flex-wrap:wrap; gap:12px;">
+    <div>
+        <h2 style="font-size: 20px; font-weight: 700;">
+            <code>{{ kod }}</code>
+            {{ proc.ad if proc else '' }}
+        </h2>
+        <p class="text-muted" style="font-size: 13px;">
+            {{ stats.toplam }} {{ _('performans parametresi') }}
+            {% if proc and proc.sorumlu %} · {{ _('Sorumlu') }}: {{ proc.sorumlu }}{% endif %}
+        </p>
+    </div>
+    <a href="{{ request.script_root }}/performance" class="btn btn-outline">← {{ _('Tüm Süreçler') }}</a>
+</div>
+
+<div class="stats-grid mb-24">
+    <div class="stat-card"><div class="stat-icon green">✅</div><div class="stat-value">{{ stats.uyumlu }}</div><div class="stat-label">{{ _('Uyumlu') }}</div></div>
+    <div class="stat-card {{ 'stat-card-alert' if stats.uyumsuz else '' }}"><div class="stat-icon red">⚠️</div><div class="stat-value">{{ stats.uyumsuz }}</div><div class="stat-label">{{ _('Uyumsuz') }}</div></div>
+    <div class="stat-card"><div class="stat-icon yellow">👁️</div><div class="stat-value">{{ stats.izleme }}</div><div class="stat-label">{{ _('İzleme') }}</div></div>
+    <div class="stat-card"><div class="stat-icon purple">⏳</div><div class="stat-value">{{ stats.girilmedi }}</div><div class="stat-label">{{ _('Ölçüm Yok') }}</div></div>
+</div>
+
+{% if can_edit %}
+<div class="section-card mb-16">
+    <div class="section-header"><span class="section-title">📝 {{ _('Dönemsel Ölçüm Girişi') }}</span></div>
+    <div class="section-body">
+        <form method="GET" action="{{ request.script_root }}/performance/process/{{ kod }}" class="filters-bar mb-16" style="margin-bottom:16px;">
+            <div class="filter-group">
+                <label class="filter-label">{{ _('Dönem') }}:</label>
+                <select name="donem" class="filter-select" onchange="this.form.submit()">
+                    {% for d in donemler %}
+                    <option value="{{ d }}" {{ 'selected' if d == donem }}>{{ d }}</option>
+                    {% endfor %}
+                    {% if donem not in donemler %}
+                    <option value="{{ donem }}" selected>{{ donem }}</option>
+                    {% endif %}
+                </select>
+            </div>
+        </form>
+
+        <form method="POST" action="{{ request.script_root }}/performance/process/{{ kod }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="donem" value="{{ donem }}">
+            <div class="data-table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>{{ _('Parametre') }}</th>
+                            <th>{{ _('Hedef') }}</th>
+                            <th>{{ _('GG') }}</th>
+                            <th>{{ _('Son') }}</th>
+                            <th>{{ _('Durum') }}</th>
+                            <th style="min-width:110px;">{{ donem }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for k in kpis %}
+                        {% set m = son_olcum.get(k.id) %}
+                        {% set dm = donem_olcum.get(k.id) %}
+                        <tr>
+                            <td class="text-muted">{{ k.sira_no or '—' }}</td>
+                            <td style="font-size:12px; max-width:260px;">
+                                <a href="{{ request.script_root }}/performance/kpi/{{ k.id }}">{{ k.parametre }}</a>
+                                {% if k.prosedure %}<div class="text-muted" style="font-size:10px;">{{ k.prosedure }}</div>{% endif %}
+                            </td>
+                            <td style="font-size:12px; white-space:nowrap;">{{ k.hedef_metin or '—' }} {% if k.birim %}<span class="text-muted">{{ k.birim }}</span>{% endif %}</td>
+                            <td class="text-muted">{{ k.gg_periyot or '—' }}</td>
+                            <td style="font-size:12px;">
+                                {% if m %}
+                                {{ m.gerceklesen if m.gerceklesen is not none else (m.gerceklesen_metin or '—') }}
+                                <div class="text-muted" style="font-size:10px;">{{ m.donem }}</div>
+                                {% else %}—{% endif %}
+                            </td>
+                            <td>
+                                {% if m %}<span class="status-badge {{ m.durum|slug }}">{{ m.durum }}</span>
+                                {% else %}<span class="text-muted">—</span>{% endif %}
+                            </td>
+                            <td>
+                                <input type="text" name="deger_{{ k.id }}" class="form-control" style="padding:6px 8px; font-size:13px;"
+                                       value="{% if dm %}{{ dm.gerceklesen if dm.gerceklesen is not none else (dm.gerceklesen_metin or '') }}{% endif %}"
+                                       placeholder="—">
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="d-flex align-center gap-8" style="margin-top:16px; flex-wrap:wrap;">
+                <label style="font-size:13px; display:flex; align-items:center; gap:6px;">
+                    <input type="checkbox" name="dof_ac" value="1">
+                    {{ _('Uyumsuz ölçümlerde DÖF aç') }}
+                </label>
+                <button type="submit" class="btn btn-primary">{{ _('Dönem Ölçümlerini Kaydet') }}</button>
+            </div>
+            <p class="form-hint" style="margin-top:8px;">{{ _('Boş bırakılan satırlar güncellenmez. Hedef karşılanmayan kayıtlar için DÖF kutusunu işaretleyin.') }}</p>
+        </form>
+    </div>
+</div>
+{% else %}
+<div class="section-card">
+    <div class="data-table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>{{ _('Parametre') }}</th>
+                    <th>{{ _('Hedef') }}</th>
+                    <th>{{ _('GG') }}</th>
+                    <th>{{ _('Son Ölçüm') }}</th>
+                    <th>{{ _('Durum') }}</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for k in kpis %}
+                {% set m = son_olcum.get(k.id) %}
+                <tr>
+                    <td class="text-muted">{{ k.sira_no or '—' }}</td>
+                    <td style="font-size:12px;">{{ k.parametre }}</td>
+                    <td style="font-size:12px;">{{ k.hedef_metin or '—' }} {% if k.birim %}{{ k.birim }}{% endif %}</td>
+                    <td class="text-muted">{{ k.gg_periyot or '—' }}</td>
+                    <td style="font-size:12px;">{% if m %}{{ m.gerceklesen if m.gerceklesen is not none else (m.gerceklesen_metin or '—') }} <span class="text-muted">({{ m.donem }})</span>{% else %}—{% endif %}</td>
+                    <td>{% if m %}<span class="status-badge {{ m.durum|slug }}">{{ m.durum }}</span>{% else %}—{% endif %}</td>
+                    <td><a href="{{ request.script_root }}/performance/kpi/{{ k.id }}" class="btn btn-sm btn-outline">{{ _('Detay') }}</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,19 @@
+﻿python.exe : Traceback (most recent call last):
+At C:\Users\labaratuvar03\AppData\Local\Temp\ps-script-c12802a6-b013-435f-9541-de04bec7dce7.ps1:112 char:1
++ & "\\192.168.0.249\ortak\HARUN\dys\.venv\Scripts\python.exe" "d:\UYGU ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  File "d:\UYGULAMA PROJELER\debak dijital\dys\_survey_talimat.py", line 40, in <module>
+    doc = Document(str(fp))
+  File "\\192.168.0.249\ortak\HARUN\dys\.venv\lib\site-packages\docx\api.py", line 27, in Document
+    document_part = cast("DocumentPart", Package.open(docx).main_document_part)
+  File "\\192.168.0.249\ortak\HARUN\dys\.venv\lib\site-packages\docx\opc\package.py", line 126, in open
+    pkg_reader = PackageReader.from_file(pkg_file)
+  File "\\192.168.0.249\ortak\HARUN\dys\.venv\lib\site-packages\docx\opc\pkgreader.py", line 22, in from_file
+    phys_reader = PhysPkgReader(pkg_file)
+  File "\\192.168.0.249\ortak\HARUN\dys\.venv\lib\site-packages\docx\opc\phys_pkg.py", line 21, in __new__
+    raise PackageNotFoundError("Package not found at '%s'" % pkg_file)
+docx.opc.exceptions.PackageNotFoundError: Package not found at 'D:\UYGULAMA PROJELER\debak dijital\dys\uploads\document
+s\378\rev0\D01.1 T01 Oryantasyon Ara ¦i■lem-Kalite E­itim Notu.docx'

@@ -1,0 +1,165 @@
+﻿TOTAL_RULES=159
+GET_RULES=109
+GET_NO_PARAM=78
+DISTINCT_PARAMS=['approval_id', 'audit_id', 'capa_id', 'claim_id', 'control_id', 'device_id', 'disposal_id', 'dist_id', 'doc_id', 'drill_id', 'elem_no', 'ev_id', 'filename', 'finding_id', 'fmea_id', 'fmt', 'group_id', 'item_id', 'karar', 'kayit_id', 'kod', 'kpi_id', 'locale', 'ppap_id', 'process_id', 'qrqc_id', 'rapor', 'req_id', 'risk_id', 'user_id']
+
+--- ALL RULES ---
+GET                  /                                                            dashboard                                
+GET                  /_platform/ping                                              documents._platform_ping                 
+GET                  /admin/audit-integrity                                       audit_integrity                          
+GET                  /admin/distribution-groups                                   distribution_groups                      
+POST                 /admin/distribution-groups/<int:group_id>/delete             distribution_group_delete                group_id
+POST                 /admin/distribution-groups/<int:group_id>/members            distribution_group_members               group_id
+POST                 /admin/distribution-groups/new                               distribution_group_new                   
+POST                 /admin/send-digest                                           admin_send_digest                        
+GET                  /admin/users                                                 admin_users                              
+POST                 /admin/users/<int:user_id>/delete                            admin_user_delete                        user_id
+POST                 /admin/users/<int:user_id>/edit                              admin_user_edit                          user_id
+POST                 /admin/users/<int:user_id>/toggle                            admin_user_toggle                        user_id
+POST                 /admin/users/new                                             admin_user_new                           
+GET                  /api/audits/checklist-preview                                audit_checklist_preview_api              
+POST                 /api/distribution/<int:dist_id>/read                         api_mark_read                            dist_id
+GET                  /api/documents/lookup                                        api_documents_lookup                     
+GET                  /api/documents/next-number                                   api_documents_next_number                
+GET                  /approvals                                                   approvals                                
+POST                 /approvals/<int:approval_id>/approve                         approve                                  approval_id
+POST                 /approvals/<int:approval_id>/reject                          reject                                   approval_id
+POST                 /approvals/bulk-approve                                      bulk_approve                             
+GET                  /audit-log                                                   audit_log                                
+GET                  /audits                                                      audit_dashboard                          
+GET                  /audits/<int:audit_id>                                       audit_detail                             audit_id
+GET,POST             /audits/<int:audit_id>/checklist                             audit_checklist_run                      audit_id
+POST                 /audits/<int:audit_id>/finding                               audit_finding_add                        audit_id
+POST                 /audits/<int:audit_id>/update                                audit_update                             audit_id
+GET                  /audits/checklists                                           audit_checklist_catalog                  
+POST                 /audits/checklists/import                                    audit_checklist_import                   
+GET                  /audits/evidence/<int:ev_id>/download                        audit_evidence_download                  ev_id
+POST                 /audits/finding/<int:finding_id>/to-capa                     audit_finding_to_capa                    finding_id
+GET                  /audits/list                                                 audit_list                               
+GET,POST             /audits/new                                                  audit_new                                
+GET,POST             /audits/program                                              audit_program                            
+GET                  /capa                                                        capa_dashboard                           
+GET                  /capa/<int:capa_id>                                          capa_detail                              capa_id
+POST                 /capa/<int:capa_id>/close                                    capa_close                               capa_id
+GET,POST             /capa/<int:capa_id>/edit                                     capa_edit                                capa_id
+GET                  /capa/<int:capa_id>/export.pdf                               capa_export_one                          capa_id
+POST                 /capa/<int:capa_id>/reopen                                   capa_reopen                              capa_id
+GET                  /capa/export.<fmt>                                           capa_export                              fmt
+GET                  /capa/list                                                   capa_list                                
+GET,POST             /capa/new                                                    capa_new                                 
+POST                 /capa/send-reminders                                         capa_send_reminders                      
+GET                  /competency                                                  competency_matrix                        
+POST                 /competency/new                                              competency_new                           
+GET                  /disposals                                                   disposals                                
+POST                 /disposals/<int:disposal_id>/approve                         disposal_approve                         disposal_id
+POST                 /disposals/<int:disposal_id>/execute                         disposal_execute                         disposal_id
+GET                  /distributions                                               distributions                            
+POST                 /distributions/<int:dist_id>/mark-read                       mark_distribution_read                   dist_id
+GET                  /documents                                                   documents                                
+GET                  /documents/<int:doc_id>                                      document_detail                          doc_id
+POST                 /documents/<int:doc_id>/cancel                               document_cancel                          doc_id
+POST                 /documents/<int:doc_id>/disposal/request                     disposal_request                         doc_id
+POST                 /documents/<int:doc_id>/distribute                           document_distribute                      doc_id
+GET                  /documents/<int:doc_id>/download                             document_download                        doc_id
+GET,POST             /documents/<int:doc_id>/edit                                 document_edit                            doc_id
+POST                 /documents/<int:doc_id>/legal-hold                           document_legal_hold                      doc_id
+POST                 /documents/<int:doc_id>/obsolete                             document_obsolete                        doc_id
+GET                  /documents/<int:doc_id>/preview                              document_preview                         doc_id
+GET                  /documents/<int:doc_id>/procedure.docx                       document_procedure_docx                  doc_id
+GET,POST             /documents/<int:doc_id>/revise                               document_revise                          doc_id
+POST                 /documents/<int:doc_id>/submit-approval                      submit_approval                          doc_id
+GET                  /documents/export.xlsx                                       documents_export                         
+GET,POST             /documents/new                                               document_new                             
+GET,POST             /env/aspects                                                 env_aspects                              
+GET,POST             /env/incidents                                               env_incidents                            
+GET,POST             /env/measurements                                            env_measurements                         
+GET                  /health                                                      health_check                             
+GET                  /healthz                                                     healthz                                  
+GET,POST             /iatf/apqp                                                   iatf_apqp                                
+GET,POST             /iatf/calibration                                            iatf_calibration                         
+GET,POST             /iatf/control-plans                                          iatf_control_plans                       
+GET,POST             /iatf/csr                                                    iatf_csr                                 
+GET                  /iatf/fmea                                                   fmea_list                                
+GET                  /iatf/fmea/<int:fmea_id>                                     fmea_detail                              fmea_id
+GET,POST             /iatf/fmea/<int:fmea_id>/edit                                fmea_edit                                fmea_id
+POST                 /iatf/fmea/<int:fmea_id>/item/<int:item_id>/action           fmea_item_action                         fmea_id,item_id
+POST                 /iatf/fmea/<int:fmea_id>/item/<int:item_id>/delete           fmea_item_delete                         fmea_id,item_id
+POST                 /iatf/fmea/<int:fmea_id>/item/<int:item_id>/edit             fmea_item_edit                           fmea_id,item_id
+POST                 /iatf/fmea/<int:fmea_id>/item/new                            fmea_item_new                            fmea_id
+POST                 /iatf/fmea/<int:fmea_id>/step                                fmea_step                                fmea_id
+GET,POST             /iatf/fmea/new                                               fmea_new                                 
+GET                  /iatf/layout-inspection                                      layout_inspection_list                   
+POST                 /iatf/layout-inspection/new                                  layout_inspection_new                    
+GET,POST             /iatf/nonconforming                                          iatf_nonconforming                       
+GET                  /iatf/pokayoke                                               pokayoke_list                            
+POST                 /iatf/pokayoke/<int:device_id>/delete                        pokayoke_delete                          device_id
+POST                 /iatf/pokayoke/<int:device_id>/test                          pokayoke_test                            device_id
+POST                 /iatf/pokayoke/new                                           pokayoke_new                             
+GET,POST             /iatf/spc                                                    iatf_spc                                 
+GET                  /iatf/supplier-dev                                           supplier_dev_list                        
+POST                 /iatf/supplier-dev/new                                       supplier_dev_new                         
+GET,POST             /iatf/suppliers                                              iatf_suppliers                           
+GET                  /iatf/warranty                                               warranty_list                            
+POST                 /iatf/warranty/<int:claim_id>/analyze                        warranty_analyze                         claim_id
+POST                 /iatf/warranty/new                                           warranty_new                             
+GET                  /ims                                                         ims_overview                             
+GET,POST             /ims/context                                                 ims_context                              
+GET,POST             /ims/legal                                                   ims_legal                                
+GET                  /ims/requirements                                            ims_requirements                         
+POST                 /ims/requirements/update/<int:req_id>                        ims_requirements_update                  req_id
+GET,POST             /ims/reviews                                                 ims_reviews                              
+GET                  /isms                                                        isms_overview                            
+GET,POST             /isms/access-reviews                                         isms_access_reviews                      
+GET,POST             /isms/assets                                                 isms_assets                              
+GET,POST             /isms/backups                                                isms_backups                             
+GET,POST             /isms/incidents                                              isms_incidents                           
+GET,POST             /isms/risks                                                  isms_risks                               
+GET                  /isms/soa                                                    isms_soa                                 
+POST                 /isms/soa/update/<int:control_id>                            isms_soa_update                          control_id
+GET,POST             /login                                                       login                                    
+GET                  /logout                                                      logout                                   
+GET,POST             /ohs/drills                                                  ohs_drills                               
+GET                  /ohs/drills/<int:drill_id>                                   ohs_drill_detail                         drill_id
+GET,POST             /ohs/hazards                                                 ohs_hazards                              
+GET,POST             /ohs/incidents                                               ohs_incidents                            
+GET,POST             /ohs/participation                                           ohs_participation                        
+GET                  /ohs/ppe                                                     ohs_ppe                                  
+GET                  /performance                                                 performance_dashboard                    
+GET,POST             /performance/<int:kpi_id>                                    performance_kpi_detail                   kpi_id
+POST                 /performance/import                                          performance_import                       
+GET,POST             /performance/kpi/<int:kpi_id>                                performance_kpi_detail                   kpi_id
+GET,POST             /performance/process/<kod>                                   performance_process                      kod
+GET                  /ppap                                                        ppap_list                                
+GET                  /ppap/<int:ppap_id>                                          ppap_detail                              ppap_id
+POST                 /ppap/<int:ppap_id>/element/<int:elem_no>                    ppap_element_update                      ppap_id,elem_no
+GET                  /ppap/<int:ppap_id>/element/<int:elem_no>/download           ppap_element_download                    ppap_id,elem_no
+GET                  /ppap/<int:ppap_id>/element/<int:elem_no>/preview            ppap_element_preview                     ppap_id,elem_no
+POST                 /ppap/<int:ppap_id>/status                                   ppap_status_update                       ppap_id
+POST                 /ppap/<int:ppap_id>/submit-approval                          ppap_submit_approval                     ppap_id
+POST                 /ppap/approval/<int:approval_id>/<string:karar>              ppap_approval_decide                     approval_id,karar
+GET,POST             /ppap/new                                                    ppap_new                                 
+GET                  /processes                                                   processes                                
+GET                  /processes/<int:process_id>                                  process_detail                           process_id
+GET                  /qrqc                                                        qrqc_dashboard                           
+GET                  /qrqc/<int:qrqc_id>                                          qrqc_detail                              qrqc_id
+GET,POST             /qrqc/<int:qrqc_id>/close                                    qrqc_close                               qrqc_id
+GET,POST             /qrqc/<int:qrqc_id>/edit                                     qrqc_edit                                qrqc_id
+GET,POST             /qrqc/<int:qrqc_id>/trigger-dof                              qrqc_trigger_dof                         qrqc_id
+GET                  /qrqc/list                                                   qrqc_list                                
+GET,POST             /qrqc/new                                                    qrqc_new                                 
+GET                  /reports                                                     reports                                  
+GET                  /reports/<rapor>/export.<fmt>                                report_export                            rapor,fmt
+GET                  /reports/audit-package                                       report_audit_package                     
+GET                  /reports/compliance                                          report_compliance                        
+GET                  /reports/inventory                                           report_inventory                         
+GET                  /reports/obsolete                                            report_obsolete                          
+GET                  /reports/review-calendar                                     report_review_calendar                   
+GET                  /risks                                                       risk_list                                
+GET,POST             /risks/<int:risk_id>/edit                                    risk_edit                                risk_id
+GET,POST             /risks/new                                                   risk_new                                 
+GET                  /search                                                      global_search                            
+GET                  /set-locale/<locale>                                         set_locale                               locale
+GET                  /static/<path:filename>                                      static                                   filename
+GET                  /training                                                    training_list                            
+POST                 /training/<int:kayit_id>/delete                              training_delete                          kayit_id
+POST                 /training/new                                                training_new                             

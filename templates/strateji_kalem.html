@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Stratejik Planlama {{ k.yil }} — düzenle{% endblock %}
+
+{% block breadcrumb %}
+<span class="separator">›</span>
+<a href="{{ url_for('strateji', yil=k.yil, sekme=k.bolum) }}">Stratejik Planlama {{ k.yil }}</a>
+<span class="separator">›</span>
+<span>{{ sekme_adi }}</span>
+{% endblock %}
+
+{% block content %}
+<div class="section-card" style="max-width:900px;">
+  <div class="section-header"><span class="section-title">✏️ {{ sekme_adi }} · {{ k.yil }}</span></div>
+  <div class="section-body">
+  <form method="POST" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px 14px;">
+    <label>Kapsam<select name="kapsam" class="form-control">{% for x in kapsamlar %}<option {{ 'selected' if x == k.kapsam }}>{{ x }}</option>{% endfor %}</select></label>
+    {% if k.bolum == 'baglam' %}<label>Çevre bileşeni<select name="grup" class="form-control">{% for b in bilesenler %}<option {{ 'selected' if b == k.grup }}>{{ b }}</option>{% endfor %}</select></label>
+    {% elif k.bolum == 'swot' %}<label>SWOT türü<select name="grup" class="form-control">{% for b in swot_turleri %}<option {{ 'selected' if b == k.grup }}>{{ b }}</option>{% endfor %}</select></label>{% endif %}
+    <label>Sıra<input type="number" name="sira" value="{{ k.sira or '' }}" class="form-control"></label>
+    {% if k.bolum in ['strateji', 'eylem'] %}<label>No<input name="kod" value="{{ k.kod or '' }}" class="form-control"></label>{% endif %}
+    <label style="grid-column:1/-1;">Metin<textarea name="metin" class="form-control" rows="3" required>{{ k.metin }}</textarea></label>
+    {% for ad, etiket, tip in alanlar %}{% set v = k.veri.get(ad, '') %}
+      {% if tip == 'uzun' %}<label style="grid-column:1/-1;">{{ etiket }}<textarea name="{{ ad }}" class="form-control" rows="3">{{ v }}</textarea></label>
+      {% elif tip.startswith('secim:') %}<label>{{ etiket }}<select name="{{ ad }}" class="form-control"><option></option>{% for s in tip[6:].split(',') %}<option {{ 'selected' if s == v }}>{{ s }}</option>{% endfor %}</select></label>
+      {% elif tip == 'tarih' %}<label>{{ etiket }}<input type="date" name="{{ ad }}" value="{{ v if v|length == 10 else '' }}" class="form-control">{% if v and v|length != 10 %}<span class="text-muted" style="font-size:11px;">Kayıtlı: {{ v }}</span>{% endif %}</label>
+      {% else %}<label>{{ etiket }}<input name="{{ ad }}" value="{{ v }}" class="form-control"></label>{% endif %}
+    {% endfor %}
+    {% if k.bolum == 'eylem' %}
+      <label>Planlanan termin<input type="date" name="termin" value="{{ k.termin.isoformat() if k.termin else '' }}" class="form-control"></label>
+      <label>Durum<select name="durum" class="form-control">{% for d in durumlar %}<option {{ 'selected' if d == k.durum }}>{{ d }}</option>{% endfor %}</select></label>
+      <label>Sorumlu<select name="sorumlu_id" class="form-control"><option value="">—</option>{% for u in users %}<option value="{{ u.id }}" {{ 'selected' if u.id == k.sorumlu_id }}>{{ u.ad_soyad }}</option>{% endfor %}</select></label>
+    {% endif %}
+    <div style="grid-column:1/-1;display:flex;gap:8px;">
+      {% if can_edit %}<button class="btn btn-primary" type="submit">Kaydet</button>
+      <button class="btn btn-danger" type="submit" name="islem" value="sil" formnovalidate onclick="return confirm('Bu satır silinsin mi?');">Sil</button>{% endif %}
+      <a href="{{ url_for('strateji', yil=k.yil, sekme=k.bolum) }}" class="btn btn-secondary">Vazgeç</a>
+    </div>
+  </form>
+  </div>
+</div>
+{% endblock %}

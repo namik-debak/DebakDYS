@@ -1,0 +1,29 @@
+# DYS — Üretim Bağımlılıkları (test edilmiş sürümlerle pinlenmiştir)
+Flask==3.1.3
+SQLAlchemy==2.0.35
+Werkzeug==3.1.8
+PyMuPDF==1.28.0
+python-docx==1.2.0
+openpyxl==3.1.5
+waitress==3.0.2
+
+# Güvenlik ve iş akışı
+Flask-WTF==1.3.0
+WTForms==3.2.2
+Flask-Limiter==4.1.1
+
+# Platform: PostgreSQL, SQL Server (pyodbc), Alembic, Redis, dotenv
+psycopg[binary]==3.2.3
+pyodbc==5.2.0
+python-dotenv==1.0.1
+alembic==1.14.0
+redis==5.2.1
+
+# Raporlama / dışa aktarma
+reportlab==5.0.0
+
+# Windows: talimat/xls-doc kontrollü kopya PDF (Excel/Word)
+pywin32==308
+
+# Zamanlanmış görevler (günlük özet e-postaları)
+APScheduler==3.10.4

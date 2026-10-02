@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}{{ k.kayit_no }} — {{ k.form_ad }}{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><a href="{{ url_for('bakim_kayitlar') }}">Bakım Kayıtları</a>{% if e %}<span class="separator">›</span><a href="{{ url_for('bakim_ekipman_detay', eid=e.id) }}">{{ e.kod }}</a>{% endif %}<span class="separator">›</span><span>{{ k.kayit_no }}</span>{% endblock %}
+{% block content %}
+<style>
+.bk-t{width:100%;border-collapse:collapse;}
+.bk-t th,.bk-t td{border:1px solid var(--border);padding:6px 8px;font-size:13px;text-align:left;vertical-align:top;}
+.bk-t th{background:var(--bg-secondary);font-size:11px;text-transform:uppercase;}
+.bk-t tr.uyg td{background:rgba(239,68,68,.08);}
+.bk-ust{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px 16px;font-size:13px;}
+.bk-ust div span{display:block;font-size:11px;color:var(--text-muted);}
+@media print{
+  .sidebar,.top-bar,.breadcrumb,.no-print,nav,header{display:none !important;}
+  .main-content,.content{margin:0 !important;padding:0 !important;}
+  .section-card{box-shadow:none !important;border:none !important;}
+  @page{size:A4;margin:12mm;}
+  body{background:#fff !important;color:#000 !important;}
+}
+</style>
+<div class="mb-16 d-flex align-center justify-between no-print" style="flex-wrap:wrap;gap:10px;">
+  <div><h2 style="font-size:20px;font-weight:700;">{{ k.kayit_no }} — {{ k.form_ad }}</h2>
+    <p class="text-muted" style="font-size:13px;">{{ k.form_kod }} · {{ k.kategori }} · kaydeden {{ olusturan }} · {{ k.olusturma_tarihi.strftime('%d.%m.%Y %H:%M') if k.olusturma_tarihi else '' }}</p></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+    <button onclick="window.print()" class="btn btn-outline">🖨️ Yazdır (A4)</button>
+    {% if e %}<a href="{{ url_for('bakim_form', ekipman=e.id, form=k.form_kod) }}" class="btn btn-outline">＋ Aynı formdan yeni</a>
+    <a href="{{ url_for('bakim_ekipman_detay', eid=e.id) }}" class="btn btn-outline">⬅️ {{ e.kod }}</a>{% endif %}
+  </div>
+</div>
+<div class="section-card mb-16"><div class="section-body">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:12px;border-bottom:2px solid var(--border);padding-bottom:8px;">
+    <div><div style="font-size:11px;color:var(--text-muted);">DEBAK · D03 Bakım ve Ekipman Yönetimi</div><div style="font-size:17px;font-weight:800;">{{ k.form_ad }}</div></div>
+    <div style="text-align:right;font-size:12px;"><div><strong>{{ k.form_kod }}</strong></div><div>{{ k.kayit_no }}</div></div>
+  </div>
+  <div class="bk-ust">
+    <div><span>Makine / kalıp</span><strong>{{ e.kod if e else '—' }}</strong> {{ e.ad if e else '' }}</div>
+    <div><span>Marka / model</span>{{ (e.marka or '—') if e else '—' }}{% if e and e.model %} · {{ e.model }}{% endif %}</div>
+    <div><span>Tarih</span><strong>{{ k.tarih.strftime('%d.%m.%Y') }}</strong></div>
+    <div><span>{{ 'Sorumlu operatör' if k.kategori == 'Günlük kontrol' else 'Bakımcı / bakımcılar' }}</span>{{ k.bakimci }}</div>
+    {% if k.sure_dk %}<div><span>Bakım süresi</span>{{ k.sure_dk }} dk</div>{% endif %}
+    {% if k.calisma_saati %}<div><span>Çalışma saati</span>{{ '{:,}'.format(k.calisma_saati).replace(',', '.') }}</div>{% endif %}
+    {% if k.baski_sayisi %}<div><span>Baskı sayısı</span>{{ '{:,}'.format(k.baski_sayisi).replace(',', '.') }}</div>{% endif %}
+    {% if k.is_emri %}<div><span>İş emri</span>{{ k.is_emri }}</div>{% endif %}
+    {% if k.lot_no %}<div><span>Lot no</span>{{ k.lot_no }}</div>{% endif %}
+    {% if k.urun %}<div><span>Ürün</span>{{ k.urun }}</div>{% endif %}
+    <div><span>Sonuç</span><strong>{{ k.sonuc }}</strong></div>
+  </div>
+  <table class="bk-t" style="margin-top:14px;">
+    <thead><tr><th style="width:50px;">No</th><th>İşlem / kriter</th><th style="width:110px;">Durum</th>{% if s and s.olcumlu %}<th style="width:90px;">Ölçüm</th>{% endif %}<th style="width:230px;">Açıklama</th></tr></thead>
+    <tbody>
+    {% set ns = namespace(g='') %}
+    {% for m in maddeler %}
+      {% if m.grup and m.grup != ns.g %}{% set ns.g = m.grup %}<tr><td colspan="{{ 5 if s and s.olcumlu else 4 }}" style="background:var(--bg-secondary);font-weight:700;font-size:12px;">{{ m.grup }}</td></tr>{% endif %}
+      <tr class="{{ 'uyg' if m.durum == 'Uygun Değil' }}"><td style="font-family:monospace;font-weight:700;">{{ m.no }}</td><td>{{ m.madde }}</td><td>{{ m.durum }}</td>{% if s and s.olcumlu %}<td>{{ m.olcum }}</td>{% endif %}<td>{{ m.aciklama }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% if k.degisen_parcalar %}<p style="margin-top:10px;font-size:13px;"><strong>Değiştirilen parçalar:</strong> {{ k.degisen_parcalar }}</p>{% endif %}
+  {% if k.aciklama %}<p style="margin-top:6px;font-size:13px;"><strong>Açıklama:</strong> {{ k.aciklama }}</p>{% endif %}
+  <table class="bk-t" style="margin-top:18px;"><tr><th>Bakımı yapan</th><th>Bakım sorumlusu</th><th>Üretim / kullanıcı bölüm</th></tr><tr><td style="height:46px;">{{ k.bakimci }}</td><td></td><td></td></tr></table>
+  <p class="text-muted" style="font-size:10px;margin-top:6px;">DYS kaydının çıktısıdır — geçerli kayıt DYS'dedir.</p>
+</div></div>
+{% if yonetici %}
+<form method="POST" class="no-print" onsubmit="return confirm('{{ k.kayit_no }} silinsin mi?');"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="sil"><button class="btn btn-outline" type="submit" style="font-size:12px;">Kaydı sil</button></form>
+{% endif %}
+{% endblock %}

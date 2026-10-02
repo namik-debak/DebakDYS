@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block title %}Doküman Envanteri{% endblock %}
+
+{% block breadcrumb %}
+<span class="separator">›</span>
+<a href="{{ request.script_root }}/reports">Raporlar</a>
+<span class="separator">›</span>
+<span>Doküman Envanteri</span>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex align-center justify-between mb-24">
+    <div>
+        <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 4px;">📊 Doküman Envanteri</h2>
+        <p class="text-muted" style="font-size: 13px;">Toplam <strong style="color: var(--text-primary);">{{ documents|length }}</strong> doküman listeleniyor</p>
+    </div>
+    <div class="d-flex gap-8">
+        <a href="{{ request.script_root }}/reports/inventory/export.xlsx?{{ request.query_string.decode() }}" class="btn btn-outline">⬇ Excel</a>
+        <a href="{{ request.script_root }}/reports/inventory/export.pdf?{{ request.query_string.decode() }}" class="btn btn-outline">⬇ PDF</a>
+        <a href="{{ request.script_root }}/reports" class="btn btn-secondary">← Raporlar</a>
+    </div>
+</div>
+
+<!-- Tip Dağılımı -->
+<div class="stats-grid mb-24">
+    {% for tip in tipler %}
+    <div class="stat-card">
+        <div class="stat-icon blue">📄</div>
+        <div class="stat-value">{{ tip_dagilimi.get(tip, 0) }}</div>
+        <div class="stat-label">{{ tip }}</div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Filters -->
+<div class="section-card mb-16">
+    <div class="section-body" style="padding: 12px 16px;">
+        <form method="GET" action="{{ request.script_root }}/reports/inventory" class="filters-bar">
+            <div class="filter-group">
+                <label class="filter-label">Süreç:</label>
+                <select name="surec" class="filter-select" onchange="this.form.submit()">
+                    <option value="">Tümü</option>
+                    {% for p in processes %}
+                    <option value="{{ p.id }}" {{ 'selected' if request.args.get('surec') == p.id|string }}>{{ p.kod }} - {{ p.ad }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Tip:</label>
+                <select name="tip" class="filter-select" onchange="this.form.submit()">
+                    <option value="">Tümü</option>
+                    {% for tip in tipler %}
+                    <option value="{{ tip }}" {{ 'selected' if request.args.get('tip') == tip }}>{{ tip }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Durum:</label>
+                <select name="durum" class="filter-select" onchange="this.form.submit()">
+                    <option value="">Tümü</option>
+                    {% for d in ['Taslak', 'İncelemede', 'Onaylı', 'İptal', 'Eskimiş'] %}
+                    <option value="{{ d }}" {{ 'selected' if request.args.get('durum') == d }}>{{ d }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% if request.args.get('surec') or request.args.get('tip') or request.args.get('durum') %}
+            <a href="{{ request.script_root }}/reports/inventory" class="btn btn-sm btn-outline">✕ Temizle</a>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+<!-- Envanter Tablosu -->
+<div class="section-card">
+    {% if documents %}
+    <div class="data-table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Doküman No</th>
+                    <th>Başlık</th>
+                    <th>Süreç</th>
+                    <th>Tip</th>
+                    <th class="text-center">Rev.</th>
+                    <th>Durum</th>
+                    <th>Güvenlik</th>
+                    <th>Yürürlük</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for doc in documents %}
+                <tr>
+                    <td><code style="color: var(--text-accent);">{{ doc.dokuman_no }}</code></td>
+                    <td><a href="{{ request.script_root }}/documents/{{ doc.id }}" style="color: var(--text-primary); font-weight: 600;">{{ doc.baslik }}</a></td>
+                    <td class="text-muted">{{ doc.surec.kod }}</td>
+                    <td>{{ doc.dokuman_tipi }}</td>
+                    <td class="text-center">{{ doc.revizyon_no }}</td>
+                    <td>
+                        <span class="status-badge {{ doc.durum|slug }}">{{ doc.durum|enum }}</span>
+                    </td>
+                    <td>
+                        <span class="sec-badge {{ doc.guvenlik_sinifi|slug }}">{{ doc.guvenlik_sinifi|enum }}</span>
+                    </td>
+                    <td class="text-muted">{{ doc.yururluk_tarihi.strftime('%d.%m.%Y') if doc.yururluk_tarihi else '-' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state" style="padding: 30px;">
+        <div class="empty-icon">📄</div>
+        <p class="text-muted">Seçilen kriterlere uygun doküman bulunamadı.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

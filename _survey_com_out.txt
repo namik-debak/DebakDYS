@@ -1,0 +1,16 @@
+﻿XLS Y01-T02 D:\UYGULAMA PROJELER\debak dijital\dys\uploads\documents\29\rev0\Y01 T02 D÷k³man Olu■turma Talimat².xls
+  L/H/R footer: '' '' '&F'
+  L/H/R header: '' '' ''
+XLS Y01-T03 D:\UYGULAMA PROJELER\debak dijital\dys\uploads\documents\30\rev0\Y01 T03 Yedekleme Talimat².xls
+  L/H/R footer: '' '' 'Y01 T02 (4)_16.12.2024'
+  L/H/R header: '' '' ''
+XLS Y03.2-T01 D:\UYGULAMA PROJELER\debak dijital\dys\uploads\documents\102\rev0\Y03.2 T01 Geri Ãa­²rma Plan².xls
+  L/H/R footer: '' '' ''
+  L/H/R header: '' '' ''
+DOC Y02.2-T02 D:\UYGULAMA PROJELER\debak dijital\dys\uploads\documents\55\rev0\Y02.2 T02 Kalite Politikas².doc
+  primary footer 'Y1 T5.01(1)_10.01.2016'
+DOC Y02.3-T01 D:\UYGULAMA PROJELER\debak dijital\dys\uploads\documents\60\rev0\Y02.3 T01 Risk Degerlendirme Talimat².doc
+  primary footer 'Haz²rlayan: G³ll³ ▄nl³\r\x07Onaylayan: Dilara Altunta■\r\x07Son Revizyon Tarihi\r\x07\r\x07¦mza:\r\x07¦mza:\r\x0707.04.2025\r\x07\r\x07'
+  primary header '\x01\r\x07Y02.3 T 01\rRisk De­erlendirme Talimat²\r\x07Rev. Tarihi\r\x0707.04.2025\r\x07\r\x07\r\x07\r\x07Revizyon No\r\x0700\r\x07\r\x07\r\x07\r\x07Sayfa No\r\x071/4 \r\x07\x07'
+DOC Y03.3-T02 D:\UYGULAMA PROJELER\debak dijital\dys\uploads\documents\109\rev0\Y03.3 T02 Veri Analizlerinde Kullan²lan ¦statistik Y÷ntemler.doc
+  primary footer 'Y03 T01(3)_20.12.2024'

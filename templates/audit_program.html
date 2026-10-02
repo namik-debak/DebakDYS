@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block title %}{{ _('Tetkik Programı') }}{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><a href="{{ request.script_root }}/audits">{{ _('İç Tetkik') }}</a><span class="separator">›</span><span>{{ _('Program') }}</span>{% endblock %}
+
+{% set is_editor = session.get('rol') in ['Admin', 'Doküman Kontrol'] %}
+
+{% block content %}
+<div class="mb-24">
+    <h2 style="font-size: 20px; font-weight: 700;">{{ _('Yıllık İç Tetkik Programı') }}</h2>
+    <p class="text-muted" style="font-size: 13px;">{{ _('Risk temelli yıllık tetkik planlama') }}. Tarihi gelen iç denetimler plan kaleminden otomatik açılır —
+       <a href="{{ request.script_root }}/audits/automation">Denetim Yönetimi</a> · <a href="{{ request.script_root }}/audits/auditors">İç Denetçiler</a></p>
+</div>
+
+{% for prog in programlar %}
+<div class="section-card mb-16">
+    <div class="section-header">
+        <span class="section-title">{{ prog.yil }} — {{ prog.baslik }}</span>
+        <span class="status-badge {{ prog.durum|slug }}">{{ prog.durum|enum }}</span>
+        {% if prog.risk_temelli_mi %}<span class="text-muted" style="font-size:12px;"> · {{ _('Risk temelli') }}</span>{% endif %}
+        <a class="btn btn-outline" style="margin-left:auto;" href="{{ request.script_root }}/audits/program/{{ prog.id }}/calendar">📅 Takvim görünümü</a>
+    </div>
+    <div class="section-body">
+        {% if prog.kapsam %}<p class="text-muted" style="font-size:13px; margin-bottom:12px;">{{ prog.kapsam }}</p>{% endif %}
+        {% if prog.items %}
+        <div class="data-table-wrapper">
+            <table class="data-table">
+                <thead><tr><th>{{ _('Ay') }}</th><th>Kategori</th><th>{{ _('Tip') }}</th><th>Kalem</th><th>{{ _('Süreç / Ürün') }}</th><th>{{ _('Standart') }}</th><th>{{ _('Tetkikçi') }}</th><th>Tetkik</th><th>{{ _('Durum') }}</th></tr></thead>
+                <tbody>
+                    {% for it in prog.items %}
+                    <tr>
+                        <td class="text-center">{{ it.planlanan_ay or '—' }}{% if it.plan_gunu %}<div class="text-muted" style="font-size:10px;">gün {{ it.plan_gunu }}</div>{% endif %}</td>
+                        <td style="font-size:12px;">{{ it.kategori or '—' }}</td>
+                        <td style="font-size:12px;">{{ (it.denetim_tipi or 'Sistem Denetimi')|enum }}</td>
+                        <td style="font-size:12px;">{{ it.kalem_adi or '—' }}</td>
+                        <td style="font-size:12px;">
+                            {% if it.denetim_tipi == 'Ürün Denetimi' %}{{ it.urun_adi or '—' }}
+                            {% else %}{{ (it.surec.kod + ' — ' + it.surec.ad) if it.surec else '—' }}{% endif %}
+                        </td>
+                        <td>{{ it.ilgili_standart or '—' }}</td>
+                        <td>{{ it.tetkik_eden.ad_soyad if it.tetkik_eden else (it.denetci_metin or '—') }}</td>
+                        <td style="white-space:nowrap;">{% if it.audit %}<a href="{{ request.script_root }}/audits/{{ it.audit.id }}">{{ it.audit.tetkik_no }}</a>
+                            {% elif is_editor and (it.kategori or 'Süreç') in ['Süreç','Saha','Proses','Ürün'] %}<form method="POST" action="{{ request.script_root }}/audits/program/item/{{ it.id }}/ac" style="display:inline;"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-outline" style="padding:2px 8px;font-size:11px;" type="submit">Şimdi aç</button></form>
+                            {% else %}—{% endif %}</td>
+                        <td><span class="status-badge {{ it.durum|slug }}">{{ it.durum|enum }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}<p class="text-muted">{{ _('Henüz kalem yok') }}.</p>{% endif %}
+
+        {% if is_editor %}
+        <form method="POST" action="{{ request.script_root }}/audits/program" class="mt-16" style="display:grid; grid-template-columns: repeat(6, 1fr); gap:8px; align-items:end;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="action" value="item">
+            <input type="hidden" name="program_id" value="{{ prog.id }}">
+            <div class="form-group"><label class="form-label" for="ay_{{ prog.id }}">{{ _('Ay') }}</label><input type="number" min="1" max="12" name="planlanan_ay" id="ay_{{ prog.id }}" class="form-control"></div>
+            <div class="form-group">
+                <label class="form-label" for="tip_{{ prog.id }}">{{ _('Tip') }}</label>
+                <select name="denetim_tipi" id="tip_{{ prog.id }}" class="form-control">
+                    {% for t in tipler %}<option value="{{ t }}">{{ t }}</option>{% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="surec_{{ prog.id }}">{{ _('Süreç') }}</label>
+                <select name="surec_id" id="surec_{{ prog.id }}" class="form-control"><option value="">—</option>{% for p in procs %}<option value="{{ p.id }}">{{ p.kod }}</option>{% endfor %}</select>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="urun_{{ prog.id }}">{{ _('Ürün') }}</label>
+                <input type="text" name="urun_adi" id="urun_{{ prog.id }}" class="form-control" placeholder="ürün denetimi">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="aud_{{ prog.id }}">{{ _('Tetkikçi') }}</label>
+                <select name="tetkik_eden_id" id="aud_{{ prog.id }}" class="form-control"><option value="">—</option>{% for u in users %}<option value="{{ u.id }}">{{ u.ad_soyad }}</option>{% endfor %}</select>
+            </div>
+                <div class="form-group">
+                    <label class="form-label">Bağlı Tetkik</label>
+                    <select name="audit_id" class="form-control"><option value="">—</option>{% for a in audits %}<option value="{{ a.id }}">{{ a.tetkik_no }} — {{ a.baslik }}</option>{% endfor %}</select>
+                </div>
+
+            <button type="submit" class="btn btn-outline">+ {{ _('Kalem') }}</button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+{% else %}
+<div class="empty-state mb-16"><div class="empty-icon">📅</div><h3>{{ _('Program bulunamadı') }}</h3></div>
+{% endfor %}
+
+{% if is_editor %}
+<div class="section-card">
+    <div class="section-header"><span class="section-title">➕ {{ _('Yeni Program') }}</span></div>
+    <div class="section-body">
+        <form method="POST" action="{{ request.script_root }}/audits/program">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="action" value="program">
+            <div style="display:grid; grid-template-columns: 1fr 2fr 1fr; gap:12px;">
+                <div class="form-group"><label class="form-label" for="yil">{{ _('Yıl') }}</label><input type="number" name="yil" id="yil" class="form-control" value="{{ 2026 }}"></div>
+                <div class="form-group"><label class="form-label" for="baslik">{{ _('Başlık') }} *</label><input name="baslik" id="baslik" class="form-control" required></div>
+                <div class="form-group">
+                    <label class="form-label" for="durum">{{ _('Durum') }}</label>
+                    <select name="durum" id="durum" class="form-control">{% for d in DURUMLAR %}<option value="{{ d }}">{{ d }}</option>{% endfor %}</select>
+                </div>
+                <div class="form-group" style="grid-column: span 2;"><label class="form-label" for="kapsam">{{ _('Kapsam') }}</label><textarea name="kapsam" id="kapsam" class="form-control" rows="2"></textarea></div>
+                <div class="form-group" style="padding-top:28px;">
+                    <label class="form-label"><input type="checkbox" name="risk_temelli_mi" value="1" checked> {{ _('Risk temelli') }}</label>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">{{ _('Kaydet') }}</button>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

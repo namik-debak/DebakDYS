@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}Dağıtım Grupları{% endblock %}
+
+{% block breadcrumb %}
+<span class="separator">›</span>
+<span>Dağıtım Grupları</span>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex align-center justify-between mb-24">
+    <div>
+        <h2 style="font-size: 20px; font-weight: 700;">Dağıtım Grupları</h2>
+        <p class="text-muted" style="font-size: 13px;">Doküman dağıtımında tekrar kullanılabilir alıcı grupları</p>
+    </div>
+    <button class="btn btn-primary" onclick="openModal('group-modal')">➕ Yeni Grup</button>
+</div>
+
+<div class="section-card">
+    {% if gruplar %}
+    <div class="data-table-wrapper">
+        <table class="data-table">
+            <thead><tr><th>Grup</th><th>Açıklama</th><th>Üye Sayısı</th><th>Üyeler</th><th></th></tr></thead>
+            <tbody>
+                {% for g in gruplar %}
+                <tr>
+                    <td><strong>{{ g.ad }}</strong></td>
+                    <td class="text-muted" style="font-size:12px;">{{ g.aciklama or '-' }}</td>
+                    <td class="text-center">{{ g.members|length }}</td>
+                    <td style="font-size:12px;">{{ g.members|map(attribute='kullanici.ad_soyad')|join(', ') if g.members else '—' }}</td>
+                    <td>
+                        <div class="d-flex gap-8">
+                            <button class="btn btn-sm btn-outline" onclick="openModal('members-{{ g.id }}')">Üyeler</button>
+                            <form method="POST" action="{{ request.script_root }}/admin/distribution-groups/{{ g.id }}/delete"
+                                  onsubmit="return confirm('{{ g.ad }} grubu silinsin mi?');" style="display:inline;">
+                                <button type="submit" class="btn btn-sm btn-outline">Sil</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">👪</div>
+        <h3>Henüz dağıtım grubu yok</h3>
+        <button class="btn btn-primary" onclick="openModal('group-modal')">Yeni Grup Oluştur</button>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Yeni Grup Modalı -->
+<div class="modal-overlay" id="group-modal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Yeni Dağıtım Grubu</h3>
+            <button class="modal-close" onclick="closeModal('group-modal')" aria-label="Kapat">✕</button>
+        </div>
+        <form method="POST" action="{{ request.script_root }}/admin/distribution-groups/new">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Grup Adı *</label>
+                    <input type="text" name="ad" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Açıklama</label>
+                    <input type="text" name="aciklama" class="form-control">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal('group-modal')">İptal</button>
+                <button type="submit" class="btn btn-primary">Oluştur</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Üye Modalları -->
+{% for g in gruplar %}
+<div class="modal-overlay" id="members-{{ g.id }}">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>{{ g.ad }} — Üyeler</h3>
+            <button class="modal-close" onclick="closeModal('members-{{ g.id }}')" aria-label="Kapat">✕</button>
+        </div>
+        <form method="POST" action="{{ request.script_root }}/admin/distribution-groups/{{ g.id }}/members">
+            <div class="modal-body">
+                {% set uye_ids = g.members|map(attribute='kullanici_id')|list %}
+                {% for u in users %}
+                <label style="display:flex; align-items:center; gap:8px; padding:4px 0;">
+                    <input type="checkbox" name="kullanici_ids" value="{{ u.id }}" {{ 'checked' if u.id in uye_ids }}>
+                    {{ u.ad_soyad }} <span class="text-muted" style="font-size:11px;">({{ u.departman }})</span>
+                </label>
+                {% endfor %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal('members-{{ g.id }}')">İptal</button>
+                <button type="submit" class="btn btn-primary">Kaydet</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}

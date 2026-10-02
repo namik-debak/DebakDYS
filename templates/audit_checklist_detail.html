@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block title %}{{ cl.kod }} — {{ cl.ad }}{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><a href="{{ url_for('audit_checklist_catalog') }}">Tetkik Soru Listeleri</a><span class="separator">›</span><span>{{ cl.kod }}</span>{% endblock %}
+{% block content %}
+<style>
+.sl-q{display:grid;grid-template-columns:58px minmax(0,1fr) 190px;gap:14px;padding:12px 18px;border-bottom:1px solid var(--border);}
+.sl-q:last-child{border-bottom:none;}
+.sl-no{font-family:monospace;font-weight:700;background:var(--color-primary);color:#fff;border-radius:4px;padding:2px 6px;font-size:12px;align-self:start;text-align:center;}
+.sl-meta{font-size:12px;color:var(--text-muted);}
+.sl-meta b{color:var(--text-primary);}
+.sl-ip{font-size:12px;color:var(--text-muted);margin-top:6px;background:var(--bg-secondary);padding:6px 10px;border-radius:6px;border-left:3px solid var(--border);white-space:pre-line;}
+.sl-cev{display:inline-block;font-size:11px;padding:1px 8px;border-radius:10px;background:rgba(16,185,129,.12);color:var(--color-success,#059669);border:1px solid rgba(16,185,129,.35);}
+.sl-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;}
+details.sl-duz summary{cursor:pointer;font-size:12px;color:var(--color-primary);margin-top:6px;}
+@media (max-width:760px){.sl-q{grid-template-columns:1fr;}}
+@media print{.sidebar,header.header,.no-print,details.sl-duz{display:none !important;}.main-content{margin:0 !important;}@page{size:A4;margin:12mm;}}
+</style>
+
+<div class="mb-16 d-flex align-center justify-between" style="flex-wrap:wrap;gap:10px;">
+  <div>
+    <div class="text-muted" style="font-size:12px;">{{ cl.denetim_tipi }}{% if cl.surec_kod %} · süreç {{ cl.surec_kod }}{% endif %}{% if not cl.aktif %} · <strong>pasif</strong>{% endif %}</div>
+    <h2 style="font-size:20px;font-weight:700;"><code style="color:var(--text-accent);">{{ cl.kod }}</code> — {{ cl.ad }}</h2>
+    <p class="text-muted" style="font-size:13px;">{{ toplam }} soru · {{ bolumler|length }} bölüm · {{ denetimler|length }} denetimde kullanılıyor{% if cevap %} · {{ cevap|length }} soru cevap almış{% endif %}</p>
+  </div>
+  <div class="no-print" style="display:flex;gap:8px;flex-wrap:wrap;">
+    <a href="{{ url_for('audit_checklist_excel', cid=cl.id) }}" class="btn btn-outline">📊 Excel</a>
+    <button onclick="window.print()" class="btn btn-outline">🖨️ Yazdır</button>
+    <a href="{{ url_for('audit_checklist_catalog') }}" class="btn btn-outline">⬅️ Soru listeleri</a>
+  </div>
+</div>
+
+{% if cl.kaynak_dosya %}<p class="text-muted" style="font-size:12px;margin-bottom:12px;">Kaynak: {{ cl.kaynak_dosya }}</p>{% endif %}
+
+<div class="no-print" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+  {% for b, L in bolumler %}<a href="#b-{{ loop.index }}" class="btn btn-outline" style="font-size:12px;padding:3px 10px;">{{ b }} <span class="text-muted">({{ L|length }})</span></a>{% endfor %}
+</div>
+
+{% for b, L in bolumler %}
+<div class="section-card mb-16" id="b-{{ loop.index }}">
+  <div class="section-header" style="background:var(--bg-secondary);"><span class="section-title" style="font-size:14px;">📂 {{ b }}</span><span class="text-muted" style="font-size:12px;">{{ L|length }} soru</span></div>
+  <div class="section-body" style="padding:0;">
+    {% for q in L %}
+    <div class="sl-q" id="q-{{ q.id }}">
+      <span class="sl-no" title="Sıra {{ q.sira }}">{{ q.soru_no or q.sira }}</span>
+      <div>
+        <div style="font-weight:600;font-size:14px;line-height:1.45;">{{ q.soru_metin|kodlari_bagla }}</div>
+        {% if q.ipucu %}<div class="sl-ip">{{ q.ipucu }}</div>{% endif %}
+        {% if yonetici %}
+        <details class="sl-duz"><summary>Düzenle</summary>
+          <form method="POST" style="margin-top:8px;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="soru_kaydet"><input type="hidden" name="qid" value="{{ q.id }}">
+            <div class="form-group"><label class="form-label">Soru *</label><textarea name="soru_metin" class="form-control" rows="3" required>{{ q.soru_metin }}</textarea></div>
+            <div class="sl-g">
+              <div class="form-group"><label class="form-label">Bölüm</label><input name="bolum" list="sl-bolum" class="form-control" value="{{ q.bolum or '' }}"></div>
+              <div class="form-group"><label class="form-label">Soru no</label><input name="soru_no" class="form-control" value="{{ q.soru_no or '' }}"></div>
+              <div class="form-group"><label class="form-label">Sıra</label><input name="sira" type="number" min="1" class="form-control" value="{{ q.sira }}"></div>
+              <div class="form-group"><label class="form-label">Şart no</label><input name="sart_no" class="form-control" value="{{ q.sart_no or '' }}"></div>
+              <div class="form-group" style="grid-column:span 2;"><label class="form-label">Kime</label><input name="kime" class="form-control" value="{{ q.kime or '' }}"></div>
+            </div>
+            <div class="form-group"><label class="form-label">İpucu / ilgili doküman</label><textarea name="ipucu" class="form-control" rows="2">{{ q.ipucu or '' }}</textarea></div>
+            {% if cevap.get(q.id) %}<p style="font-size:12px;color:#b45309;">Bu soru {{ cevap[q.id] }} denetimde cevaplanmış — metin değişikliği o denetimlerde de görünür.</p>{% endif %}
+            <div style="display:flex;gap:8px;"><button class="btn btn-primary" type="submit" style="font-size:12px;">Kaydet</button></div>
+          </form>
+          {% if not cevap.get(q.id) %}
+          <form method="POST" onsubmit="return confirm('Soru silinsin mi?');" style="margin-top:6px;"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="soru_sil"><input type="hidden" name="qid" value="{{ q.id }}"><button class="btn btn-outline" type="submit" style="font-size:11px;padding:1px 8px;">Soruyu sil</button></form>
+          {% endif %}
+        </details>
+        {% endif %}
+      </div>
+      <div class="sl-meta">
+        {% if q.sart_no %}<div>Şart: <b>{{ q.sart_no }}</b></div>{% endif %}
+        {% if q.kime %}<div style="margin-top:3px;">Kime: <b>{{ q.kime }}</b></div>{% endif %}
+        {% if cevap.get(q.id) %}<div style="margin-top:5px;"><span class="sl-cev">{{ cevap[q.id] }} cevap</span></div>{% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% else %}
+<div class="section-card mb-16"><div class="section-body"><p class="text-muted">Bu listede soru yok.</p></div></div>
+{% endfor %}
+<datalist id="sl-bolum">{% for b in bolum_adlari %}<option value="{{ b }}">{% endfor %}</datalist>
+
+<div class="section-card mb-16 no-print">
+  <div class="section-header"><span class="section-title">🗂️ Bu listeyi kullanan denetimler</span><span class="text-muted" style="font-size:12px;">{{ denetimler|length }}</span></div>
+  <div class="section-body" style="padding:0;">
+    {% if denetimler %}
+    <table class="data-table"><thead><tr><th>Tetkik no</th><th>Başlık</th><th>Plan</th><th>Durum</th><th></th></tr></thead><tbody>
+    {% for a in denetimler %}<tr><td><a href="{{ url_for('audit_detail', audit_id=a.id) }}">{{ a.tetkik_no }}</a></td><td>{{ a.baslik }}</td>
+      <td>{{ a.planlanan_tarih.strftime('%d.%m.%Y') if a.planlanan_tarih else '—' }}</td><td>{{ a.durum }}</td>
+      <td><a href="{{ url_for('audit_checklist_run', audit_id=a.id) }}" class="btn btn-outline" style="font-size:12px;padding:2px 10px;">Soru listesi</a></td></tr>{% endfor %}
+    </tbody></table>
+    {% else %}<p class="text-muted" style="padding:16px;">Henüz kullanılmadı.</p>{% endif %}
+  </div>
+</div>
+
+{% if yonetici %}
+<div class="section-card mb-16 no-print">
+  <div class="section-header"><span class="section-title">＋ Soru ekle</span></div>
+  <div class="section-body">
+    <form method="POST"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="soru_ekle">
+      <div class="form-group"><label class="form-label">Soru *</label><textarea name="soru_metin" class="form-control" rows="3" required></textarea></div>
+      <div class="sl-g">
+        <div class="form-group"><label class="form-label">Bölüm</label><input name="bolum" list="sl-bolum" class="form-control" placeholder="Genel"></div>
+        <div class="form-group"><label class="form-label">Soru no</label><input name="soru_no" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Sıra (boşsa sona)</label><input name="sira" type="number" min="1" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Şart no</label><input name="sart_no" class="form-control"></div>
+        <div class="form-group" style="grid-column:span 2;"><label class="form-label">Kime</label><input name="kime" class="form-control"></div>
+      </div>
+      <div class="form-group"><label class="form-label">İpucu / ilgili doküman</label><textarea name="ipucu" class="form-control" rows="2"></textarea></div>
+      <button class="btn btn-primary" type="submit">Soru ekle</button>
+    </form>
+  </div>
+</div>
+
+<div class="section-card no-print">
+  <div class="section-header"><span class="section-title">✏️ Liste bilgileri</span></div>
+  <div class="section-body">
+    <form method="POST"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="liste">
+      <div class="sl-g">
+        <div class="form-group" style="grid-column:span 2;"><label class="form-label">Ad *</label><input name="ad" class="form-control" required value="{{ cl.ad }}"></div>
+        <div class="form-group"><label class="form-label">Tetkik tipi</label><select name="denetim_tipi" class="form-control">{% for t in tipler %}<option {% if cl.denetim_tipi == t %}selected{% endif %}>{{ t }}</option>{% endfor %}</select></div>
+        <div class="form-group"><label class="form-label">Süreç kodu</label><input name="surec_kod" class="form-control" value="{{ cl.surec_kod or '' }}"></div>
+      </div>
+      <label style="font-size:13px;display:flex;align-items:center;gap:6px;margin-bottom:8px;"><input type="checkbox" name="aktif" value="1" {% if cl.aktif %}checked{% endif %}> Aktif (pasif liste yeni denetimlerde seçilmez)</label>
+      <button class="btn btn-outline" type="submit">Kaydet</button>
+    </form>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

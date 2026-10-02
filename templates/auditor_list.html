@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}İç Denetçiler{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><a href="{{ request.script_root }}/audits">İç Tetkik</a><span class="separator">›</span><span>İç Denetçiler</span>{% endblock %}
+{% block content %}
+<style>.nt{font-size:11px;text-align:center;} .nt .v{color:var(--color-success,#10b981);font-weight:700;} .nt .y{color:var(--text-muted);opacity:.5;}
+.rotate{writing-mode:vertical-rl;transform:rotate(180deg);font-size:11px;white-space:nowrap;padding:4px 0;}</style>
+<div class="d-flex align-center justify-between mb-24" style="flex-wrap:wrap;gap:12px;">
+  <div>
+    <h2 style="font-size:20px;font-weight:700;">İç Denetçi Yetkinlikleri</h2>
+    <p class="text-muted" style="font-size:13px;">IATF 16949 § 7.2.3 — kalifikasyon matrisi (Y01.6 F06). Otomatik atamada yalnız aktif, DYS kullanıcısına bağlı, yetkinliği geçerli ve denetlenen süreçten bağımsız denetçiler kullanılır.</p>
+  </div>
+  <div style="display:flex;gap:8px;">
+    <a class="btn btn-outline" href="{{ request.script_root }}/audits/automation">🔔 Hatırlatmalar</a>
+    {% if can_edit %}<a class="btn btn-primary" href="{{ request.script_root }}/audits/auditors/new">+ Denetçi</a>{% endif %}
+  </div>
+</div>
+<div class="section-card">
+{% if denetciler %}
+<div class="data-table-wrapper"><table class="data-table">
+<thead><tr><th>No</th><th>Denetçi</th><th>DYS Kullanıcısı</th><th>Rol</th><th>Tür</th>
+{% for k, e in NIT %}<th class="nt"><div class="rotate">{{ e }}</div></th>{% endfor %}
+<th>Kendi süreci</th><th>Geçerlilik</th><th>{{ yil }} denetim / hedef</th><th>Durum</th></tr></thead>
+<tbody>
+{% for d in denetciler %}{% set n = d.nitelikler %}
+<tr {% if not d.aktif %}style="opacity:.55"{% endif %}>
+  <td>{{ d.denetci_no or '—' }}</td>
+  <td><a href="{{ request.script_root }}/audits/auditors/{{ d.id }}"><strong>{{ d.ad_soyad }}</strong></a></td>
+  <td>{% if d.user %}{{ d.user.ad_soyad }}<div class="text-muted" style="font-size:11px;">{{ d.user.departman }}</div>{% else %}<span style="color:var(--color-warning,#f59e0b);font-size:12px;">⚠ eşleşmedi</span>{% endif %}</td>
+  <td style="font-size:12px;">{{ d.rol or '—' }}</td>
+  <td style="font-size:12px;">{{ d.turler|join(' ') or '—' }}</td>
+  {% for k, e in NIT %}<td class="nt">{% if n.get(k) %}<span class="v">✓</span>{% else %}<span class="y">·</span>{% endif %}</td>{% endfor %}
+  <td style="font-size:12px;">{{ d.kendi_surecleri or '—' }}</td>
+  <td style="font-size:12px;">{% if d.gecerlilik_tarihi %}{% set kalan = (d.gecerlilik_tarihi - bugun).days %}
+      <span style="color:{{ 'var(--color-danger,#ef4444)' if kalan < 0 else ('var(--color-warning,#f59e0b)' if kalan <= 60 else 'inherit') }};">{{ d.gecerlilik_tarihi.strftime('%d.%m.%Y') }}</span>{% else %}—{% endif %}</td>
+  <td style="text-align:center;">{{ yuk.get(d.user_id, 0) if d.user_id else 0 }} / {{ d.yillik_hedef or '—' }}</td>
+  <td>{% if d.aktif %}<span class="status-badge onayli">Aktif</span>{% else %}<span class="status-badge eskimis">Pasif</span>{% endif %}</td>
+</tr>
+{% endfor %}
+</tbody></table></div>
+{% else %}
+<div class="empty-state"><div class="empty-icon">🎓</div><h3>Denetçi kaydı yok</h3><p class="text-muted">Denetim Yönetimi sayfasından F06 planını içe aktarın ya da elle ekleyin.</p></div>
+{% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,75 @@
+﻿{% extends "base.html" %}
+{% block title %}Revize Et — {{ doc.dokuman_no }}{% endblock %}
+
+{% block breadcrumb %}
+<span class="separator">›</span>
+<a href="{{ request.script_root }}/documents">Dokümanlar</a>
+<span class="separator">›</span>
+<a href="{{ request.script_root }}/documents/{{ doc.id }}">{{ doc.dokuman_no }}</a>
+<span class="separator">›</span>
+<span>Revize Et</span>
+{% endblock %}
+
+{% block content %}
+<div class="mb-24">
+    <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 4px;">Doküman Revize Et</h2>
+    <p class="text-muted" style="font-size: 13px;">{{ doc.dokuman_no }} — {{ doc.baslik }} · Mevcut Rev: {{ doc.revizyon_no }} → Yeni Rev: {{ doc.revizyon_no + 1 }}</p>
+</div>
+
+<form method="POST" action="{{ request.script_root }}/documents/{{ doc.id }}/revise" enctype="multipart/form-data">
+    <div class="grid-2">
+        <div class="section-card">
+            <div class="section-header">
+                <span class="section-title">📝 Revizyon Bilgileri</span>
+            </div>
+            <div class="section-body">
+                <div class="form-group">
+                    <label class="form-label">Değişiklik Açıklaması <span class="required">*</span></label>
+                    <textarea name="degisiklik_aciklamasi" class="form-control" rows="4"
+                              placeholder="Bu revizyonda yapılan değişiklikleri açıklayınız..." required></textarea>
+                    <span class="form-hint">ISO standartları gereği tüm değişiklikler kayıt altına alınmalıdır</span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Değişiklik Kategorisi (MOC)</label>
+                    <select name="degisiklik_kategorisi" class="form-control">
+                        <option value="">— Seçiniz —</option>
+                        <option value="Editöryal">Editöryal (yazım/biçim)</option>
+                        <option value="İçerik">İçerik (anlamsal değişiklik)</option>
+                        <option value="Kritik">Kritik (proses/ürün güvenliği etkisi)</option>
+                    </select>
+                    <span class="form-hint">Değişiklik yönetimi (Management of Change) sınıflandırması</span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Etki Değerlendirmesi</label>
+                    <textarea name="etki_degerlendirmesi" class="form-control" rows="3"
+                              placeholder="Değişikliğin ürün/proses/müşteri/uyum üzerindeki etkisini değerlendirin..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-card">
+            <div class="section-header">
+                <span class="section-title">📎 Yeni Dosya</span>
+            </div>
+            <div class="section-body">
+                {% if doc.dosya_adi %}
+                <div style="padding: 10px 14px; background: var(--bg-glass); border-radius: var(--radius-sm); border: 1px solid var(--border-color); margin-bottom: 12px; font-size: 13px;">
+                    📎 Mevcut: <strong>{{ doc.dosya_adi }}</strong>
+                </div>
+                {% endif %}
+                <div class="file-upload-area">
+                    <input type="file" name="dosya" style="display: none;">
+                    <div class="upload-icon">📤</div>
+                    <div class="upload-text">Yeni dosya yükleyin (isteğe bağlı)</div>
+                    <div class="upload-hint">Yüklenmezse mevcut dosya korunur</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-between align-center mt-24">
+        <a href="{{ request.script_root }}/documents/{{ doc.id }}" class="btn btn-secondary">← Geri</a>
+        <button type="submit" class="btn btn-primary">🔄 Revize Et ve Onaya Gönder</button>
+    </div>
+</form>
+{% endblock %}

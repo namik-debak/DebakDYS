@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block title %}Çevresel Olay ve Tatbikat Kayıtları{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><span>Çevre Olayları</span>{% endblock %}
+
+{% block content %}
+<div class="d-flex align-center justify-between mb-24" style="flex-wrap:wrap;gap:12px;">
+  <div>
+    <h2 style="font-size:20px;font-weight:700;">Çevresel Olay ve Tatbikat Kayıtları</h2>
+    <p class="text-muted" style="font-size:13px;">ISO 14001:2015 Çevre Kazaları, Sızıntı/Dökülmeler ve Acil Durum Tatbikat Sicili. Toplam <strong>{{ kayitlar|length }}</strong> kayıt.</p>
+  </div>
+</div>
+
+<!-- Olay Listesi Tablosu -->
+<div class="section-card mb-24">
+{% if kayitlar %}
+<div class="data-table-wrapper">
+<table class="data-table">
+<thead>
+    <tr>
+        <th>Olay/Tatbikat No</th>
+        <th>Tür</th>
+        <th>Tarih</th>
+        <th>İşlem / Tanım</th>
+        <th>Etki Derecesi</th>
+        <th>Uygulanan Müdahale / Aksiyon</th>
+        <th style="text-align:center;">Tatbikat mı?</th>
+        <th>Sorumlu</th>
+        <th>DÖF Bağlantısı</th>
+    </tr>
+</thead>
+<tbody>
+{% for r in kayitlar %}
+<tr>
+    <td><code style="color:var(--text-accent); font-weight:700;">{{ r.olay_no or '—' }}</code></td>
+    <td><strong>{{ r.tur }}</strong></td>
+    <td style="font-size:12px; font-family:monospace;">{{ r.tarih.strftime('%Y-%m-%d') if r.tarih else '—' }}</td>
+    <td style="font-size:13px; max-width:200px;">{{ r.tanim }}</td>
+    <td style="font-size:12px; color:var(--text-muted);">{{ r.etki or '—' }}</td>
+    <td style="font-size:12px; max-width:200px;">{{ r.aksiyon or '—' }}</td>
+    <td class="text-center">
+        <span class="badge" style="font-size:10px; font-weight:700; background:{{ '#d1fae5' if r.tatbikat_mi else '#f3f4f6' }}; color:{{ '#065f46' if r.tatbikat_mi else '#4b5563' }};">
+            {{ 'TATBİKAT ✅' if r.tatbikat_mi else 'GERÇEK OLAY ⚠️' }}
+        </span>
+    </td>
+    <td><span style="font-size:12px;">{{ r.sorumlu.ad_soyad if r.sorumlu else '—' }}</span></td>
+    <td>
+        {% if r.capa_id %}
+        <a href='{{ request.script_root }}/capa/{{ r.capa_id }}' class="btn btn-outline" style="padding:2px 8px; font-size:11px;">🔍 DÖF</a>
+        {% else %}
+        <span class="text-muted">—</span>
+        {% endif %}
+    </td>
+</tr>
+{% endfor %}
+</tbody></table>
+</div>
+{% else %}
+<div class="empty-state"><div class="empty-icon">⚠️</div><h3>Kayıt yok</h3></div>
+{% endif %}
+</div>
+
+<!-- Yeni Olay Ekleme Formu -->
+{% if can_edit %}
+<div class="section-card">
+    <div class="section-header" style="border-bottom:1px solid var(--border); padding:12px 20px;">
+        <span class="section-title">➕ Yeni Çevresel Olay / Tatbikat Kaydı Ekle</span>
+    </div>
+    <div class="section-body" style="padding:20px;">
+        <form method="POST" action="{{ url_for('env_incidents') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:16px; margin-bottom:16px;">
+                <div class="form-group">
+                    <label class="form-label">Olay No</label>
+                    <input type="text" name="olay_no" class="form-control" placeholder="Örn: ENV-INC-2026-03">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Olay Türü *</label>
+                    <select name="tur" class="form-control" required>
+                        {% for t in olay_turleri %}
+                        <option value="{{ t }}" {{ 'selected' if t=='Sızıntı/Dökülme' }}>{{ t }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tarih *</label>
+                    <input type="date" name="tarih" class="form-control" required value="{{ date_today }}">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Sorumlu / Kontrol Eden</label>
+                    <select name="sorumlu_id" class="form-control">
+                        <option value="">— Seçiniz —</option>
+                        {% for u in users %}
+                        <option value="{{ u.id }}">{{ u.ad_soyad }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group" style="grid-column: span 4;">
+                    <label class="form-label">Olayın Tanımı / Senaryo Detayı *</label>
+                    <textarea name="tanim" class="form-control" rows="2" required placeholder="Olayın nasıl gerçekleştiğini, dökülen kimyasal türünü veya tatbikat senaryosunu açıklayınız..."></textarea>
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label">Çevresel Etki (Miktar / Yayılım)</label>
+                    <input type="text" name="etki" class="form-control" placeholder="Örn: 20 Litre hidrolik yağ drenaja ulaşmadan kontrol altına alındı">
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label">Uygulanan Acil Durum Müdahalesi / Aksiyonlar</label>
+                    <input type="text" name="aksiyon" class="form-control" placeholder="Örn: Kimyasal döküntü kiti kullanıldı, talaş ile absorbe edildi">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Kayıt Türü *</label>
+                    <select name="tatbikat_mi" class="form-control" required>
+                        <option value="0">Gerçek Çevre Olayı</option>
+                        <option value="1">Acil Durum Tatbikatı</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">İlgili DÖF</label>
+                    <select name="capa_id" class="form-control">
+                        <option value="">— Seçiniz (Varsa) —</option>
+                        {% for c in capas %}
+                        <option value="{{ c.id }}">{{ c.dof_no or c.id }} {{ c.baslik|truncate(30) }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" style="padding:10px 24px;">💾 Olayı Kaydet</button>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

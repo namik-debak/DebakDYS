@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block title %}Yerleşim Muayenesi & Fonksiyonel Testler{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><span>Yerleşim Muayenesi (Layout Inspection)</span>{% endblock %}
+{% block content %}
+<div class="d-flex align-center justify-between mb-24" style="flex-wrap:wrap;gap:12px;">
+  <div>
+    <h2 style="font-size:20px;font-weight:700;">Yerleşim Muayenesi ve Fonksiyonel Testler <span class="text-muted" style="font-size:13px;font-weight:400;">IATF 16949 § 8.6.2</span></h2>
+    <p class="text-muted" style="font-size:13px;">Toplam <strong>{{ inspections|length }}</strong> parça muayene kaydı.</p>
+  </div>
+  {% if session.rol in ('Admin','Doküman Kontrol') %}
+  <button type="button" class="btn btn-primary" onclick="document.getElementById('addInspectionModal').style.display='flex'">
+    <span style="font-size:16px;">＋</span> Yeni Muayene Kaydı
+  </button>
+  {% endif %}
+</div>
+
+<div class="section-card">
+{% if inspections %}
+<div class="data-table-wrapper">
+<table class="data-table">
+<thead>
+  <tr>
+    <th>Parça No</th>
+    <th>Parça Adı</th>
+    <th style="text-align:center;">Periyot</th>
+    <th style="text-align:center;">Son Muayene</th>
+    <th style="text-align:center;">Sonraki Muayene</th>
+    <th style="text-align:center;">Sonuç</th>
+    <th>Rapor No</th>
+    <th>Sorumlu</th>
+    <th>Açıklama</th>
+  </tr>
+</thead>
+<tbody>
+{% for i in inspections %}
+<tr>
+  <td><code style="color:var(--text-accent);">{{ i.parca_no }}</code></td>
+  <td><strong>{{ i.parca_adi }}</strong></td>
+  <td style="text-align:center;">{{ i.periyot_ay }} ay</td>
+  <td style="text-align:center;font-size:12px;">{{ i.son_muayene_tarihi or '—' }}</td>
+  <td style="text-align:center;font-size:12px;
+    {% if i.sonraki_muayene_tarihi and i.sonraki_muayene_tarihi < date.today() %}color:#dc2626;font-weight:700;{% endif %}">
+    {{ i.sonraki_muayene_tarihi or '—' }}
+    {% if i.sonraki_muayene_tarihi and i.sonraki_muayene_tarihi < date.today() %}
+    <span style="font-size:10px;display:block;color:#dc2626;">⚠️ Gecikti</span>
+    {% endif %}
+  </td>
+  <td style="text-align:center;">
+    <span class="badge" style="font-size:11px;padding:2px 8px;border-radius:4px;
+      background:{{ '#16a34a' if i.sonuc == 'Uygun' else ('#dc2626' if i.sonuc == 'Uygunsuz' else '#94a3b8') }};color:#fff;">
+      {{ i.sonuc }}
+    </span>
+  </td>
+  <td>{{ i.rapor_no or '—' }}</td>
+  <td>{{ i.sorumlu.ad_soyad if i.sorumlu else '—' }}</td>
+  <td style="font-size:12px;color:var(--text-secondary);">{{ i.aciklama or '—' }}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+{% else %}
+<div class="empty-state"><div class="empty-icon">📏</div><h3>Yerleşim muayene kaydı yok</h3><p class="text-muted">Yıllık yerleşim muayenesi ve fonksiyonel test planlarını takip etmek için kayıt ekleyin.</p></div>
+{% endif %}
+</div>
+
+{# ═══ Yeni Muayene Modal ═══ #}
+<div id="addInspectionModal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;">
+  <div class="section-card" style="width:90%;max-width:550px;padding:24px;">
+    <div class="d-flex align-center justify-between mb-16">
+      <h3 style="font-size:16px;font-weight:700;margin:0;">📏 Yeni Yerleşim Muayenesi</h3>
+      <button type="button" onclick="document.getElementById('addInspectionModal').style.display='none'" style="background:none;border:none;font-size:20px;cursor:pointer;">✕</button>
+    </div>
+    <form method="post" action="{{ url_for('layout_inspection_new') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="form-group">
+          <label class="form-label">Parça No *</label>
+          <input type="text" name="parca_no" class="form-control" required placeholder="Örn: 9678129">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Parça Adı *</label>
+          <input type="text" name="parca_adi" class="form-control" required placeholder="Örn: Motor Braketi">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Periyot (Ay) *</label>
+          <input type="number" name="periyot_ay" class="form-control" value="12" min="1" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Son Muayene Tarihi *</label>
+          <input type="date" name="son_muayene_tarihi" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Sonuç</label>
+          <select name="sonuc" class="form-control">
+            <option value="Uygun">Uygun</option>
+            <option value="Uygunsuz">Uygunsuz</option>
+            <option value="Değerlendirilmedi">Değerlendirilmedi</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Rapor No</label>
+          <input type="text" name="rapor_no" class="form-control" placeholder="Örn: LIR-2026-001">
+        </div>
+        <div class="form-group" style="grid-column:span 2;">
+          <label class="form-label">Sorumlu Mühendis</label>
+          <select name="sorumlu_id" class="form-control">
+            <option value="">— Seçiniz —</option>
+            {% for u in users %}<option value="{{ u.id }}">{{ u.ad_soyad }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="form-group" style="grid-column:span 2;">
+          <label class="form-label">Notlar ve Ölçüm Sonuçları</label>
+          <textarea name="aciklama" class="form-control" rows="2"></textarea>
+        </div>
+      </div>
+      <div class="d-flex justify-end" style="margin-top:16px;gap:8px;">
+        <button type="button" class="btn btn-outline" onclick="document.getElementById('addInspectionModal').style.display='none'">İptal</button>
+        <button type="submit" class="btn btn-primary">✓ Muayene Ekle</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

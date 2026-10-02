@@ -1,0 +1,3284 @@
+{
+ "_aciklama": "DYS modülü ↔ DEBAK dokümanları (yalnız prosedür, iş akışı, talimat, form). Kaynak: D01.2 İş Sağlığı ve Güvenliği Yönetimi ve D07 (yeni D05) Çevre Yönetimi klasörleri; 'grup' klasördeki yerini, 'kayit: modul' formun kaydının bu ekranda tutulduğunu gösterir.",
+ "moduller": [
+  {
+   "id": "nav-env-aspects",
+   "yol": "/env/aspects",
+   "standart": "ISO 14001",
+   "madde": "6.1.2",
+   "eski_baslik": "Çevre Boyutları",
+   "baslik": "Çevre Boyut & Etki Değerlendirmesi",
+   "aciklama": "Faaliyetlerin çevre boyutları, etkileri, normal/anormal/acil koşul, önem derecesi (olasılık × şiddet) ve operasyonel kontroller.",
+   "dokumanlar": [
+    {
+     "no": "D05 P01",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D05 A01",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D05 T05",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "D05 T01",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "D05 T06",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "D05 T03",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "D05 F04",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D05 F03",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D05 F11",
+     "grup": "Formlar"
+    },
+    {
+     "no": "D05 F13",
+     "grup": "Formlar"
+    },
+    {
+     "no": "D05 F14",
+     "grup": "Formlar"
+    },
+    {
+     "no": "D05 F15",
+     "grup": "Formlar"
+    },
+    {
+     "no": "D05 F16",
+     "grup": "Formlar"
+    },
+    {
+     "no": "D05 F18",
+     "grup": "Formlar"
+    },
+    {
+     "no": "D05 F19",
+     "grup": "Formlar"
+    },
+    {
+     "no": "D05 F20",
+     "grup": "Formlar"
+    }
+   ]
+  },
+  {
+   "id": "nav-env-meas",
+   "yol": "/env/measurements",
+   "standart": "ISO 14001",
+   "madde": "9.1.1",
+   "eski_baslik": "Çevresel Ölçüm",
+   "baslik": "Atık, Enerji ve Kimyasal İzleme",
+   "aciklama": "Atık miktarları, enerji/su/doğalgaz tüketimi ve kimyasal kullanımı; limit aşımında DÖF.",
+   "dokumanlar": [
+    {
+     "no": "D05 P01",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D05 A01",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D05 T02",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "D05 F01",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D05 F02",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D05 F06",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D05 F07",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D05 F08",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D05 F09",
+     "grup": "Formlar"
+    },
+    {
+     "no": "D05 F10",
+     "grup": "Formlar"
+    }
+   ]
+  },
+  {
+   "id": "nav-env-inc",
+   "yol": "/env/incidents",
+   "standart": "ISO 14001",
+   "madde": "8.2 · 10.2",
+   "eski_baslik": "Çevre Olayları",
+   "baslik": "Çevre Kazaları ve Acil Durumlar",
+   "aciklama": "Sızıntı/dökülme, emisyon aşımı, atık uygunsuzluğu, çevre şikâyeti; kök neden ve DÖF.",
+   "dokumanlar": [
+    {
+     "no": "D05 P01",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D05 A01",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D05 T04",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "D05 F17",
+     "grup": "Formlar",
+     "kayit": "modul"
+    }
+   ]
+  },
+  {
+   "id": "nav-ohs-haz",
+   "yol": "/ohs/hazards",
+   "standart": "ISO 45001",
+   "madde": "6.1.2",
+   "eski_baslik": "Tehlike & Risk",
+   "baslik": "Tehlike Tanımlama ve Risk Değerlendirmesi",
+   "aciklama": "Faaliyet/çalışan grubu bazında tehlikeler, risk puanı, kontrol hiyerarşisi ve artık risk.",
+   "dokumanlar": [
+    {
+     "no": "D01.2 P02",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D01.2 A02",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D01.2 P01",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D01.2 A01",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D01.2 T41",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "D01.2 T20",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "D01.2 T22",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "D01.2 T23",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "D01.2 T09",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "D01.2 T21",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "D01.2 T11",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "D01.2 T12",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "D01.2 T06",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "D01.2 T13",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "D01.2 T16",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "D01.2 T18",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "D01.2 T24",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "D01.2 T25",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "D01.2 T26",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "D01.2 T28",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "D01.2 T29",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "D01.2 T57",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "D01.2 T02",
+     "grup": "Talimatlar › Çalıştırma ve Güvenlik Talimatları"
+    },
+    {
+     "no": "D01.2 T03",
+     "grup": "Talimatlar › Çalıştırma ve Güvenlik Talimatları"
+    },
+    {
+     "no": "D01.2 T04",
+     "grup": "Talimatlar › Çalıştırma ve Güvenlik Talimatları"
+    },
+    {
+     "no": "D01.2 T05",
+     "grup": "Talimatlar › Çalıştırma ve Güvenlik Talimatları"
+    },
+    {
+     "no": "D01.2 T07",
+     "grup": "Talimatlar › Çalıştırma ve Güvenlik Talimatları"
+    },
+    {
+     "no": "D01.2 T08",
+     "grup": "Talimatlar › Çalıştırma ve Güvenlik Talimatları"
+    },
+    {
+     "no": "D01.2 T10",
+     "grup": "Talimatlar › Çalıştırma ve Güvenlik Talimatları"
+    },
+    {
+     "no": "D01.2 T14",
+     "grup": "Talimatlar › Çalıştırma ve Güvenlik Talimatları"
+    },
+    {
+     "no": "D01.2 T15",
+     "grup": "Talimatlar › Çalıştırma ve Güvenlik Talimatları"
+    },
+    {
+     "no": "D01.2 T19",
+     "grup": "Talimatlar › Çalıştırma ve Güvenlik Talimatları"
+    },
+    {
+     "no": "D01.2 T27",
+     "grup": "Talimatlar › Çalıştırma ve Güvenlik Talimatları"
+    },
+    {
+     "no": "D01.2 T31",
+     "grup": "Talimatlar › Çalıştırma ve Güvenlik Talimatları"
+    },
+    {
+     "no": "D01.2 T32",
+     "grup": "Talimatlar › Çalıştırma ve Güvenlik Talimatları"
+    },
+    {
+     "no": "D01.2 T34",
+     "grup": "Talimatlar › Çalıştırma ve Güvenlik Talimatları"
+    },
+    {
+     "no": "D01.2 T35",
+     "grup": "Talimatlar › Çalıştırma ve Güvenlik Talimatları"
+    },
+    {
+     "no": "D01.2 T36",
+     "grup": "Talimatlar › Çalıştırma ve Güvenlik Talimatları"
+    },
+    {
+     "no": "D01.2 T37",
+     "grup": "Talimatlar › Çalıştırma ve Güvenlik Talimatları"
+    },
+    {
+     "no": "D01.2 T38",
+     "grup": "Talimatlar › Çalıştırma ve Güvenlik Talimatları"
+    },
+    {
+     "no": "D01.2 T39",
+     "grup": "Talimatlar › Çalıştırma ve Güvenlik Talimatları"
+    },
+    {
+     "no": "D01.2 T40",
+     "grup": "Talimatlar › Çalıştırma ve Güvenlik Talimatları"
+    },
+    {
+     "no": "D01.2 T42",
+     "grup": "Talimatlar › Çalıştırma ve Güvenlik Talimatları"
+    },
+    {
+     "no": "D01.2 T43",
+     "grup": "Talimatlar › Çalıştırma ve Güvenlik Talimatları"
+    },
+    {
+     "no": "D01.2 T44",
+     "grup": "Talimatlar › Çalıştırma ve Güvenlik Talimatları"
+    },
+    {
+     "no": "D01.2 T45",
+     "grup": "Talimatlar › Çalıştırma ve Güvenlik Talimatları"
+    },
+    {
+     "no": "D01.2 T46",
+     "grup": "Talimatlar › Çalıştırma ve Güvenlik Talimatları"
+    },
+    {
+     "no": "D01.2 T47",
+     "grup": "Talimatlar › Çalıştırma ve Güvenlik Talimatları"
+    },
+    {
+     "no": "D01.2 T48",
+     "grup": "Talimatlar › Çalıştırma ve Güvenlik Talimatları"
+    },
+    {
+     "no": "D01.2 T49",
+     "grup": "Talimatlar › Çalıştırma ve Güvenlik Talimatları"
+    },
+    {
+     "no": "D01.2 T50",
+     "grup": "Talimatlar › Çalıştırma ve Güvenlik Talimatları"
+    },
+    {
+     "no": "D01.2 T51",
+     "grup": "Talimatlar › Çalıştırma ve Güvenlik Talimatları"
+    },
+    {
+     "no": "D01.2 T52",
+     "grup": "Talimatlar › Çalıştırma ve Güvenlik Talimatları"
+    },
+    {
+     "no": "D01.2 T53",
+     "grup": "Talimatlar › Çalıştırma ve Güvenlik Talimatları"
+    },
+    {
+     "no": "D01.2 T54",
+     "grup": "Talimatlar › Çalıştırma ve Güvenlik Talimatları"
+    },
+    {
+     "no": "D01.2 T55",
+     "grup": "Talimatlar › Çalıştırma ve Güvenlik Talimatları"
+    },
+    {
+     "no": "D01.2 T56",
+     "grup": "Talimatlar › Çalıştırma ve Güvenlik Talimatları"
+    },
+    {
+     "no": "D01.2 T58",
+     "grup": "Talimatlar › Çalıştırma ve Güvenlik Talimatları"
+    },
+    {
+     "no": "D01.2 F05",
+     "grup": "Formlar › İSG Risk Analizi",
+     "kayit": "modul"
+    },
+    {
+     "no": "D01.2 F30",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D01.2 F15",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D01.2 F09",
+     "grup": "Formlar"
+    },
+    {
+     "no": "D01.2 F10",
+     "grup": "Formlar"
+    },
+    {
+     "no": "D01.2 F11",
+     "grup": "Formlar"
+    },
+    {
+     "no": "D01.2 F12",
+     "grup": "Formlar"
+    },
+    {
+     "no": "D01.2 F13",
+     "grup": "Formlar"
+    },
+    {
+     "no": "D01.2 F14",
+     "grup": "Formlar"
+    },
+    {
+     "no": "D01.2 F21",
+     "grup": "Formlar"
+    },
+    {
+     "no": "D01.2 F23",
+     "grup": "Formlar"
+    },
+    {
+     "no": "D01.2 F25",
+     "grup": "Formlar"
+    },
+    {
+     "no": "D01.2 F07",
+     "grup": "Formlar"
+    },
+    {
+     "no": "D01.2 F08",
+     "grup": "Formlar"
+    },
+    {
+     "no": "D01.2 F24",
+     "grup": "Formlar"
+    },
+    {
+     "no": "D01.2 F28",
+     "grup": "Formlar"
+    },
+    {
+     "no": "D01.2 F33",
+     "grup": "Formlar"
+    }
+   ]
+  },
+  {
+   "id": "nav-ohs-inc",
+   "yol": "/ohs/incidents",
+   "standart": "ISO 45001",
+   "madde": "10.2",
+   "eski_baslik": "İSG Olayları",
+   "baslik": "İş Kazası, Ramak Kala ve Meslek Hastalığı",
+   "aciklama": "Kaza, ramak kala ve meslek hastalığı kaydı; kayıp gün, SGK bildirimi, kök neden ve DÖF.",
+   "dokumanlar": [
+    {
+     "no": "D01.2 P03",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D01.2 A03",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D01.2 F16",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D01.2 F17",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D01.2 F20",
+     "grup": "Formlar",
+     "kayit": "modul"
+    }
+   ]
+  },
+  {
+   "id": "nav-ohs-part",
+   "yol": "/ohs/participation",
+   "standart": "ISO 45001",
+   "madde": "5.4",
+   "eski_baslik": "Çalışan Katılımı",
+   "baslik": "Çalışan Katılımı, Danışma ve İSG Kurulu",
+   "aciklama": "Öneri, danışma, kurul kararı, geri bildirim ve şikâyetler; kararların takibi.",
+   "dokumanlar": [
+    {
+     "no": "D01.2 P02",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D01.2 A02",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D01.2 F22",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D01.2 F02",
+     "grup": "Formlar › Atama yazısı"
+    },
+    {
+     "no": "D01.2 F03",
+     "grup": "Formlar › Atama yazısı"
+    },
+    {
+     "no": "D01.2 F31",
+     "grup": "Formlar"
+    },
+    {
+     "no": "D01.2 F32",
+     "grup": "Formlar"
+    },
+    {
+     "no": "D01.2 F34",
+     "grup": "Formlar › İç Dış Paydaş Anketleri-Sonuçları"
+    },
+    {
+     "no": "D01.2 F35",
+     "grup": "Formlar › İç Dış Paydaş Anketleri-Sonuçları"
+    }
+   ]
+  },
+  {
+   "id": "nav-ohs-ppe",
+   "yol": "/ohs/ppe",
+   "standart": "ISO 45001",
+   "madde": "8.1.2",
+   "eski_baslik": "KKD",
+   "baslik": "Kişisel Koruyucu Donanım (KKD)",
+   "aciklama": "KKD stok, zimmet ve iade; kullanım planına göre dağıtım.",
+   "dokumanlar": [
+    {
+     "no": "D01.2 P02",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D01.2 T30",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "D01.2 T33",
+     "grup": "Talimatlar › Çalıştırma ve Güvenlik Talimatları"
+    },
+    {
+     "no": "D01.2 F18",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D01.2 F19",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D01.2 F29",
+     "grup": "Formlar",
+     "kayit": "modul"
+    }
+   ]
+  },
+  {
+   "id": "nav-ohs-drills",
+   "yol": "/ohs/drills",
+   "standart": "ISO 45001 · ISO 14001",
+   "madde": "8.2",
+   "eski_baslik": "Acil Durum Tatbikatı",
+   "baslik": "Acil Durum Hazırlığı ve Tatbikat",
+   "aciklama": "Tatbikat planı ve gerçekleşme, katılımcılar, etkinlik değerlendirmesi, aksiyonlar (İSG ve çevre senaryoları).",
+   "dokumanlar": [
+    {
+     "no": "D01.2 P02",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D01.2 A02",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D01.2 T01",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "D01.2 F01",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D01.2 F36",
+     "grup": "Formlar › Tatbikatlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D05 F12",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D01.2 F06",
+     "grup": "Formlar"
+    },
+    {
+     "no": "D01.2 F27",
+     "grup": "Formlar"
+    }
+   ]
+  },
+  {
+   "id": "nav-strateji",
+   "yol": "/strateji",
+   "standart": "ISO 9001 · IATF 16949 · ISO 14001 · ISO 45001",
+   "madde": "4.1 · 4.2 · 6.1 · 6.2",
+   "eski_baslik": "Stratejik Planlama",
+   "baslik": "Stratejik Planlama (Bağlam, Paydaş, SWOT, Strateji)",
+   "aciklama": "Çevre (bağlam) analizi, paydaş analizi, SWOT ve stratejiler; öncelikli stratejilerin uygulanması ve yıllık gözden geçirilmesi. Kurumsal ve İSG & Çevre bakışı aynı dönemde.",
+   "dokumanlar": [
+    {
+     "no": "Y01 P01",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "Y01 A01",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "Y01 K01",
+     "grup": "El Kitabı"
+    },
+    {
+     "no": "Y01.2 K01",
+     "grup": "Politikalar"
+    },
+    {
+     "no": "Y01.2 K02",
+     "grup": "Politikalar"
+    },
+    {
+     "no": "Y01.2 K03",
+     "grup": "Politikalar"
+    },
+    {
+     "no": "Y01 F02",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01 F03",
+     "grup": "Formlar",
+     "kayit": "modul"
+    }
+   ]
+  },
+  {
+   "id": "nav-audit-automation",
+   "yol": "/audits/automation",
+   "standart": "ISO 9001 · IATF 16949 · ISO 14001 · ISO 45001",
+   "madde": "9.2",
+   "eski_baslik": "Denetim Yönetimi",
+   "baslik": "Denetim Yönetimi",
+   "aciklama": "Süreç, proses, ürün ve saha (İSG – 5S) denetimleri: yıllık plan, tetkik açma, soru listeleri, bulgular ve DÖF; iç denetçi yetkinlikleri.",
+   "dokumanlar": [
+    {
+     "no": "Y01 A05",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "Y01 P05",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "Y01.6 F01",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.6 F02",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.6 F03",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.6 F04",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.6 F05",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.6 F06",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.6 F07",
+     "grup": "Formlar"
+    },
+    {
+     "no": "Y01.6 F08",
+     "grup": "Formlar"
+    },
+    {
+     "no": "Y01.6 F09",
+     "grup": "Formlar"
+    },
+    {
+     "no": "Y01.6 F10",
+     "grup": "Formlar"
+    },
+    {
+     "no": "Y01.6 F11",
+     "grup": "Formlar"
+    },
+    {
+     "no": "Y01.6 F14",
+     "grup": "Formlar"
+    },
+    {
+     "no": "Y01.6 F15",
+     "grup": "Formlar"
+    },
+    {
+     "no": "Y01.6 F16",
+     "grup": "Formlar"
+    },
+    {
+     "no": "Y01.6 F19",
+     "grup": "Formlar"
+    },
+    {
+     "no": "Y01.6 F21",
+     "grup": "Formlar"
+    },
+    {
+     "no": "Y01.6 F28",
+     "grup": "Formlar"
+    },
+    {
+     "no": "Y01.6 F29",
+     "grup": "Formlar"
+    },
+    {
+     "no": "Y01.6 F33",
+     "grup": "Formlar"
+    },
+    {
+     "no": "Y01.6 F34",
+     "grup": "Formlar"
+    }
+   ]
+  },
+  {
+   "id": "nav-capa",
+   "yol": "/capa",
+   "standart": "ISO 9001 · IATF 16949 · ISO 14001 · ISO 45001",
+   "madde": "10.2",
+   "eski_baslik": "DÖF",
+   "baslik": "DÖF (Uygunsuzluk Yönetimi)",
+   "aciklama": "Uygunsuzluk ve düzeltici / önleyici faaliyetler (8D); müşteri kalite vakaları; Performans (KPI) uygunsuzlukları da burada listelenir.",
+   "dokumanlar": [
+    {
+     "no": "Y01 A06",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "Y01 P06",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "Y01.7 F01",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.7 F02",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.7 F03",
+     "grup": "Formlar"
+    },
+    {
+     "no": "Y01.7 F32",
+     "grup": "Formlar"
+    },
+    {
+     "no": "Y01.7 T01",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "Y01.7 T02",
+     "grup": "Talimatlar"
+    }
+   ]
+  },
+  {
+   "id": "nav-performans",
+   "yol": "/performans",
+   "standart": "IATF 16949",
+   "madde": "6.2.2.1 · 9.1 · 10.2",
+   "eski_baslik": "Performans Değerlendirme (KPI)",
+   "baslik": "Performans Değerlendirme (KPI)",
+   "aciklama": "Süreç performans göstergeleri (eski Y03 F06), ölçüm girişi, veri tamlığı, hedef sapmasında 10.2 uygunsuzluk; yönetim gözden geçirme girdisi. kpi.debak.com'un DYS'deki hali.",
+   "dokumanlar": [
+    {
+     "no": "Y01 A04",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "Y01 F08",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01 P04",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "Y01.8 F01",
+     "grup": "Formlar"
+    },
+    {
+     "no": "Y01.8 F02",
+     "grup": "Formlar"
+    },
+    {
+     "no": "Y01.8 F03",
+     "grup": "Formlar"
+    },
+    {
+     "no": "Y01.8 F04",
+     "grup": "Formlar"
+    },
+    {
+     "no": "Y01.8 F05",
+     "grup": "Formlar"
+    },
+    {
+     "no": "Y01.8 F06",
+     "grup": "Formlar"
+    },
+    {
+     "no": "Y01.8 F07",
+     "grup": "Formlar"
+    },
+    {
+     "no": "Y01.8 F08",
+     "grup": "Formlar"
+    },
+    {
+     "no": "Y01.8 F09",
+     "grup": "Formlar"
+    },
+    {
+     "no": "Y01.8 F10",
+     "grup": "Formlar"
+    },
+    {
+     "no": "Y01.8 F11",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.8 T01",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "Y01.8 T02",
+     "grup": "Talimatlar"
+    }
+   ]
+  },
+  {
+   "id": "nav-toplanti",
+   "yol": "/toplantilar",
+   "standart": "ISO 9001 · ISO 14001 · ISO 45001",
+   "madde": "7.4",
+   "eski_baslik": "Toplantı Tutanakları",
+   "baslik": "Toplantı Tutanakları (İletişim)",
+   "aciklama": "Günlük üretim & bakım, aylık kalite, iç paydaş ve proje toplantıları; kararların sorumlu ve terminle takibi.",
+   "dokumanlar": [
+    {
+     "no": "Y01.4 F01",
+     "grup": "Formlar"
+    },
+    {
+     "no": "Y01.4 F02",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.4 F03",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.4 F04",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.4 T01",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "Y01.4 T02",
+     "grup": "Talimatlar"
+    }
+   ]
+  },
+  {
+   "id": "nav-training",
+   "yol": "/training",
+   "standart": "ISO 9001 · IATF 16949 · ISO 45001",
+   "madde": "7.2 · 7.3",
+   "eski_baslik": "Eğitim Kayıtları",
+   "baslik": "Eğitim Yönetimi",
+   "aciklama": "Yıllık eğitim planı, eğitim katılım ve etkinlik değerlendirmesi, oryantasyon; kişi bazında eğitim ve sertifika kayıtları.",
+   "dokumanlar": [
+    {
+     "no": "D01.1 P01",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D01.1 P02",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D01.1 A01",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D01.1 A02",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D01.1 F01",
+     "grup": "Formlar"
+    },
+    {
+     "no": "D01.1 F02",
+     "grup": "Formlar"
+    },
+    {
+     "no": "D01.1 F03",
+     "grup": "Formlar"
+    },
+    {
+     "no": "D01.1 F05",
+     "grup": "Formlar"
+    },
+    {
+     "no": "D01.1 F06",
+     "grup": "Formlar"
+    },
+    {
+     "no": "D01.1 F08",
+     "grup": "Formlar"
+    },
+    {
+     "no": "D01.1 F09",
+     "grup": "Formlar"
+    },
+    {
+     "no": "D01.1 T01",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "D01.1 T02",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "D01.1 T03",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "D01.1 T04",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "D01.1 T05",
+     "grup": "Talimatlar"
+    }
+   ]
+  },
+  {
+   "id": "nav-competency",
+   "yol": "/competency",
+   "standart": "ISO 9001 · IATF 16949",
+   "madde": "7.2 · 7.2.1",
+   "eski_baslik": "Yetkinlik Matrisi",
+   "baslik": "Yetkinlik Yönetimi",
+   "aciklama": "Görev / rol bazında asgari yetkinlikler (D01.1 F04 bu ekranda), görev tanımları (D01 GT), dönemsel yetkinlik izleme ve çok görevlilik tabloları.",
+   "dokumanlar": [
+    {
+     "no": "D01 P03",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D01 A03",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D01.1 F04",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D01.1 F07",
+     "grup": "Formlar"
+    },
+    {
+     "no": "D01.1 F10",
+     "grup": "Formlar"
+    },
+    {
+     "no": "D01 GT01",
+     "grup": "Görev Tanımları"
+    },
+    {
+     "no": "D01 GT02",
+     "grup": "Görev Tanımları"
+    },
+    {
+     "no": "D01 GT03",
+     "grup": "Görev Tanımları"
+    },
+    {
+     "no": "D01 GT04",
+     "grup": "Görev Tanımları"
+    },
+    {
+     "no": "D01 GT05",
+     "grup": "Görev Tanımları"
+    },
+    {
+     "no": "D01 GT06",
+     "grup": "Görev Tanımları"
+    },
+    {
+     "no": "D01 GT07",
+     "grup": "Görev Tanımları"
+    },
+    {
+     "no": "D01 GT08",
+     "grup": "Görev Tanımları"
+    },
+    {
+     "no": "D01 GT09",
+     "grup": "Görev Tanımları"
+    },
+    {
+     "no": "D01 GT10",
+     "grup": "Görev Tanımları"
+    },
+    {
+     "no": "D01 GT11",
+     "grup": "Görev Tanımları"
+    },
+    {
+     "no": "D01 GT12",
+     "grup": "Görev Tanımları"
+    },
+    {
+     "no": "D01 GT13",
+     "grup": "Görev Tanımları"
+    },
+    {
+     "no": "D01 GT14",
+     "grup": "Görev Tanımları"
+    },
+    {
+     "no": "D01 GT15",
+     "grup": "Görev Tanımları"
+    },
+    {
+     "no": "D01 GT16",
+     "grup": "Görev Tanımları"
+    },
+    {
+     "no": "D01 GT17",
+     "grup": "Görev Tanımları"
+    },
+    {
+     "no": "D01 GT18",
+     "grup": "Görev Tanımları"
+    },
+    {
+     "no": "D01 GT19",
+     "grup": "Görev Tanımları"
+    },
+    {
+     "no": "D01 GT20",
+     "grup": "Görev Tanımları"
+    },
+    {
+     "no": "D01 GT21",
+     "grup": "Görev Tanımları"
+    },
+    {
+     "no": "D01 GT22",
+     "grup": "Görev Tanımları"
+    },
+    {
+     "no": "D01 GT23",
+     "grup": "Görev Tanımları"
+    },
+    {
+     "no": "D01 GT24",
+     "grup": "Görev Tanımları"
+    },
+    {
+     "no": "D01 GT25",
+     "grup": "Görev Tanımları"
+    },
+    {
+     "no": "D01 GT26",
+     "grup": "Görev Tanımları"
+    },
+    {
+     "no": "D01 GT27",
+     "grup": "Görev Tanımları"
+    },
+    {
+     "no": "D01 GT28",
+     "grup": "Görev Tanımları"
+    },
+    {
+     "no": "D01 GT29",
+     "grup": "Görev Tanımları"
+    },
+    {
+     "no": "D01 GT30",
+     "grup": "Görev Tanımları"
+    },
+    {
+     "no": "D01 GT31",
+     "grup": "Görev Tanımları"
+    },
+    {
+     "no": "D01 GT32",
+     "grup": "Görev Tanımları"
+    },
+    {
+     "no": "D01 GT33",
+     "grup": "Görev Tanımları"
+    },
+    {
+     "no": "D01 GT34",
+     "grup": "Görev Tanımları"
+    },
+    {
+     "no": "D01 GT35",
+     "grup": "Görev Tanımları"
+    },
+    {
+     "no": "D01 GT36",
+     "grup": "Görev Tanımları"
+    }
+   ]
+  },
+  {
+   "id": "nav-kalite-tedarikci",
+   "yol": "/kalite/tedarikci",
+   "standart": "IATF 16949 · ISO 9001",
+   "madde": "8.4 · 8.7 · 10.2",
+   "eski_baslik": "Tedarikçi Uygunsuzlukları",
+   "baslik": "Tedarikçi Uygunsuzlukları",
+   "aciklama": "Tedarikçi kaynaklı uygunsuzluk (SCAR): tespit, karar, 4D / 8D yanıtı, etkinlik doğrulaması; A4 PDF rapor (TR / EN).",
+   "dokumanlar": [
+    {
+     "no": "D02 P01",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D02 A01",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D02 F11",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D04 P01",
+     "grup": "Prosedürler"
+    }
+   ]
+  },
+  {
+   "id": "nav-kalite-musteri",
+   "yol": "/kalite/musteri",
+   "standart": "IATF 16949 · ISO 9001",
+   "madde": "8.7 · 9.1.2 · 10.2.6",
+   "eski_baslik": "Müşteri Şikayet Listesi",
+   "baslik": "Müşteri Şikayet Listesi",
+   "aciklama": "Müşteri şikayetleri 8D yapısında (D1–D8), geçici önlem ve 8D terminleri; A4 PDF 8D raporu (TR / EN) müşteriye gönderilir.",
+   "dokumanlar": [
+    {
+     "no": "Y01 P06",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "Y01 A06",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "Y01.7 F01",
+     "grup": "Formlar"
+    },
+    {
+     "no": "Y01.7 F02",
+     "grup": "Formlar"
+    },
+    {
+     "no": "Y01.7 F03",
+     "grup": "Formlar",
+     "kayit": "modul"
+    }
+   ]
+  },
+  {
+   "id": "nav-ppap",
+   "yol": "/ppap",
+   "standart": "IATF 16949",
+   "madde": "8.3.4.4",
+   "eski_baslik": "PPAP Yönetimi",
+   "baslik": "PPAP Yönetimi",
+   "aciklama": "",
+   "dokumanlar": [
+    {
+     "no": "M02 A01",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "M02 A02",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "M02 A03",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "M02 P01",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "M02 P02",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "M02 P03",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "M02 F11",
+     "grup": "Formlar",
+     "kayit": "modul"
+    }
+   ]
+  },
+  {
+   "id": "nav-auditors",
+   "yol": "/audits/auditors",
+   "standart": "IATF 16949",
+   "madde": "7.2.3",
+   "eski_baslik": "İç Denetçiler",
+   "baslik": "İç Denetçiler",
+   "aciklama": "",
+   "dokumanlar": [
+    {
+     "no": "Y01.6 F04",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.6 F05",
+     "grup": "Formlar",
+     "kayit": "modul"
+    }
+   ]
+  },
+  {
+   "id": "nav-qrqc",
+   "yol": "/qrqc",
+   "standart": "IATF 16949",
+   "madde": "10.2.3",
+   "eski_baslik": "QRQC (Hızlı Yanıt)",
+   "baslik": "QRQC (Hızlı Yanıt)",
+   "aciklama": "",
+   "dokumanlar": [
+    {
+     "no": "Y01.4 F01",
+     "grup": "Formlar",
+     "kayit": "modul"
+    }
+   ]
+  },
+  {
+   "id": "nav-audits",
+   "yol": "/audits",
+   "standart": "ISO 9001 · IATF 16949",
+   "madde": "9.2",
+   "eski_baslik": "İç Tetkik",
+   "baslik": "İç Tetkik",
+   "aciklama": "",
+   "dokumanlar": [
+    {
+     "no": "Y01.6 F07",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.6 F08",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.6 F09",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.6 F10",
+     "grup": "Formlar",
+     "kayit": "modul"
+    }
+   ]
+  },
+  {
+   "id": "nav-audit-checklists",
+   "yol": "/audits/checklists",
+   "standart": "IATF 16949",
+   "madde": "9.2.2",
+   "eski_baslik": "Soru Listeleri",
+   "baslik": "Soru Listeleri",
+   "aciklama": "",
+   "dokumanlar": [
+    {
+     "no": "Y01.6 F11",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.6 F14",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.6 F15",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.6 F16",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.6 F19",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.6 F21",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.6 F28",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.6 F29",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.6 F33",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.6 F34",
+     "grup": "Formlar",
+     "kayit": "modul"
+    }
+   ]
+  },
+  {
+   "id": "nav-risks",
+   "yol": "/risks",
+   "standart": "ISO 9001 · IATF 16949",
+   "madde": "6.1",
+   "eski_baslik": "Risk Kaydı",
+   "baslik": "Risk Kaydı",
+   "aciklama": "",
+   "dokumanlar": [
+    {
+     "no": "Y01.3 F01",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.3 F02",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.3 F03",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.3 F04",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.3 F05",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.3 F06",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.3 F07",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.3 F08",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.3 F09",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.3 F10",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.3 F11",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.3 F12",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.3 F13",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.3 F14",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.3 F15",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.3 F16",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.3 F17",
+     "grup": "Formlar",
+     "kayit": "modul"
+    }
+   ]
+  },
+  {
+   "id": "nav-apqp",
+   "yol": "/iatf/apqp",
+   "standart": "IATF 16949",
+   "madde": "8.3",
+   "eski_baslik": "APQP",
+   "baslik": "APQP",
+   "aciklama": "",
+   "dokumanlar": [
+    {
+     "no": "M02 A01",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "M02 A02",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "M02 A03",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "M02 P01",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "M02 P02",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "M02 P03",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "M02 F09",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "M02 F10",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "M02 F12",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "M02 F17",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "M02 F18",
+     "grup": "Formlar",
+     "kayit": "modul"
+    }
+   ]
+  },
+  {
+   "id": "nav-fmea",
+   "yol": "/iatf/fmea",
+   "standart": "IATF 16949",
+   "madde": "8.3.3.3 · 8.3.5.2",
+   "eski_baslik": "FMEA",
+   "baslik": "FMEA",
+   "aciklama": "",
+   "dokumanlar": [
+    {
+     "no": "M02 A01",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "M02 A02",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "M02 A03",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "M02 P01",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "M02 P02",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "M02 P03",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "M02 F06",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "M02 F07",
+     "grup": "Formlar",
+     "kayit": "modul"
+    }
+   ]
+  },
+  {
+   "id": "nav-cp",
+   "yol": "/iatf/control-plans",
+   "standart": "IATF 16949",
+   "madde": "8.5.1.1",
+   "eski_baslik": "Kontrol Planı",
+   "baslik": "Kontrol Planı",
+   "aciklama": "",
+   "dokumanlar": [
+    {
+     "no": "M02 A01",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "M02 A02",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "M02 A03",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "M02 P01",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "M02 P02",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "M02 P03",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "M02 F02",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "M02 F04",
+     "grup": "Formlar",
+     "kayit": "modul"
+    }
+   ]
+  },
+  {
+   "id": "nav-enj-param",
+   "yol": "/uretim/enjeksiyon-parametreleri",
+   "standart": "IATF 16949",
+   "madde": "8.5.1",
+   "eski_baslik": "Enjeksiyon Parametreleri",
+   "baslik": "Enjeksiyon Parametreleri",
+   "aciklama": "",
+   "dokumanlar": [
+    {
+     "no": "M03 A01",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "M03 P01",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "M03 F08",
+     "grup": "Formlar",
+     "kayit": "modul"
+    }
+   ]
+  },
+  {
+   "id": "nav-cal",
+   "yol": "/iatf/calibration",
+   "standart": "IATF 16949",
+   "madde": "7.1.5",
+   "eski_baslik": "Kalibrasyon",
+   "baslik": "Kalibrasyon",
+   "aciklama": "",
+   "dokumanlar": [
+    {
+     "no": "Y01 A01",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "Y01 A02",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "Y01 A03",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "Y01 A04",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "Y01 A05",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "Y01 A06",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "Y01 P01",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "Y01 P02",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "Y01 P03",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "Y01 P04",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "Y01 P05",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "Y01 P06",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "Y01 F09",
+     "grup": "Formlar",
+     "kayit": "modul"
+    }
+   ]
+  },
+  {
+   "id": "nav-uou",
+   "yol": "/iatf/nonconforming",
+   "standart": "IATF 16949",
+   "madde": "8.7",
+   "eski_baslik": "Uygun Olmayan Ürün",
+   "baslik": "Uygun Olmayan Ürün",
+   "aciklama": "",
+   "dokumanlar": [
+    {
+     "no": "D04.5 F01",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D04.5 F02",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D04.5 F04",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D04.5 F06",
+     "grup": "Formlar",
+     "kayit": "modul"
+    }
+   ]
+  },
+  {
+   "id": "nav-sup",
+   "yol": "/iatf/suppliers",
+   "standart": "IATF 16949",
+   "madde": "8.4",
+   "eski_baslik": "Tedarikçiler",
+   "baslik": "Tedarikçiler",
+   "aciklama": "",
+   "dokumanlar": [
+    {
+     "no": "D02 A01",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D02 P01",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D05 A01",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D05 P01",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 A01",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A02",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A03",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A04",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A05",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A06",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A07",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A08",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A09",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A10",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A11",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 P01",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P02",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P03",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P04",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P05",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P06",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P07",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P08",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P09",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P10",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P11",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D02 F03",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D02 F10",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D05 F13",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D05 F14",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D06 F20",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D06 F46",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D06 F47",
+     "grup": "Formlar",
+     "kayit": "modul"
+    }
+   ]
+  },
+  {
+   "id": "nav-spc",
+   "yol": "/iatf/spc",
+   "standart": "IATF 16949",
+   "madde": "9.1.1",
+   "eski_baslik": "SPC",
+   "baslik": "SPC",
+   "aciklama": "",
+   "dokumanlar": [
+    {
+     "no": "D04 A01",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D04 A02",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D04 A03",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D04 A04",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D04 A05",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D04 P01",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D04 P02",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D04 P03",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D04 P04",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D04 P05",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "M03 A01",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "M03 P01",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D04 F13",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "M03 F02",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "M03 F07",
+     "grup": "Formlar",
+     "kayit": "modul"
+    }
+   ]
+  },
+  {
+   "id": "nav-csr",
+   "yol": "/iatf/csr",
+   "standart": "IATF 16949",
+   "madde": "4.3.2",
+   "eski_baslik": "CSR",
+   "baslik": "CSR",
+   "aciklama": "",
+   "dokumanlar": [
+    {
+     "no": "D05 A01",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D05 P01",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D05 F11",
+     "grup": "Formlar",
+     "kayit": "modul"
+    }
+   ]
+  },
+  {
+   "id": "nav-ims-context",
+   "yol": "/ims/context",
+   "standart": "ISO 9001 · 14001 · 45001",
+   "madde": "4.1 · 4.2",
+   "eski_baslik": "Bağlam & Taraflar",
+   "baslik": "Bağlam & Taraflar",
+   "aciklama": "",
+   "dokumanlar": [
+    {
+     "no": "D01.2 A01",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D01.2 A02",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D01.2 A03",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D01.2 P01",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D01.2 P02",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D01.2 P03",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 A01",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A02",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A03",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A04",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A05",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A06",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A07",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A08",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A09",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A10",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A11",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 P01",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P02",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P03",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P04",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P05",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P06",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P07",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P08",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P09",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P10",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P11",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D01.2 F34",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D01.2 F35",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D06 F32",
+     "grup": "Formlar",
+     "kayit": "modul"
+    }
+   ]
+  },
+  {
+   "id": "nav-ims-legal",
+   "yol": "/ims/legal",
+   "standart": "ISO 14001 · 45001",
+   "madde": "6.1.3",
+   "eski_baslik": "Mevzuat & Uygunluk",
+   "baslik": "Mevzuat & Uygunluk",
+   "aciklama": "",
+   "dokumanlar": [
+    {
+     "no": "D01.2 A01",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D01.2 A02",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D01.2 A03",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D01.2 P01",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D01.2 P02",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D01.2 P03",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D05 A01",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D05 P01",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 A01",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A02",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A03",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A04",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A05",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A06",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A07",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A08",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A09",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A10",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A11",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 P01",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P02",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P03",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P04",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P05",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P06",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P07",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P08",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P09",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P10",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P11",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D01.2 F10",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D05 F09",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D05 F10",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D05 F20",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D06 F13",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D06 F52",
+     "grup": "Formlar",
+     "kayit": "modul"
+    }
+   ]
+  },
+  {
+   "id": "nav-ims-ygg",
+   "yol": "/ims/reviews",
+   "standart": "ISO 9001 · 14001 · 45001",
+   "madde": "9.3",
+   "eski_baslik": "Yönetim Gözden Geçirme",
+   "baslik": "Yönetim Gözden Geçirme",
+   "aciklama": "",
+   "dokumanlar": [
+    {
+     "no": "D06 A01",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A02",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A03",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A04",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A05",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A06",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A07",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A08",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A09",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A10",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A11",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 P01",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P02",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P03",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P04",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P05",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P06",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P07",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P08",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P09",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P10",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P11",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 F12",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.5 F01",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "Y01.5 F02",
+     "grup": "Formlar",
+     "kayit": "modul"
+    }
+   ]
+  },
+  {
+   "id": "nav-isms-assets",
+   "yol": "/isms/assets",
+   "standart": "ISO 27001",
+   "madde": "A.5.9",
+   "eski_baslik": "Bilgi Varlıkları",
+   "baslik": "Bilgi Varlıkları",
+   "aciklama": "",
+   "dokumanlar": [
+    {
+     "no": "D06 A01",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A02",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A03",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A04",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A05",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A06",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A07",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A08",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A09",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A10",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A11",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 P01",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P02",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P03",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P04",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P05",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P06",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P07",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P08",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P09",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P10",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P11",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 F23",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D06 F26",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D06 F28",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D06 F29",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D06 F50",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D06 F53",
+     "grup": "Formlar",
+     "kayit": "modul"
+    }
+   ]
+  },
+  {
+   "id": "nav-isms-soa",
+   "yol": "/isms/soa",
+   "standart": "ISO 27001",
+   "madde": "6.1.3",
+   "eski_baslik": "SoA",
+   "baslik": "SoA",
+   "aciklama": "",
+   "dokumanlar": [
+    {
+     "no": "D06 A01",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A02",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A03",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A04",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A05",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A06",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A07",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A08",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A09",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A10",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A11",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 P01",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P02",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P03",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P04",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P05",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P06",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P07",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P08",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P09",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P10",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P11",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 F27",
+     "grup": "Formlar",
+     "kayit": "modul"
+    }
+   ]
+  },
+  {
+   "id": "nav-isms-risks",
+   "yol": "/isms/risks",
+   "standart": "ISO 27001",
+   "madde": "6.1.2 · 8.2",
+   "eski_baslik": "ISMS Riskleri",
+   "baslik": "ISMS Riskleri",
+   "aciklama": "",
+   "dokumanlar": [
+    {
+     "no": "D06 A01",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A02",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A03",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A04",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A05",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A06",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A07",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A08",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A09",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A10",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A11",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 P01",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P02",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P03",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P04",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P05",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P06",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P07",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P08",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P09",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P10",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P11",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 F04",
+     "grup": "Formlar",
+     "kayit": "modul"
+    }
+   ]
+  },
+  {
+   "id": "nav-isms-inc",
+   "yol": "/isms/incidents",
+   "standart": "ISO 27001 · KVKK",
+   "madde": "A.5.24",
+   "eski_baslik": "Güvenlik Olayları",
+   "baslik": "Güvenlik Olayları",
+   "aciklama": "",
+   "dokumanlar": [
+    {
+     "no": "D06 A01",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A02",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A03",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A04",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A05",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A06",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A07",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A08",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A09",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A10",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A11",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 P01",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P02",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P03",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P04",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P05",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P06",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P07",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P08",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P09",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P10",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P11",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 F08",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D06 F09",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D06 F30",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D06 F34",
+     "grup": "Formlar",
+     "kayit": "modul"
+    }
+   ]
+  },
+  {
+   "id": "nav-isms-acc",
+   "yol": "/isms/access-reviews",
+   "standart": "ISO 27001",
+   "madde": "A.5.18",
+   "eski_baslik": "Erişim İncelemesi",
+   "baslik": "Erişim İncelemesi",
+   "aciklama": "",
+   "dokumanlar": [
+    {
+     "no": "D06 A01",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A02",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A03",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A04",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A05",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A06",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A07",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A08",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A09",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A10",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A11",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 P01",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P02",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P03",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P04",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P05",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P06",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P07",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P08",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P09",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P10",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P11",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 F16",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D06 F17",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D06 F18",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D06 F36",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D06 F37",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D06 F38",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D06 F40",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D06 F51",
+     "grup": "Formlar",
+     "kayit": "modul"
+    }
+   ]
+  },
+  {
+   "id": "nav-isms-backups",
+   "yol": "/isms/backups",
+   "standart": "ISO 27001",
+   "madde": "A.8.13",
+   "eski_baslik": "Yedekleme Kanıtı",
+   "baslik": "Yedekleme Kanıtı",
+   "aciklama": "",
+   "dokumanlar": [
+    {
+     "no": "D06 A01",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A02",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A03",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A04",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A05",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A06",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A07",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A08",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A09",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A10",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 A11",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D06 P01",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P02",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P03",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P04",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P05",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P06",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P07",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P08",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P09",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P10",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D06 P11",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D03.2 F02",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D03.2 F03",
+     "grup": "Formlar",
+     "kayit": "modul"
+    },
+    {
+     "no": "D06 F55",
+     "grup": "Formlar",
+     "kayit": "modul"
+    }
+   ]
+  },
+  {
+   "id": "nav-teknik-resim",
+   "yol": "/teknik-resim",
+   "standart": "IATF 16949",
+   "madde": "7.5.3.2.2",
+   "eski_baslik": "Teknik Resimler",
+   "baslik": "Teknik Resimler",
+   "aciklama": "Müşteri teknik resimleri: müşteri → ürün → revizyon; manuel yükleme, geçerli / geçersiz revizyon, dağıtım ve eski kopyaların toplanması, değişiklik etki değerlendirmesi (D04.4 F02 yerine).",
+   "dokumanlar": [
+    {
+     "no": "D04 P04",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D04 A04",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D04.6 T01",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "D04.6 F06",
+     "grup": "Formlar"
+    },
+    {
+     "no": "D04.6 F02",
+     "grup": "Formlar"
+    }
+   ]
+  },
+  {
+   "id": "nav-bakim",
+   "yol": "/bakim",
+   "standart": "IATF 16949",
+   "madde": "8.5.1.5",
+   "eski_baslik": "Bakım Formu",
+   "baslik": "Bakım Formu",
+   "aciklama": "D03 bakım formları tek ekranda: makine / kalıp ve bakım türü seçilir, form şablona göre değişir (periyodik bakım, günlük kontrol, bakım kartı, kalıp bakımı).",
+   "dokumanlar": [
+    {
+     "no": "D03 P01",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D03 A01",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D03 T01",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "D03 T02",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "D03 T03",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "D03 T04",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "D03 T05",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "D03 T06",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "D03 T07",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "D03 T08",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "D03 T09",
+     "grup": "Talimatlar"
+    }
+   ]
+  },
+  {
+   "id": "nav-bakim-ekipman",
+   "yol": "/bakim/ekipman",
+   "standart": "IATF 16949",
+   "madde": "8.5.1.5",
+   "eski_baslik": "Makine & Kalıp Listesi",
+   "baslik": "Makine & Kalıp Listesi",
+   "aciklama": "Bakım ekipmanları (enjeksiyon makineleri, kalıphane tezgahları, yardımcı ekipman, kalıplar): bakım planı, son / sonraki bakım, bakım geçmişi.",
+   "dokumanlar": [
+    {
+     "no": "D03 P01",
+     "grup": "Prosedürler"
+    },
+    {
+     "no": "D03 A01",
+     "grup": "İş Akışları"
+    },
+    {
+     "no": "D03 T02",
+     "grup": "Talimatlar"
+    },
+    {
+     "no": "D03 T09",
+     "grup": "Talimatlar"
+    }
+   ]
+  }
+ ]
+}

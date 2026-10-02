@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% block title %}Garanti & Müşteri Şikayet Yönetimi{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><span>Garanti Analiz Sistemi</span>{% endblock %}
+{% block content %}
+<div class="d-flex align-center justify-between mb-24" style="flex-wrap:wrap;gap:12px;">
+  <div>
+    <h2 style="font-size:20px;font-weight:700;">Garanti ve Müşteri Şikayetleri <span class="text-muted" style="font-size:13px;font-weight:400;">IATF 16949 § 10.2.5</span></h2>
+    <p class="text-muted" style="font-size:13px;">Toplam <strong>{{ claims|length }}</strong> talep ve garanti şikayeti.</p>
+  </div>
+  {% if session.rol in ('Admin','Doküman Kontrol') %}
+  <button type="button" class="btn btn-primary" onclick="document.getElementById('addClaimModal').style.display='flex'">
+    <span style="font-size:16px;">＋</span> Yeni Garanti Talebi
+  </button>
+  {% endif %}
+</div>
+
+<div class="section-card">
+{% if claims %}
+<div class="data-table-wrapper">
+<table class="data-table">
+<thead>
+  <tr>
+    <th>Müşteri</th>
+    <th>Parça No</th>
+    <th style="text-align:center;">Miktar</th>
+    <th style="text-align:center;">Tarih</th>
+    <th style="text-align:right;">Tutar</th>
+    <th style="text-align:center;">Durum</th>
+    <th>Analiz Sonucu</th>
+    <th>İlişkili DÖF</th>
+    <th></th>
+  </tr>
+</thead>
+<tbody>
+{% for c in claims %}
+<tr>
+  <td><strong>{{ c.musteri }}</strong></td>
+  <td><code style="color:var(--text-accent);">{{ c.parca_no }}</code></td>
+  <td style="text-align:center;">{{ c.miktar }} adet</td>
+  <td style="text-align:center;font-size:12px;">{{ c.talep_tarihi or '—' }}</td>
+  <td style="text-align:right;font-weight:600;color:#1e293b;">
+    {% if c.tutar is not none %}{{ '{:,.2f}'.format(c.tutar) }} TL{% else %}—{% endif %}
+  </td>
+  <td style="text-align:center;">
+    <span class="badge" style="font-size:11px;padding:2px 8px;border-radius:4px;
+      background:{{ '#dc2626' if c.durum == 'Açık' else ('#f59e0b' if c.durum == 'Analiz Ediliyor' else '#16a34a') }};color:#fff;">
+      {{ c.durum }}
+    </span>
+  </td>
+  <td style="font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+    {{ c.analiz_sonucu or 'Henüz analiz yapılmadı' }}
+  </td>
+  <td>
+    {% if c.capa %}
+    <a href="{{ request.script_root }}/capa/{{ c.capa.id }}" style="font-weight:600;color:#3b82f6;text-decoration:none;">{{ c.capa.dof_no }}</a>
+    {% else %}
+    <span class="text-muted" style="font-size:11px;">Bağlantı yok</span>
+    {% endif %}
+  </td>
+  <td style="white-space:nowrap;text-align:right;">
+    {% if session.rol in ('Admin','Doküman Kontrol') %}
+    <button type="button" class="btn btn-outline" style="padding:2px 8px;font-size:11px;"
+      onclick="openAnalyzeModal({{ c.id }}, '{{ c.musteri|replace("'", "\\'") }} - {{ c.parca_no|replace("'", "\\'") }}', '{{ c.analiz_sonucu or ''|replace("'", "\\'") }}', '{{ c.capa_id or '' }}', '{{ c.durum }}')">
+      🔍 Analiz Et
+    </button>
+    {% endif %}
+  </td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+{% else %}
+<div class="empty-state"><div class="empty-icon">🛡️</div><h3>Garanti kaydı yok</h3><p class="text-muted">Müşteri şikayeti ve garanti talebi eklemek için yukarıdaki butonu kullanın.</p></div>
+{% endif %}
+</div>
+
+{# ═══ Yeni Garanti Talebi Modal ═══ #}
+<div id="addClaimModal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;">
+  <div class="section-card" style="width:90%;max-width:550px;padding:24px;">
+    <div class="d-flex align-center justify-between mb-16">
+      <h3 style="font-size:16px;font-weight:700;margin:0;">🛡️ Yeni Garanti Talebi</h3>
+      <button type="button" onclick="document.getElementById('addClaimModal').style.display='none'" style="background:none;border:none;font-size:20px;cursor:pointer;">✕</button>
+    </div>
+    <form method="post" action="{{ url_for('warranty_new') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="form-group">
+          <label class="form-label">Müşteri *</label>
+          <input type="text" name="musteri" class="form-control" required placeholder="Örn: Renault, Ford">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Parça No *</label>
+          <input type="text" name="parca_no" class="form-control" required placeholder="Örn: P-84729">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Miktar *</label>
+          <input type="number" name="miktar" class="form-control" value="1" min="1" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Talep Tarihi</label>
+          <input type="date" name="talep_tarihi" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tutar (TL)</label>
+          <input type="number" step="any" name="tutar" class="form-control" placeholder="Opsiyonel maliyet">
+        </div>
+        <div class="form-group" style="grid-column:span 2;">
+          <label class="form-label">Açıklama / Müşteri Şikayet Detayı</label>
+          <textarea name="aciklama" class="form-control" rows="3"></textarea>
+        </div>
+      </div>
+      <div class="d-flex justify-end" style="margin-top:16px;gap:8px;">
+        <button type="button" class="btn btn-outline" onclick="document.getElementById('addClaimModal').style.display='none'">İptal</button>
+        <button type="submit" class="btn btn-primary">✓ Oluştur</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{# ═══ Garanti Analiz Modal ═══ #}
+<div id="analyzeModal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;">
+  <div class="section-card" style="width:90%;max-width:550px;padding:24px;">
+    <div class="d-flex align-center justify-between mb-16">
+      <h3 style="font-size:16px;font-weight:700;margin:0;" id="analyzeTitle">🔍 Garanti Analiz Sonucu</h3>
+      <button type="button" onclick="document.getElementById('analyzeModal').style.display='none'" style="background:none;border:none;font-size:20px;cursor:pointer;">✕</button>
+    </div>
+    <form id="analyzeForm" method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="form-group">
+        <label class="form-label">Analiz Sonucu *</label>
+        <textarea name="analiz_sonucu" class="form-control" rows="3" required id="analizSonucuField" placeholder="Kök neden analizi, hata tipi (Üretim Hatası, Kullanıcı Hatası vb.)..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">İlişkili DÖF (Sorun Çözme - IATF 16949 § 10.2.3)</label>
+        <select name="capa_id" class="form-control" id="capaIdField">
+          <option value="">— Yok (Yeni DÖF açılması gerekebilir) —</option>
+          {% for cap in capas %}
+          <option value="{{ cap.id }}">{{ cap.dof_no }} - {{ cap.baslik }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label" style="display:flex;align-items:center;gap:8px;">
+          <input type="checkbox" name="sonuclandir" value="1" id="sonuclandirField"> Analizi Sonuçlandır ve Kapat
+        </label>
+      </div>
+      <div class="d-flex justify-end" style="margin-top:16px;gap:8px;">
+        <button type="button" class="btn btn-outline" onclick="document.getElementById('analyzeModal').style.display='none'">İptal</button>
+        <button type="submit" class="btn btn-primary">✓ Analiz Kaydet</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+function openAnalyzeModal(claimId, title, analizSonucu, capaId, durum) {
+  document.getElementById('analyzeForm').action = '/iatf/warranty/' + claimId + '/analyze';
+  document.getElementById('analyzeTitle').textContent = '🔍 Garanti Analiz Sonucu — ' + title;
+  document.getElementById('analizSonucuField').value = analizSonucu;
+  document.getElementById('capaIdField').value = capaId || '';
+  document.getElementById('sonuclandirField').checked = (durum === 'Sonuçlandırıldı');
+  document.getElementById('analyzeModal').style.display = 'flex';
+}
+</script>
+{% endblock %}

@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Tedarikçi Geliştirme Yönetimi{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><span>Tedarikçi Geliştirme Planları</span>{% endblock %}
+{% block content %}
+<div class="d-flex align-center justify-between mb-24" style="flex-wrap:wrap;gap:12px;">
+  <div>
+    <h2 style="font-size:20px;font-weight:700;">Tedarikçi Geliştirme Planları <span class="text-muted" style="font-size:13px;font-weight:400;">IATF 16949 § 8.4.2.3</span></h2>
+    <p class="text-muted" style="font-size:13px;">Toplam <strong>{{ plans|length }}</strong> aktif geliştirme planı.</p>
+  </div>
+  {% if session.rol in ('Admin','Doküman Kontrol') %}
+  <button type="button" class="btn btn-primary" onclick="document.getElementById('addPlanModal').style.display='flex'">
+    <span style="font-size:16px;">＋</span> Yeni Plan
+  </button>
+  {% endif %}
+</div>
+
+<div class="section-card">
+{% if plans %}
+<div class="data-table-wrapper">
+<table class="data-table">
+<thead>
+  <tr>
+    <th>Tedarikçi Adı</th>
+    <th>Başlangıç Tarihi</th>
+    <th>Hedef Tarih</th>
+    <th>Hedef Sertifikasyon</th>
+    <th style="text-align:center;">Son Denetim Skoru</th>
+    <th style="text-align:center;">Durum</th>
+    <th>Notlar</th>
+  </tr>
+</thead>
+<tbody>
+{% for p in plans %}
+<tr>
+  <td><strong>{{ p.tedarikci_adi }}</strong></td>
+  <td style="font-size:12px;">{{ p.baslangic_tarihi or '—' }}</td>
+  <td style="font-size:12px;">{{ p.hedef_tarih or '—' }}</td>
+  <td>
+    <span class="badge" style="background:#e0e7ff;color:#4f46e5;font-size:11px;padding:2px 8px;border-radius:4px;font-weight:600;">
+      {{ p.hedef_sertifikasyon or 'ISO 9001' }}
+    </span>
+  </td>
+  <td style="text-align:center;font-weight:700;color:{{ '#16a34a' if p.son_denetim_skoru and p.son_denetim_skoru >= 80 else ('#f59e0b' if p.son_denetim_skoru and p.son_denetim_skoru >= 60 else '#dc2626') }}">
+    {% if p.son_denetim_skoru is not none %}%{{ p.son_denetim_skoru }}{% else %}—{% endif %}
+  </td>
+  <td style="text-align:center;">
+    <span class="badge" style="font-size:11px;padding:2px 8px;border-radius:4px;
+      background:{{ '#16a34a' if p.durum == 'Tamamlandı' else ('#dc2626' if p.durum == 'İptal' else '#2563eb') }};color:#fff;">
+      {{ p.durum }}
+    </span>
+  </td>
+  <td style="font-size:12px;color:var(--text-secondary);">{{ p.notlar or '—' }}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+{% else %}
+<div class="empty-state"><div class="empty-icon">🤝</div><h3>Tedarikçi geliştirme planı yok</h3><p class="text-muted">Tedarikçi QMS geliştirme hedeflerini izlemek için plan oluşturun.</p></div>
+{% endif %}
+</div>
+
+{# ═══ Yeni Tedarikçi Planı Modal ═══ #}
+<div id="addPlanModal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;">
+  <div class="section-card" style="width:90%;max-width:550px;padding:24px;">
+    <div class="d-flex align-center justify-between mb-16">
+      <h3 style="font-size:16px;font-weight:700;margin:0;">🤝 Yeni Tedarikçi Geliştirme Planı</h3>
+      <button type="button" onclick="document.getElementById('addPlanModal').style.display='none'" style="background:none;border:none;font-size:20px;cursor:pointer;">✕</button>
+    </div>
+    <form method="post" action="{{ url_for('supplier_dev_new') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="form-group" style="grid-column:span 2;">
+          <label class="form-label">Tedarikçi Adı *</label>
+          <input type="text" name="tedarikci_adi" class="form-control" required placeholder="Örn: ABC Metal A.Ş.">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Başlangıç Tarihi</label>
+          <input type="date" name="baslangic_tarihi" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Hedef Tarih</label>
+          <input type="date" name="hedef_tarih" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Hedef Sertifikasyon</label>
+          <select name="hedef_sertifikasyon" class="form-control">
+            <option value="ISO 9001:2015">ISO 9001:2015</option>
+            <option value="MAQMSR (Minimum)">MAQMSR</option>
+            <option value="IATF 16949:2016">IATF 16949:2016</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Son Denetim Skoru (%)</label>
+          <input type="number" step="any" name="son_denetim_skoru" class="form-control" min="0" max="100">
+        </div>
+        <div class="form-group" style="grid-column:span 2;">
+          <label class="form-label">Notlar ve Hedefler</label>
+          <textarea name="notlar" class="form-control" rows="3" placeholder="Geliştirme hedefleri, denetim bulguları aksiyonları..."></textarea>
+        </div>
+      </div>
+      <div class="d-flex justify-end" style="margin-top:16px;gap:8px;">
+        <button type="button" class="btn btn-outline" onclick="document.getElementById('addPlanModal').style.display='none'">İptal</button>
+        <button type="submit" class="btn btn-primary">✓ Planı Ekle</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

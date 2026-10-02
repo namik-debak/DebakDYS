@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+{% block title %}İç Tetkik Paneli{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><span>İç Tetkik Paneli</span>{% endblock %}
+
+{% block content %}
+<div class="mb-24 d-flex align-center justify-between">
+    <div>
+        <h2 style="font-size: 20px; font-weight: 700;">İç Tetkik Paneli</h2>
+        <p class="text-muted" style="font-size: 13px;">ISO 9001, IATF 16949, ISO 14001, ISO 45001 İç Tetkik yönetim paneli.</p>
+    </div>
+    {% if is_editor %}
+    <div class="d-flex gap-8">
+        <a href="{{ url_for('audit_list') }}" class="btn btn-outline">📋 Tetkik Listesi</a>
+        <a href="{{ url_for('audit_checklist_catalog') }}" class="btn btn-outline">📝 Soru Listeleri</a>
+        <a href="{{ url_for('audit_new') }}" class="btn btn-primary">➕ Yeni Tetkik Planla</a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- İstatistik Kartları -->
+<div style="display:grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
+    <div class="section-card" style="padding:16px; display:flex; align-items:center; gap:16px;">
+        <div style="font-size:32px; width:48px; height:48px; background:rgba(99,102,241,0.1); color:var(--color-primary); border-radius:8px; display:flex; align-items:center; justify-content:center;">🕵️</div>
+        <div>
+            <div style="font-size:12px; color:var(--text-muted); text-transform:uppercase; font-weight:600;">Toplam Tetkik</div>
+            <div style="font-size:24px; font-weight:800; margin-top:2px;">{{ stats.toplam }}</div>
+        </div>
+    </div>
+    <div class="section-card" style="padding:16px; display:flex; align-items:center; gap:16px;">
+        <div style="font-size:32px; width:48px; height:48px; background:rgba(245,158,11,0.1); color:#d97706; border-radius:8px; display:flex; align-items:center; justify-content:center;">⏳</div>
+        <div>
+            <div style="font-size:12px; color:var(--text-muted); text-transform:uppercase; font-weight:600;">Geciken Tetkik</div>
+            <div style="font-size:24px; font-weight:800; color:#ef4444; margin-top:2px;">{{ stats.geciken }}</div>
+        </div>
+    </div>
+    <div class="section-card" style="padding:16px; display:flex; align-items:center; gap:16px;">
+        <div style="font-size:32px; width:48px; height:48px; background:rgba(16,185,129,0.1); color:#059669; border-radius:8px; display:flex; align-items:center; justify-content:center;">✅</div>
+        <div>
+            <div style="font-size:12px; color:var(--text-muted); text-transform:uppercase; font-weight:600;">Tamamlanan</div>
+            <div style="font-size:24px; font-weight:800; color:#10b981; margin-top:2px;">{{ stats.tamamlandi }}</div>
+        </div>
+    </div>
+    <div class="section-card" style="padding:16px; display:flex; align-items:center; gap:16px;">
+        <div style="font-size:32px; width:48px; height:48px; background:rgba(239,68,68,0.1); color:#dc2626; border-radius:8px; display:flex; align-items:center; justify-content:center;">⚠️</div>
+        <div>
+            <div style="font-size:12px; color:var(--text-muted); text-transform:uppercase; font-weight:600;">Bulunan Uygunsuzluk</div>
+            <div style="font-size:24px; font-weight:800; color:#ef4444; margin-top:2px;">{{ stats.bulgu }}</div>
+        </div>
+    </div>
+</div>
+
+<!-- Grafikler ve Tablolar -->
+<div style="display:grid; grid-template-columns: 1fr 1fr; gap:24px; margin-bottom: 24px;">
+    <!-- Sol: Tetkik Dağılım Grafiği -->
+    <div class="section-card" style="padding:20px;">
+        <h3 style="font-size:14px; font-weight:700; margin-bottom:16px;">📊 Tetkik Tipleri Dağılımı</h3>
+        <div style="position:relative; height:240px; display:flex; align-items:center; justify-content:center;">
+            <canvas id="tipChart" style="max-height:220px; max-width:220px;"></canvas>
+        </div>
+    </div>
+    
+    <!-- Sağ: Yaklaşan Tetkikler -->
+    <div class="section-card" style="padding:20px; display:flex; flex-direction:column; justify-between: space-between;">
+        <h3 style="font-size:14px; font-weight:700; margin-bottom:12px;">📅 Yaklaşan Tetkikler (14 Gün)</h3>
+        {% if yaklasan %}
+        <div style="overflow-y:auto; max-height:240px; display:flex; flex-direction:column; gap:10px;">
+            {% for a in yaklasan %}
+            <div style="background:var(--bg-secondary); border-radius:6px; padding:10px; border-left:4px solid var(--color-primary); display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <div style="font-weight:600; font-size:13px;">{{ a.denetçi_adi or 'Denetçi Belirtilmedi' }}</div>
+                    <div style="font-size:11px; color:var(--text-muted);">{{ a.denetim_tipi }} — {{ a.surec_adi or 'Genel' }}</div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-family:monospace; font-weight:700; font-size:12px;">{{ a.planlanan_tarih }}</div>
+                    <a href="{{ url_for('audit_detail', audit_id=a.id) }}" style="font-size:11px; color:var(--color-primary); font-weight:600; text-decoration:none;">🔍 Detay</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div style="text-align:center; padding:40px 0; color:var(--text-muted); font-size:13px;">Yakın zamanda planlanmış tetkik bulunmuyor.</div>
+        {% endif %}
+    </div>
+</div>
+
+<div style="display:grid; grid-template-columns: 2fr 1fr; gap:24px;">
+    <!-- Son Kayıtlar -->
+    <div class="section-card" style="padding:20px;">
+        <h3 style="font-size:14px; font-weight:700; margin-bottom:12px;">🕒 Son Tetkik Faaliyetleri</h3>
+        {% if son_kayitlar %}
+        <table class="data-table" style="font-size:12px;">
+            <thead>
+                <tr>
+                    <th>Süreç / Konu</th>
+                    <th>Tip</th>
+                    <th>Planlanan</th>
+                    <th>Durum</th>
+                    <th>Detay</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for a in son_kayitlar %}
+                <tr>
+                    <td><strong>{{ a.surec_adi or 'Genel Denetim' }}</strong></td>
+                    <td>{{ a.denetim_tipi }}</td>
+                    <td style="font-family:monospace;">{{ a.planlanan_tarih or 'Belirtilmedi' }}</td>
+                    <td>
+                        <span class="badge" style="font-size:10px; font-weight:700; background:{{ '#d1fae5' if a.durum=='Tamamlandı' else ('#fef3c7' if a.durum=='Planlandı' or a.durum=='Devam Ediyor' else '#fee2e2') }}; color:{{ '#065f46' if a.durum=='Tamamlandı' else ('#92400e' if a.durum=='Planlandı' or a.durum=='Devam Ediyor' else '#991b1b') }};">
+                            {{ a.durum }}
+                        </span>
+                    </td>
+                    <td>
+                        <a href="{{ url_for('audit_detail', audit_id=a.id) }}" class="btn btn-outline" style="padding:2px 8px; font-size:11px; text-decoration:none;">Göster</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div style="text-align:center; padding:40px 0; color:var(--text-muted);">Tetkik kaydı bulunamadı.</div>
+        {% endif %}
+    </div>
+    
+    <!-- DÖF Bekleyenler -->
+    <div class="section-card" style="padding:20px;">
+        <h3 style="font-size:14px; font-weight:700; margin-bottom:12px;">🛠️ DÖF Bekleyen Uygunsuzluklar</h3>
+        {% if dof_bekleyen %}
+        <div style="overflow-y:auto; max-height:280px; display:flex; flex-direction:column; gap:10px;">
+            {% for f in dof_bekleyen %}
+            <div style="background:var(--bg-secondary); border-radius:6px; padding:10px; border-left:4px solid #ef4444;">
+                <div style="font-weight:600; font-size:12px; display:flex; justify-content:space-between;">
+                    <span>Soru #{{ f.checklist_question_id or 'Genel' }}</span>
+                    <span style="color:#ef4444; font-size:10px; text-transform:uppercase; font-weight:700;">{{ f.bulgu_tipi }}</span>
+                </div>
+                <p style="font-size:11px; margin:4px 0 8px; color:var(--text-secondary); line-height:1.4;">{{ f.aciklama|truncate(80) }}</p>
+                <div style="text-align:right;">
+                    <a href="{{ url_for('audit_detail', audit_id=f.audit_id) }}" style="font-size:11px; color:var(--color-primary); font-weight:600; text-decoration:none;">🛠️ DÖF Aç</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div style="text-align:center; padding:40px 0; color:var(--text-muted); font-size:12px;">DÖF bekleyen tetkik uygunsuzluğu bulunmuyor.</div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Chart.js Yükleme ve Çizim -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    var ctx = document.getElementById('tipChart').getContext('2d');
+    var tipLabels = {{ tip_labels|tojson }};
+    var tipValues = {{ tip_values|tojson }};
+    
+    // Eger veri yoksa boş grafiği önlemek için fallback
+    if(tipLabels.length === 0) {
+        tipLabels = ['Veri Yok'];
+        tipValues = [1];
+    }
+    
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: tipLabels,
+            datasets: [{
+                data: tipValues,
+                backgroundColor: [
+                    '#6366f1',
+                    '#10b981',
+                    '#f59e0b',
+                    '#ef4444',
+                    '#8b5cf6',
+                    '#ec4899'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        boxWidth: 12,
+                        font: { size: 11 }
+                    }
+                }
+            },
+            cutout: '65%'
+        }
+    });
+});
+</script>
+{% endblock %}

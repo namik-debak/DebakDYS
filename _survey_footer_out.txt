@@ -1,0 +1,16 @@
+﻿python.exe : Traceback (most recent call last):
+At C:\Users\labaratuvar03\AppData\Local\Temp\ps-script-36312540-d47f-46e5-a803-374d49e2e159.ps1:112 char:1
++ & "\\192.168.0.249\ortak\HARUN\dys\.venv\Scripts\python.exe" "d:\UYGU ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  File "d:\UYGULAMA PROJELER\debak dijital\dys\_survey_footer_patterns.py", line 58, in <module>
+    fts = footer_texts(fp)
+  File "d:\UYGULAMA PROJELER\debak dijital\dys\_survey_footer_patterns.py", line 34, in footer_texts
+    with zipfile.ZipFile(docx) as z:
+  File "C:\Users\labaratuvar03\AppData\Local\Programs\Python\Python310\lib\zipfile.py", line 1258, in __init__
+    self._RealGetContents()
+  File "C:\Users\labaratuvar03\AppData\Local\Programs\Python\Python310\lib\zipfile.py", line 1325, in _RealGetContents
+    raise BadZipFile("File is not a zip file")
+zipfile.BadZipFile: File is not a zip file

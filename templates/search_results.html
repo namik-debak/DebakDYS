@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Arama{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><span>Arama</span>{% endblock %}
+{% block content %}
+<div class="mb-24">
+  <h2 style="font-size:20px;font-weight:700;">Arama Sonuçları</h2>
+  <p class="text-muted">Sorgu: <strong>{{ q or request.args.get('q') }}</strong></p>
+</div>
+<div class="section-card">
+{% if results %}
+<ul class="recent-list">
+{% for r in results %}
+  <li><a href="{{ r.url if r.url is defined else r.get('url','#') }}">{{ r.baslik if r.baslik is defined else r.get('baslik', r) }}</a>
+  {% if r.tip is defined or r.get is defined %}<span class="text-muted" style="font-size:12px;"> — {{ r.tip if r.tip is defined else r.get('tip','') }}</span>{% endif %}
+  </li>
+{% endfor %}
+</ul>
+{% elif documents is defined and documents %}
+<table class="data-table">
+<thead><tr><th>No</th><th>Başlık</th><th>Durum</th></tr></thead>
+<tbody>
+{% for d in documents %}
+<tr>
+  <td><code>{{ d.dokuman_no }}</code></td>
+  <td><a href="{{ request.script_root }}/documents/{{ d.id }}">{{ d.baslik }}</a></td>
+  <td><span class="status-badge {{ d.durum|slug }}">{{ d.durum|enum }}</span></td>
+</tr>
+{% endfor %}
+</tbody></table>
+{% else %}
+<div class="empty-state"><div class="empty-icon">🔎</div><h3>Sonuç bulunamadı</h3></div>
+{% endif %}
+</div>
+{% endblock %}

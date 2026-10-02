@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}{{ kpi.parametre }} — KPI{% endblock %}
+{% block breadcrumb %}
+<span class="separator">›</span>
+<a href="{{ request.script_root }}/performance">Performans İzleme</a>
+<span class="separator">›</span>
+<span>{{ kpi.parametre[:40] }}</span>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex align-center justify-between mb-24" style="flex-wrap:wrap;gap:12px;">
+  <div>
+    <h2 style="font-size:20px;font-weight:700;">{{ kpi.parametre }}</h2>
+    <p class="text-muted" style="font-size:13px;">
+      Hedef: <strong>{{ kpi.hedef_metin or '—' }}</strong>
+      {% if kpi.birim %} {{ kpi.birim }}{% endif %}
+      · GG: {{ kpi.gg_periyot or '—' }}
+      {% if kpi.surec %} · {{ kpi.surec.kod }}{% endif %}
+    </p>
+  </div>
+  <a href="{{ request.script_root }}/performance/process/{{ kpi.surec.kod if kpi.surec else '' }}" class="btn btn-outline">← Süreç</a>
+</div>
+
+{% if can_edit %}
+<div class="section-card mb-24">
+  <div class="section-header"><span class="section-title">Ölçüm Ekle</span></div>
+  <div class="section-body">
+    <form method="POST" class="filters-bar" style="flex-wrap:wrap;gap:12px;">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="filter-group">
+        <label class="filter-label">Dönem</label>
+        <select name="donem" class="filter-select">
+          <option value="{{ onerilen_donem }}">{{ onerilen_donem }}</option>
+          {% for d in donemler %}
+          {% if d != onerilen_donem %}<option value="{{ d }}">{{ d }}</option>{% endif %}
+          {% endfor %}
+        </select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-label">Gerçekleşen</label>
+        <input type="text" name="gerceklesen" class="filter-select" style="width:120px;" placeholder="değer">
+      </div>
+      <div class="filter-group">
+        <label class="filter-label">Not</label>
+        <input type="text" name="notlar" class="filter-select" style="width:200px;">
+      </div>
+      <label style="font-size:12px;display:flex;align-items:center;gap:6px;">
+        <input type="checkbox" name="dof_ac" value="1"> Uyumsuzsa DÖF aç
+      </label>
+      <button type="submit" class="btn btn-primary">Kaydet</button>
+    </form>
+  </div>
+</div>
+{% endif %}
+
+<div class="dashboard-grid mb-24">
+  <div class="section-card">
+    <div class="section-header"><span class="section-title">Trend</span></div>
+    <div class="section-body"><div class="chart-container" style="height:240px;"><canvas id="kpiChart"></canvas></div></div>
+  </div>
+  <div class="section-card">
+    <div class="section-header"><span class="section-title">Ölçüm Geçmişi</span></div>
+    <div class="section-body" style="padding:0;">
+      {% if olcumler %}
+      <table class="data-table">
+        <thead><tr><th>Dönem</th><th>Değer</th><th>Durum</th><th>DÖF</th></tr></thead>
+        <tbody>
+        {% for m in olcumler %}
+        <tr>
+          <td>{{ m.donem }}</td>
+          <td>{{ m.gerceklesen if m.gerceklesen is not none else (m.gerceklesen_metin or '—') }}</td>
+          <td><span class="status-badge {{ m.durum|slug }}">{{ m.durum|enum }}</span></td>
+          <td>{% if m.capa_id %}<a href="{{ request.script_root }}/capa/{{ m.capa_id }}">DÖF</a>{% else %}—{% endif %}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p class="text-muted" style="padding:16px;">Ölçüm yok.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function(){
+  if (typeof Chart === 'undefined') return;
+  var c = {{ chart|tojson }};
+  var el = document.getElementById('kpiChart');
+  if (!el) return;
+  new Chart(el, {
+    type: 'line',
+    data: { labels: c.labels || [], datasets: [{ label: 'Gerçekleşen', data: c.values || [], borderColor: '#2563eb', tension: 0.2 }] },
+    options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: false } }, maintainAspectRatio: false }
+  });
+})();
+</script>
+{% endblock %}

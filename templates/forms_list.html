@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Formlar{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><span>Formlar</span>{% endblock %}
+{% block content %}
+<div class="d-flex align-center justify-between mb-24" style="flex-wrap:wrap;gap:12px;">
+  <div>
+    <h2 style="font-size:20px;font-weight:700;">Formlar (Dinamik Form)</h2>
+    <p class="text-muted" style="font-size:13px;">DYS üzerinde elektronik olarak doldurulan, onaylanan ve saklanan formlar · Onay bekleyen kayıt: <strong>{{ bekleyen }}</strong></p>
+  </div>
+</div>
+<div class="section-card mb-16">
+  <div class="section-body">
+    <form method="GET" class="filters-bar" style="flex-wrap:wrap;gap:10px;">
+      <input name="q" value="{{ q }}" class="filter-select" placeholder="Form kodu, adı veya eski kod" style="min-width:240px;">
+      <input name="surec" value="{{ surec }}" class="filter-select" placeholder="Süreç (ör. D04.5)" style="width:140px;">
+      <button class="btn btn-outline" type="submit">Filtrele</button>
+    </form>
+  </div>
+</div>
+<div class="section-card mb-16">
+  <div class="section-header"><span class="section-title">📊 Toplu veri al (Excel)</span></div>
+  <div class="section-body">
+    <form method="GET" action="{{ request.script_root }}/forms/export" class="filters-bar" style="flex-wrap:wrap;gap:10px;align-items:center;">
+      <label class="filter-label">Başlangıç</label><input type="date" name="baslangic" class="filter-select">
+      <label class="filter-label">Bitiş</label><input type="date" name="bitis" class="filter-select">
+      <input name="surec" value="{{ surec }}" class="filter-select" placeholder="Süreç (ör. D03)" style="width:130px;">
+      <select name="durum" class="filter-select"><option value="">Tüm durumlar</option>{% for d in ['Onaylandı', 'Onayda', 'Taslak', 'Reddedildi'] %}<option>{{ d }}</option>{% endfor %}</select>
+      <button class="btn btn-primary" type="submit">⬇️ Excel indir</button>
+    </form>
+    <p class="text-muted" style="font-size:12px;margin-top:8px;">
+      Dosyada: <strong>Tüm Veriler</strong> (her alan bir satır — pivot/Power BI için), her form için ayrı sayfa (her kayıt bir satır),
+      <strong>Kontrol Listeleri</strong> (her madde sonucu bir satır) ve <strong>Tablolar</strong>.
+      {% if veri_klasoru %}<br>Otomatik veri dosyaları (her kayıt/onay sonrası yenilenir): <code>{{ veri_klasoru }}</code> — Excel'de <em>Veri › Veri Al › Dosyadan</em> ile bağlanıp <em>Tümünü Yenile</em> ile güncelleyebilirsiniz.{% endif %}
+    </p>
+  </div>
+</div>
+{% if can_manage %}
+<div class="section-card mb-16">
+  <div class="section-header"><span class="section-title">Form tanımı içe aktar</span></div>
+  <div class="section-body">
+    <form method="POST" action="{{ request.script_root }}/forms/import" enctype="multipart/form-data" class="filters-bar" style="flex-wrap:wrap;gap:10px;">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="file" name="dosyalar" accept=".json" multiple required>
+      <button class="btn btn-primary" type="submit">İçe aktar</button>
+      <span class="text-muted" style="font-size:12px;">'Dinamik Form Taslakları' klasöründeki JSON dosyalarını seçin. Mevcut form kodları üzerine yazılmaz.</span>
+    </form>
+  </div>
+</div>
+{% endif %}
+<div class="section-card">
+{% if tanimlar %}
+<table class="data-table">
+<thead><tr><th>Form Kodu</th><th>Form Adı</th><th>Eski Kod</th><th>Süreç</th><th>Rev.</th><th>Alan</th><th>Kayıt</th><th>Durum</th><th></th></tr></thead>
+<tbody>
+{% for t in tanimlar %}
+<tr>
+  <td><a href="{{ request.script_root }}/forms/{{ t.id }}"><strong>{{ t.form_kodu }}</strong>{% if t.kisitli %} <span title="Kısıtlı form (KVKK): kayıtları yalnız yetkililer görür">🔒</span>{% endif %}</a></td>
+  <td>{{ t.ad }}</td>
+  <td class="text-muted">{{ t.eski_kod or '—' }}</td>
+  <td>{{ t.surec.kod if t.surec else '—' }}</td>
+  <td>{{ t.revizyon_no }}</td>
+  <td>{{ (t.alanlar_json or '[]')|length > 2 and 'Tanımlı' or '—' }}</td>
+  <td>{{ sayilar[t.id] }}</td>
+  <td>{% if t.aktif is none or t.aktif %}<span class="status-badge green">Aktif</span>{% else %}<span class="status-badge gray">Pasif</span>{% endif %}</td>
+  <td style="white-space:nowrap;"><a class="btn btn-outline" href="{{ request.script_root }}/forms/{{ t.id }}/new">Doldur</a>
+      <a class="btn btn-outline" href="{{ request.script_root }}/forms/{{ t.id }}/print" target="_blank" title="Boş form çıktısı">🖨️</a></td>
+</tr>
+{% endfor %}
+</tbody></table>
+{% else %}
+<div class="empty-state"><div class="empty-icon">📝</div><h3>Form tanımı yok</h3><p class="text-muted">Taslak JSON dosyalarını içe aktararak başlayın.</p></div>
+{% endif %}
+</div>
+{% endblock %}

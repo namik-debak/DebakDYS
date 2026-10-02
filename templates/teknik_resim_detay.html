@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+{% block title %}{{ t.resim_no }} — {{ t.urun_adi }}{% endblock %}
+{% block breadcrumb %}
+<span class="separator">›</span><a href="{{ url_for('teknik_resim_liste') }}">Teknik Resimler</a>
+<span class="separator">›</span><a href="{{ url_for('teknik_resim_liste', musteri=t.musteri) }}">{{ t.musteri }}</a>
+<span class="separator">›</span><span>{{ t.resim_no }}</span>
+{% endblock %}
+{% block content %}
+<style>
+.tr-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;}
+.rev{font-family:monospace;font-weight:700;background:var(--bg-secondary);border:1px solid var(--border);border-radius:4px;padding:1px 7px;}
+.rev.gecerli{background:rgba(16,185,129,.12);border-color:rgba(16,185,129,.4);color:var(--color-success,#059669);}
+.tr-uyari{display:inline-block;font-size:11px;padding:1px 8px;border-radius:10px;margin:1px 2px 1px 0;border:1px solid var(--border);}
+.tr-uyari.kritik{background:rgba(239,68,68,.12);color:var(--color-danger,#ef4444);border-color:rgba(239,68,68,.35);}
+.tr-uyari.uyari{background:rgba(245,158,11,.12);color:#b45309;border-color:rgba(245,158,11,.35);}
+.onizleme{width:100%;height:560px;border:1px solid var(--border);border-radius:8px;background:var(--bg-secondary);}
+.onizleme-img{max-width:100%;max-height:560px;border:1px solid var(--border);border-radius:8px;display:block;margin:auto;}
+.rev-kart{border:1px solid var(--border);border-radius:10px;margin-bottom:14px;overflow:hidden;}
+.rev-kart.gecerli{border-left:4px solid var(--color-success,#10b981);}
+.rev-bas{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 14px;background:var(--bg-secondary);}
+.rev-ic{padding:12px 14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;}
+.rev-ic h4{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-muted);margin:0 0 6px;}
+.dag td,.dag th{padding:4px 6px;font-size:12px;border-bottom:1px solid var(--border);text-align:left;}
+.etk{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 10px;font-size:12px;}
+details.duz summary{cursor:pointer;font-size:12px;color:var(--color-primary);margin-top:6px;}
+</style>
+
+<div class="mb-16 d-flex align-center justify-between" style="flex-wrap:wrap;gap:10px;">
+  <div>
+    <div class="text-muted" style="font-size:12px;">{{ t.musteri }}</div>
+    <h2 style="font-size:20px;font-weight:700;">📐 {{ t.urun_adi }} <span style="font-family:monospace;font-size:16px;color:var(--text-muted);">{{ t.resim_no }}</span>{% if t.aktif == false %} <span class="tr-uyari">pasif</span>{% endif %}</h2>
+    <p class="text-muted" style="font-size:13px;">
+      Geçerli revizyon: {% if gecerli %}<span class="rev gecerli">{{ gecerli.revizyon }}</span>{% if gecerli.teslim_alma_tarihi %} · teslim alma {{ gecerli.teslim_alma_tarihi.strftime('%d.%m.%Y') }}{% endif %}{% else %}<strong>yok</strong>{% endif %}
+      {% if t.urun_kodu %} · DEBAK ürün kodu: <strong>{{ t.urun_kodu }}</strong>{% endif %} · {{ revler|length }} revizyon
+    </p>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+    {% if yazabilir %}<a href="#yeni-rev" class="btn btn-primary">⬆️ Yeni revizyon yükle</a>{% endif %}
+    <a href="{{ url_for('teknik_resim_liste', musteri=t.musteri) }}" class="btn btn-outline">⬅️ {{ t.musteri }}</a>
+  </div>
+</div>
+
+{% if gecerli and gecerli.dosya_yolu %}
+<div class="section-card mb-16">
+  <div class="section-header"><span class="section-title">👁️ Geçerli resim — rev {{ gecerli.revizyon }}</span>
+    <span style="font-size:12px;"><a href="{{ url_for('teknik_resim_dosya', rev_id=gecerli.id) }}" target="_blank">Yeni sekmede aç</a> · <a href="{{ url_for('teknik_resim_dosya', rev_id=gecerli.id, indir=1) }}">İndir</a></span></div>
+  <div class="section-body">
+    {% set e = (gecerli.dosya_adi or '').rsplit('.', 1)[-1]|lower %}
+    {% if e == 'pdf' %}<iframe class="onizleme" src="{{ url_for('teknik_resim_dosya', rev_id=gecerli.id) }}" title="Teknik resim {{ t.resim_no }}"></iframe>
+    {% elif e in goruntu %}<img class="onizleme-img" src="{{ url_for('teknik_resim_dosya', rev_id=gecerli.id) }}" alt="Teknik resim {{ t.resim_no }} rev {{ gecerli.revizyon }}">
+    {% else %}<p>📄 {{ gecerli.dosya_adi }} — bu dosya türü tarayıcıda önizlenemez; <a href="{{ url_for('teknik_resim_dosya', rev_id=gecerli.id, indir=1) }}">indirin</a>.</p>{% endif %}
+  </div>
+</div>
+{% elif gecerli %}
+<div class="section-card mb-16"><div class="section-body"><p class="text-muted">Geçerli revizyonun dosyası yüklenmemiş — aşağıda rev {{ gecerli.revizyon }} kartından yükleyebilirsiniz.</p></div></div>
+{% endif %}
+
+<div class="section-card mb-16">
+  <div class="section-header"><span class="section-title">🕘 Revizyon geçmişi</span><span class="text-muted" style="font-size:12px;">yeniden eskiye</span></div>
+  <div class="section-body">
+    {% for x in revler %}{% set r = x.r %}
+    <div class="rev-kart {{ 'gecerli' if r.durum == 'Geçerli' }}" id="rev-{{ r.id }}">
+      <div class="rev-bas">
+        <div><span class="rev {{ 'gecerli' if r.durum == 'Geçerli' }}">{{ r.revizyon }}</span>
+          <strong style="margin-left:6px;">{{ r.durum }}</strong>
+          <span class="text-muted" style="font-size:12px;">
+            {% if r.revizyon_tarihi %} · rev. tarihi {{ r.revizyon_tarihi.strftime('%d.%m.%Y') }}{% endif %}
+            {% if r.teslim_alma_tarihi %} · teslim alma {{ r.teslim_alma_tarihi.strftime('%d.%m.%Y') }}{% endif %}
+            {% if r.gecersiz_tarihi %} · geçersiz {{ r.gecersiz_tarihi.strftime('%d.%m.%Y') }}{% endif %}
+            · {{ x.yukleyen }}</span></div>
+        <div>{% for u in x.uyarilar %}<span class="tr-uyari {{ u[0] }}">{{ u[1] }}</span>{% endfor %}</div>
+      </div>
+      <div class="rev-ic">
+        <div>
+          <h4>Dosya</h4>
+          {% if r.dosya_yolu %}<div>{{ '📕' if x.ext == 'pdf' else '📄' }} <a href="{{ url_for('teknik_resim_dosya', rev_id=r.id) }}" target="_blank" style="font-weight:600;word-break:break-all;">{{ r.dosya_adi }}</a>
+            · <a href="{{ url_for('teknik_resim_dosya', rev_id=r.id, indir=1) }}" class="text-muted">indir</a></div>
+          {% else %}<div class="text-muted">Dosya yok.</div>{% endif %}
+          {% if r.degisiklik %}<div style="margin-top:8px;font-size:13px;"><strong>Değişiklik:</strong> {{ r.degisiklik }}</div>{% endif %}
+          {% if r.kaynak %}<div class="text-muted" style="font-size:11px;margin-top:4px;">📥 {{ r.kaynak }}</div>{% endif %}
+          {% if x.ekler %}<div style="margin-top:8px;"><h4 style="margin-bottom:4px;">Ek dosyalar</h4>
+            {% for e in x.ekler %}<div style="font-size:12px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;">📎 <span class="tr-uyari">{{ e.tur }}</span>
+              <a href="{{ url_for('teknik_resim_ek', rev_id=r.id, i=loop.index0) }}" target="_blank" style="word-break:break-all;">{{ e.ad }}</a>
+              {% if yonetici %}<form method="POST" onsubmit="return confirm('Ek dosya kaldırılsın mı?');" style="display:inline;"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="ek_sil"><input type="hidden" name="rev_id" value="{{ r.id }}"><input type="hidden" name="ek_i" value="{{ loop.index0 }}"><button class="btn btn-outline" type="submit" style="font-size:10px;padding:0 6px;">×</button></form>{% endif %}
+            </div>{% endfor %}</div>{% endif %}
+          {% if yazabilir %}
+          <details class="duz"><summary>Ek dosya ekle (sapma, 3D model, görsel …)</summary>
+            <form method="POST" enctype="multipart/form-data" style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="ek_ekle"><input type="hidden" name="rev_id" value="{{ r.id }}">
+              <select name="ek_tur" class="form-control" style="font-size:12px;max-width:190px;">{% for e in ek_turleri %}<option>{{ e }}</option>{% endfor %}</select>
+              <input type="file" name="ek_dosyalar" multiple class="form-control" style="font-size:12px;max-width:240px;" required>
+              <button class="btn btn-outline" type="submit" style="font-size:12px;">Ekle</button></form></details>
+          {% endif %}
+          {% if yazabilir %}
+          <details class="duz"><summary>{{ 'Dosyayı değiştir' if r.dosya_yolu else 'Dosya yükle' }}</summary>
+            <form method="POST" enctype="multipart/form-data" style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="dosya"><input type="hidden" name="rev_id" value="{{ r.id }}">
+              <input type="file" name="dosya" class="form-control" style="font-size:12px;max-width:240px;" required>
+              <button class="btn btn-outline" type="submit" style="font-size:12px;">Yükle</button></form></details>
+          {% endif %}
+          {% if yonetici %}
+          <form method="POST" onsubmit="return confirm('Rev {{ r.revizyon }} ve dosyası silinsin mi? Yalnız yanlış yüklemeler için kullanın.');" style="margin-top:8px;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="rev_sil"><input type="hidden" name="rev_id" value="{{ r.id }}">
+            <button class="btn btn-outline" type="submit" style="font-size:11px;padding:1px 8px;">Revizyonu sil</button></form>
+          {% endif %}
+        </div>
+
+        <div>
+          <h4>Dağıtım {{ '(eski kopyaların toplanması)' if r.durum != 'Geçerli' }}</h4>
+          <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="dagitim"><input type="hidden" name="rev_id" value="{{ r.id }}">
+            <table class="dag" style="width:100%;border-collapse:collapse;">
+              <tr><th>Bölüm</th><th>Dağıtım tarihi</th>{% if r.durum != 'Geçerli' %}<th>Eski kopya toplandı</th>{% endif %}</tr>
+              {% for b in dagitim %}{% set d = x.dag.get(b) or {} %}
+              <tr><td>{{ b }}</td>
+                <td><input type="date" name="tarih_{{ loop.index0 }}" value="{{ d.tarih or '' }}" class="form-control" style="font-size:12px;padding:2px 6px;" {% if not yazabilir %}disabled{% endif %}></td>
+                {% if r.durum != 'Geçerli' %}<td><input type="checkbox" name="toplandi_{{ loop.index0 }}" value="1" {% if d.toplandi %}checked{% endif %} {% if not yazabilir %}disabled{% endif %}></td>{% endif %}</tr>
+              {% endfor %}
+            </table>
+            {% if yazabilir %}<button class="btn btn-outline" type="submit" style="font-size:12px;margin-top:6px;">Dağıtımı kaydet</button>{% endif %}
+          </form>
+        </div>
+
+        <div>
+          <h4>Değişiklik değerlendirmesi</h4>
+          {% set d = x.deg %}
+          {% if d.tarih %}
+          <div style="font-size:13px;">✔ {{ d.tarih[8:10] }}.{{ d.tarih[5:7] }}.{{ d.tarih[:4] }} — {{ d.kim }}</div>
+          <div style="font-size:12px;margin-top:4px;">{% if d.etkiler %}Etkilenen: <strong>{{ d.etkiler|join(', ') }}</strong>{% else %}Etki yok{% endif %}{% if d.ppap %} · <strong>PPAP / numune onayı gerekli</strong>{% endif %}</div>
+          {% if d['not'] %}<div style="font-size:12px;margin-top:4px;">{{ d['not'] }}</div>{% endif %}
+          {% elif r.durum == 'Geçerli' %}<div class="text-muted" style="font-size:12px;">Teslim almadan itibaren {{ gun }} gün içinde değerlendirilmeli (IATF 16949 7.5.3.2.2).</div>{% else %}<div class="text-muted" style="font-size:12px;">Değerlendirme kaydı yok.</div>{% endif %}
+          {% if yazabilir %}
+          <details class="duz" {% if not d.tarih and r.durum == 'Geçerli' %}open{% endif %}><summary>{{ 'Değerlendirmeyi düzenle' if d.tarih else 'Değerlendirme gir' }}</summary>
+            <form method="POST" style="margin-top:6px;">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="degerlendirme"><input type="hidden" name="rev_id" value="{{ r.id }}">
+              <div class="etk">{% for e in etkiler %}<label><input type="checkbox" name="etki_{{ loop.index0 }}" value="1" {% if e in (d.etkiler or []) %}checked{% endif %}> {{ e }}</label>{% endfor %}</div>
+              <label style="font-size:12px;display:block;margin-top:6px;"><input type="checkbox" name="ppap" value="1" {% if d.ppap %}checked{% endif %}> PPAP / numune onayı gerekli</label>
+              <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
+                <input type="date" name="tarih" value="{{ d.tarih or today.isoformat() }}" class="form-control" style="max-width:160px;font-size:12px;" required>
+                <input name="not" value="{{ d['not'] or '' }}" maxlength="1000" class="form-control" style="flex:1;min-width:160px;font-size:12px;" placeholder="Not (ör. kontrol planı rev 5'e güncellenecek)"></div>
+              <button class="btn btn-outline" type="submit" style="font-size:12px;margin-top:6px;">Değerlendirmeyi kaydet</button>
+              <div class="text-muted" style="font-size:11px;margin-top:4px;">Hiçbiri işaretli değilse "etki yok" olarak kaydedilir.</div>
+            </form></details>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% else %}<p class="text-muted">Revizyon yok.</p>{% endfor %}
+  </div>
+</div>
+
+{% if yazabilir %}
+<div class="section-card mb-16" id="yeni-rev">
+  <div class="section-header"><span class="section-title">⬆️ Yeni revizyon yükle</span></div>
+  <div class="section-body">
+    <form method="POST" enctype="multipart/form-data">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="tr-g">
+        <div class="form-group"><label class="form-label">Revizyon *</label><input name="revizyon" class="form-control" required placeholder="ör. D"></div>
+        <div class="form-group"><label class="form-label">Revizyon tarihi (resimdeki)</label><input type="date" name="revizyon_tarihi" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Teslim alma tarihi</label><input type="date" name="teslim_alma_tarihi" class="form-control" value="{{ today.isoformat() }}"></div>
+        <div class="form-group"><label class="form-label">Resim dosyası</label><input type="file" name="dosya" class="form-control"><small class="text-muted">{{ uzantilar }}</small></div>
+        <div class="form-group" style="grid-column:1/-1;"><label class="form-label">Değişiklik özeti</label><input name="degisiklik" maxlength="1000" class="form-control" placeholder="ör. Ø4,2 tolerans ±0,05 → ±0,03; malzeme notu değişti"></div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+        <button class="btn btn-primary" type="submit" name="action" value="revizyon">⬆️ Yeni geçerli revizyon olarak yükle</button>
+        <button class="btn btn-outline" type="submit" name="action" value="arsiv" title="Eski bir revizyonu geçmişe eklemek için — geçerli revizyon değişmez">🗄️ Geçmiş revizyon olarak ekle (arşiv)</button>
+        <span class="text-muted" style="font-size:12px;">Yeni geçerli revizyon yüklenince {% if gecerli %}rev <strong>{{ gecerli.revizyon }}</strong>{% else %}önceki revizyon{% endif %} "Geçersiz" olur.</span>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="section-card mb-16">
+  <div class="section-header"><span class="section-title">✏️ Ürün bilgileri</span><span class="text-muted" style="font-size:12px;">ekleyen: {{ olusturan }} · {{ t.olusturma_tarihi.strftime('%d.%m.%Y') if t.olusturma_tarihi else '' }}</span></div>
+  <div class="section-body">
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="bilgi">
+      <div class="tr-g">
+        <div class="form-group"><label class="form-label">Müşteri *</label><input name="musteri" list="tr-musteri" class="form-control" required value="{{ t.musteri }}">
+          <datalist id="tr-musteri">{% for m in musteriler %}<option value="{{ m }}">{% endfor %}</datalist></div>
+        <div class="form-group"><label class="form-label">Ürün / resim adı *</label><input name="urun_adi" class="form-control" required value="{{ t.urun_adi }}"></div>
+        <div class="form-group"><label class="form-label">Müşteri resim no *</label><input name="resim_no" class="form-control" required value="{{ t.resim_no }}"></div>
+        <div class="form-group"><label class="form-label">DEBAK ürün kodu</label><input name="urun_kodu" class="form-control" value="{{ t.urun_kodu or '' }}"></div>
+        <div class="form-group" style="grid-column:1/-1;"><label class="form-label">Açıklama</label><input name="aciklama" maxlength="500" class="form-control" value="{{ t.aciklama or '' }}"></div>
+      </div>
+      <label style="font-size:13px;display:flex;align-items:center;gap:6px;margin-bottom:8px;"><input type="checkbox" name="aktif" value="1" {% if t.aktif != false %}checked{% endif %}> Aktif ürün (işaret kaldırılırsa listelerde gizlenir, kayıtlar korunur)</label>
+      <button class="btn btn-outline" type="submit">Bilgileri kaydet</button>
+    </form>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

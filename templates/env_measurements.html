@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block title %}Çevresel Ölçüm ve İzleme{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><span>Çevresel Ölçüm</span>{% endblock %}
+
+{% block content %}
+<div class="d-flex align-center justify-between mb-24" style="flex-wrap:wrap;gap:12px;">
+  <div>
+    <h2 style="font-size:20px;font-weight:700;">Çevresel Ölçüm ve İzleme</h2>
+    <p class="text-muted" style="font-size:13px;">ISO 14001:2015 Atık, Enerji, Su, Emisyon vb. Çevresel Boyut Ölçümleri. Toplam <strong>{{ kayitlar|length }}</strong> kayıt.</p>
+  </div>
+</div>
+
+<!-- Ölçüm Listesi Tablosu -->
+<div class="section-card mb-24">
+{% if kayitlar %}
+<div class="data-table-wrapper">
+<table class="data-table">
+<thead>
+    <tr>
+        <th>Ölçüm Türü</th>
+        <th>Ölçüm Tarihi</th>
+        <th>Gerçekleşen Değer</th>
+        <th>Birim</th>
+        <th>Yasal Limit Değer</th>
+        <th style="text-align:center;">Limit Aşımı</th>
+        <th>İlgili Aksiyon / Yorum</th>
+        <th>DÖF / Düzeltici Faaliyet</th>
+    </tr>
+</thead>
+<tbody>
+{% for r in kayitlar %}
+<tr>
+    <td><strong>{{ r.tur }}</strong></td>
+    <td style="font-size:12px; font-family:monospace;">{{ r.tarih.strftime('%Y-%m-%d') if r.tarih else '—' }}</td>
+    <td style="font-weight:700; color:{{ '#ef4444' if r.asim_mi else 'var(--text-primary)' }};">{{ r.deger if r.deger is not none else '—' }}</td>
+    <td class="text-muted" style="font-size:12px;">{{ r.birim or '' }}</td>
+    <td>{{ r.limit_deger if r.limit_deger is not none else 'Limit Yok' }}</td>
+    <td class="text-center">
+        <span class="badge" style="font-size:10px; font-weight:700; background:{{ '#fee2e2' if r.asim_mi else '#d1fae5' }}; color:{{ '#991b1b' if r.asim_mi else '#065f46' }};">
+            {{ 'LİMİT AŞILDI ⚠️' if r.asim_mi else 'Normal ✅' }}
+        </span>
+    </td>
+    <td style="font-size:12px; max-width:240px;" class="text-muted">{{ r.aksiyon or '—' }}</td>
+    <td>
+        {% if r.capa_id %}
+        <a href='{{ request.script_root }}/capa/{{ r.capa_id }}' class="btn btn-outline" style="padding:2px 8px; font-size:11px;">🔍 DÖF</a>
+        {% else %}
+        <span class="text-muted">—</span>
+        {% endif %}
+    </td>
+</tr>
+{% endfor %}
+</tbody></table>
+</div>
+{% else %}
+<div class="empty-state"><div class="empty-icon">📏</div><h3>Kayıt yok</h3></div>
+{% endif %}
+</div>
+
+<!-- Yeni Ölçüm Ekleme Formu -->
+{% if can_edit %}
+<div class="section-card">
+    <div class="section-header" style="border-bottom:1px solid var(--border); padding:12px 20px;">
+        <span class="section-title">➕ Yeni Çevresel Ölçüm Kaydı Ekle</span>
+    </div>
+    <div class="section-body" style="padding:20px;">
+        <form method="POST" action="{{ url_for('env_measurements') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:16px; margin-bottom:16px;">
+                <div class="form-group">
+                    <label class="form-label">Ölçüm Türü *</label>
+                    <select name="tur" class="form-control" required>
+                        {% for t in boyut_turleri %}
+                        <option value="{{ t }}" {{ 'selected' if t=='Atık' }}>{{ t }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Ölçüm Tarihi *</label>
+                    <input type="date" name="tarih" class="form-control" required value="{{ date_today }}">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Ölçülen Değer *</label>
+                    <input type="number" step="any" name="deger" class="form-control" required placeholder="Örn: 154.5">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Birim *</label>
+                    <input type="text" name="birim" class="form-control" required placeholder="Örn: kg, kWh, m3, ppm">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Yasal Üst Limit Değer</label>
+                    <input type="number" step="any" name="limit_deger" class="form-control" placeholder="Örn: 200.0 (Varsa)">
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label">Aşım Aksiyonu / Yorum</label>
+                    <input type="text" name="aksiyon" class="form-control" placeholder="Aşım durumunda alınan önlem, bertaraf yöntemi vb.">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Açılan DÖF İlişkisi</label>
+                    <select name="capa_id" class="form-control">
+                        <option value="">— Seçiniz (Varsa) —</option>
+                        {% for c in capas %}
+                        <option value="{{ c.id }}">{{ c.dof_no or c.id }} {{ c.baslik|truncate(30) }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" style="padding:10px 24px;">💾 Ölçümü Kaydet</button>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

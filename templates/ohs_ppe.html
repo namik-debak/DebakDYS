@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}{{ _('KKD') }}{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><span>{{ _('KKD') }}</span>{% endblock %}
+
+{% set is_editor = session.get('rol') in ['Admin', 'Doküman Kontrol'] %}
+
+{% block content %}
+<div class="mb-24">
+    <h2 style="font-size: 20px; font-weight: 700;">{{ _('KKD Envanteri') }}</h2>
+    <p class="text-muted" style="font-size: 13px;">
+        {{ _('Kişisel koruyucu donanım stok ve zimmet') }}.
+        {% if dusuk %}<span class="risk-badge yuksek">{{ dusuk }} {{ _('düşük stok') }}</span>{% endif %}
+    </p>
+</div>
+
+<div class="section-card mb-16">
+    {% if items %}
+    <div class="data-table-wrapper">
+        <table class="data-table">
+            <caption class="sr-only">{{ _('KKD') }}</caption>
+            <thead>
+                <tr><th scope="col">{{ _('Kod') }}</th><th scope="col">{{ _('Ad') }}</th><th scope="col">{{ _('Beden') }}</th><th scope="col">{{ _('Stok') }}</th><th scope="col">{{ _('Min') }}</th><th scope="col">{{ _('Birim') }}</th></tr>
+            </thead>
+            <tbody>
+                {% for i in items %}
+                <tr {% if (i.stok or 0) <= (i.min_stok or 0) %}style="background:var(--color-danger-bg);"{% endif %}>
+                    <td><code>{{ i.kod or '—' }}</code></td>
+                    <td>{{ i.ad }}</td>
+                    <td>{{ i.beden or '—' }}</td>
+                    <td class="text-center">{{ i.stok }}</td>
+                    <td class="text-center">{{ i.min_stok }}</td>
+                    <td>{{ i.birim }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}<div class="empty-state"><div class="empty-icon">🦺</div><h3>{{ _('KKD kaydı yok') }}</h3></div>{% endif %}
+</div>
+
+{% if issues %}
+<div class="section-card mb-16">
+    <div class="section-header"><span class="section-title">{{ _('Son Zimmetler') }}</span></div>
+    <div class="data-table-wrapper">
+        <table class="data-table">
+            <thead><tr><th>{{ _('KKD') }}</th><th>{{ _('Kullanıcı') }}</th><th>{{ _('Miktar') }}</th><th>{{ _('Tarih') }}</th><th>{{ _('Durum') }}</th></tr></thead>
+            <tbody>
+                {% for z in issues %}
+                <tr>
+                    <td>{{ z.ppe.ad if z.ppe else z.ppe_id }}</td>
+                    <td>{{ z.kullanici.ad_soyad if z.kullanici else '—' }}</td>
+                    <td class="text-center">{{ z.miktar }}</td>
+                    <td>{{ z.verilis_tarihi or '—' }}</td>
+                    <td>{{ z.durum }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+{% if is_editor %}
+<div class="grid-2">
+    <div class="section-card">
+        <div class="section-header"><span class="section-title">➕ {{ _('Yeni KKD') }}</span></div>
+        <div class="section-body">
+            <form method="POST" action="{{ request.script_root }}/ohs/ppe">
+                <input type="hidden" name="action" value="item">
+                <div class="form-group"><label class="form-label" for="kod">{{ _('Kod') }}</label><input name="kod" id="kod" class="form-control"></div>
+                <div class="form-group"><label class="form-label" for="ad">{{ _('Ad') }} *</label><input name="ad" id="ad" class="form-control" required></div>
+                <div class="form-group"><label class="form-label" for="beden">{{ _('Beden') }}</label><input name="beden" id="beden" class="form-control"></div>
+                <div class="form-row" style="display:flex; gap:8px;">
+                    <div class="form-group" style="flex:1;"><label class="form-label" for="stok">{{ _('Stok') }}</label><input type="number" name="stok" id="stok" class="form-control" value="0"></div>
+                    <div class="form-group" style="flex:1;"><label class="form-label" for="min_stok">{{ _('Min') }}</label><input type="number" name="min_stok" id="min_stok" class="form-control" value="0"></div>
+                    <div class="form-group" style="flex:1;">
+                        <label class="form-label" for="birim">{{ _('Birim') }}</label>
+                        <select name="birim" id="birim" class="form-control">{% for b in BIRIMLER %}<option value="{{ b }}">{{ b }}</option>{% endfor %}</select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">{{ _('Kaydet') }}</button>
+            </form>
+        </div>
+    </div>
+    <div class="section-card">
+        <div class="section-header"><span class="section-title">📤 {{ _('Zimmet Ver') }}</span></div>
+        <div class="section-body">
+            <form method="POST" action="{{ request.script_root }}/ohs/ppe">
+                <input type="hidden" name="action" value="issue">
+                <div class="form-group">
+                    <label class="form-label" for="ppe_id">{{ _('KKD') }}</label>
+                    <select name="ppe_id" id="ppe_id" class="form-control" required>
+                        {% for i in items %}<option value="{{ i.id }}">{{ i.ad }} ({{ i.stok }})</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="kullanici_id">{{ _('Kullanıcı') }}</label>
+                    <select name="kullanici_id" id="kullanici_id" class="form-control">
+                        <option value="">—</option>
+                        {% for u in users %}<option value="{{ u.id }}">{{ u.ad_soyad }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="form-group"><label class="form-label" for="miktar">{{ _('Miktar') }}</label><input type="number" name="miktar" id="miktar" class="form-control" value="1" min="1"></div>
+                <div class="form-group"><label class="form-label" for="verilis_tarihi">{{ _('Tarih') }}</label><input type="date" name="verilis_tarihi" id="verilis_tarihi" class="form-control"></div>
+                <button type="submit" class="btn btn-primary">{{ _('Zimmet') }}</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

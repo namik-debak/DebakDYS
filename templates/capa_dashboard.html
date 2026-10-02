@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+{% block title %}{{ _('DÖF Paneli') }}{% endblock %}
+
+{% block breadcrumb %}
+<span class="separator">›</span>
+<span>{{ _('DÖF / Düzeltici Faaliyet') }}</span>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex align-center justify-between mb-24" style="flex-wrap:wrap; gap:12px;">
+    <div>
+        <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 4px;">{{ _('DÖF Paneli') }}</h2>
+        <p class="text-muted" style="font-size: 13px;">
+            {{ _('Raporlar, geciken kayıtlar ve hatırlatmalar') }}
+            · {{ _('Hatırlatma penceresi') }}: {{ stats.hatirlatma_gun }} {{ _('gün') }}
+        </p>
+    </div>
+    <div class="d-flex gap-8" style="flex-wrap:wrap;">
+        <a href="{{ request.script_root }}/capa/export.xlsx" class="btn btn-outline">⬇ Excel</a>
+        <a href="{{ request.script_root }}/capa/export.pdf" class="btn btn-outline">⬇ PDF</a>
+        <a href="{{ request.script_root }}/capa/list" class="btn btn-outline">📋 {{ _('Tüm Liste') }}</a>
+        {% if is_editor %}
+        <a href="{{ request.script_root }}/capa/new" class="btn btn-primary">➕ {{ _('Yeni DÖF') }}</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="stats-grid mb-24">
+    <div class="stat-card">
+        <div class="stat-icon blue">🛠️</div>
+        <div class="stat-value">{{ stats.toplam }}</div>
+        <div class="stat-label">{{ _('Toplam DÖF') }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon yellow">📂</div>
+        <div class="stat-value">{{ stats.acik }}</div>
+        <div class="stat-label">{{ _('Açık') }}</div>
+    </div>
+    <a href="{{ request.script_root }}/capa/list?durum=" class="stat-card {{ 'stat-card-alert' if stats.geciken else '' }}" style="text-decoration:none;">
+        <div class="stat-icon red">⚠️</div>
+        <div class="stat-value">{{ stats.geciken }}</div>
+        <div class="stat-label">{{ _('Geciken') }}</div>
+    </a>
+    <div class="stat-card">
+        <div class="stat-icon orange">🗓️</div>
+        <div class="stat-value">{{ stats.yaklasan }}</div>
+        <div class="stat-label">{{ _('Yaklaşan Kapanış') }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon green">✅</div>
+        <div class="stat-value">{{ stats.kapatilan }}</div>
+        <div class="stat-label">{{ _('Kapatılan') }}</div>
+    </div>
+</div>
+
+<div class="grid-2 mb-24" style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+    <div class="section-card">
+        <div class="section-header" style="padding:12px 16px;"><span class="section-title">{{ _('Durum Dağılımı') }}</span></div>
+        <div class="section-body" style="padding:16px; min-height:220px;">
+            <canvas id="capaDurumChart" aria-label="{{ _('Durum grafiği') }}"></canvas>
+        </div>
+    </div>
+    <div class="section-card">
+        <div class="section-header" style="padding:12px 16px;"><span class="section-title">{{ _('Kaynak Dağılımı') }}</span></div>
+        <div class="section-body" style="padding:16px; min-height:220px;">
+            <canvas id="capaKaynakChart" aria-label="{{ _('Kaynak grafiği') }}"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="grid-2 mb-24" style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+    <div class="section-card">
+        <div class="section-header" style="padding:12px 16px; display:flex; justify-content:space-between; align-items:center;">
+            <span class="section-title">⚠️ {{ _('Geciken DÖF') }}</span>
+            <a href="{{ request.script_root }}/capa/list" class="btn btn-sm btn-outline">{{ _('Liste') }}</a>
+        </div>
+        <div class="section-body" style="padding:0;">
+            {% if geciken %}
+            <table class="data-table">
+                <thead><tr><th>No</th><th>{{ _('Başlık') }}</th><th>{{ _('Planlanan') }}</th></tr></thead>
+                <tbody>
+                {% for k in geciken %}
+                <tr>
+                    <td><a href="{{ request.script_root }}/capa/{{ k.id }}"><code>{{ k.dof_no }}</code></a></td>
+                    <td>{{ k.baslik }}</td>
+                    <td class="text-muted">{{ k.planlanan_tarih.strftime('%d.%m.%Y') if k.planlanan_tarih else '—' }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="text-muted" style="padding:16px; margin:0;">{{ _('Geciken kayıt yok.') }}</p>
+            {% endif %}
+        </div>
+    </div>
+    <div class="section-card">
+        <div class="section-header" style="padding:12px 16px;">
+            <span class="section-title">🗓️ {{ _('Yaklaşan Kapanış') }}</span>
+        </div>
+        <div class="section-body" style="padding:0;">
+            {% if yaklasan %}
+            <table class="data-table">
+                <thead><tr><th>No</th><th>{{ _('Başlık') }}</th><th>{{ _('Planlanan') }}</th></tr></thead>
+                <tbody>
+                {% for k in yaklasan %}
+                <tr>
+                    <td><a href="{{ request.script_root }}/capa/{{ k.id }}"><code>{{ k.dof_no }}</code></a></td>
+                    <td>{{ k.baslik }}</td>
+                    <td class="text-muted">{{ k.planlanan_tarih.strftime('%d.%m.%Y') if k.planlanan_tarih else '—' }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="text-muted" style="padding:16px; margin:0;">{{ _('Yaklaşan kapanış yok.') }}</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="section-card mb-24">
+    <div class="section-header" style="padding:12px 16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+        <span class="section-title">📧 {{ _('E-posta Hatırlatıcı') }}</span>
+        <span class="text-muted" style="font-size:12px;">
+            {% if smtp_ok %}{{ _('SMTP hazır') }}{% else %}{{ _('SMTP yapılandırılmamış') }}{% endif %}
+        </span>
+    </div>
+    <div class="section-body" style="padding:16px;">
+        <p class="text-muted" style="font-size:13px; margin:0 0 12px;">
+            {{ _('Geciken ve planlanan kapanışı yaklaşan açık DÖF\'ler için sorumlu kişiye e-posta gönderilir.') }}
+            {{ _('Zamanlayıcı açıksa her gün otomatik çalışır; buradan da manuel tetikleyebilirsiniz.') }}
+        </p>
+        {% if is_editor %}
+        <form method="POST" action="{{ request.script_root }}/capa/send-reminders" style="display:inline;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-primary">📨 {{ _('Hatırlatmaları Şimdi Gönder') }}</button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+
+<div class="section-card">
+    <div class="section-header" style="padding:12px 16px; display:flex; justify-content:space-between; align-items:center;">
+        <span class="section-title">{{ _('Son Kayıtlar') }}</span>
+        <a href="{{ request.script_root }}/capa/list" class="btn btn-sm btn-outline">{{ _('Tümü') }}</a>
+    </div>
+    <div class="section-body" style="padding:0;">
+        {% if son_kayitlar %}
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>DÖF No</th><th>{{ _('Başlık') }}</th><th>{{ _('Durum') }}</th>
+                    <th>{{ _('Sorumlu') }}</th><th></th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for k in son_kayitlar %}
+            <tr>
+                <td><code style="color:var(--text-accent);">{{ k.dof_no }}</code></td>
+                <td><a href="{{ request.script_root }}/capa/{{ k.id }}" class="doc-title">{{ k.baslik }}</a></td>
+                <td><span class="status-badge {{ k.durum|slug }}">{{ k.durum|enum }}</span></td>
+                <td class="text-muted" style="font-size:12px;">{{ k.sorumlu.ad_soyad if k.sorumlu else '—' }}</td>
+                <td>
+                    <a href="{{ request.script_root }}/capa/{{ k.id }}/export.pdf" class="btn btn-sm btn-outline">PDF</a>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">🛠️</div>
+            <h3>{{ _('Henüz DÖF yok') }}</h3>
+            {% if is_editor %}<a href="{{ request.script_root }}/capa/new" class="btn btn-primary">{{ _('Yeni DÖF Aç') }}</a>{% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+(function () {
+  var durumLabels = {{ durum_labels|tojson }};
+  var durumValues = {{ durum_values|tojson }};
+  var kaynakLabels = {{ kaynak_labels|tojson }};
+  var kaynakValues = {{ kaynak_values|tojson }};
+  var colors = ['#2563eb','#f59e0b','#10b981','#8b5cf6','#ef4444','#64748b'];
+  if (document.getElementById('capaDurumChart')) {
+    new Chart(document.getElementById('capaDurumChart'), {
+      type: 'doughnut',
+      data: { labels: durumLabels, datasets: [{ data: durumValues, backgroundColor: colors }] },
+      options: { plugins: { legend: { position: 'bottom' } }, maintainAspectRatio: false }
+    });
+  }
+  if (document.getElementById('capaKaynakChart')) {
+    new Chart(document.getElementById('capaKaynakChart'), {
+      type: 'bar',
+      data: { labels: kaynakLabels, datasets: [{ label: 'Adet', data: kaynakValues, backgroundColor: '#2563eb' }] },
+      options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }, maintainAspectRatio: false }
+    });
+  }
+})();
+</script>
+{% endblock %}

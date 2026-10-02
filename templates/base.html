@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="{{ get_locale() }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Doküman Yönetim Sistemi - IATF 16949, ISO 14001, ISO 45001, ISO 27001 uyumlu">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{% block title %}DYS{% endblock %} — Doküman Yönetim Sistemi</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+    {% block head %}{% endblock %}
+<style>.nav-section:not(:has(.nav-item)){display:none;}</style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">{{ _('İçeriğe geç') }}</a>
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container" role="status" aria-live="polite" aria-atomic="true"></div>
+    <!-- Mobil kenar çubuğu arka planı -->
+    <div class="sidebar-backdrop" id="sidebar-backdrop" tabindex="-1" aria-hidden="true"></div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div data-flash="{{ message }}" data-flash-type="{{ category }}" style="display:none;"></div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <div class="app-container">
+        <!-- ═══ Sidebar ═══ -->
+        <aside class="sidebar" id="main-sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">D</div>
+                <div class="sidebar-brand">
+                    <h1>DYS</h1>
+                    <span>{{ _('Doküman Yönetimi') }}</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <!-- Ana Menü -->
+                <div class="nav-section">
+                    <div class="nav-section-title">{{ _('Ana Menü') }}</div>
+                    {% if modul_acik('nav-dashboard') %}<a href="{{ request.script_root }}/" class="nav-item" id="nav-dashboard">
+                        <span class="nav-icon">📊</span>
+                        <span>{{ _('Panel') }}</span>
+                    </a>{% endif %}
+                    {% if modul_acik('nav-islerim') %}<a href="{{ request.script_root }}/islerim" class="nav-item" id="nav-islerim">
+                        <span class="nav-icon">📥</span>
+                        <span>{{ _('İşlerim') }}</span>
+                    </a>{% endif %}
+                    {% if modul_acik('nav-processes') %}<a href="{{ request.script_root }}/processes" class="nav-item" id="nav-processes">
+                        <span class="nav-icon">🔄</span>
+                        <span>{{ _('Süreç Haritası') }}</span>
+                    </a>{% endif %}
+                    {% if modul_acik('nav-documents') %}<a href="{{ request.script_root }}/documents" class="nav-item" id="nav-documents">
+                        <span class="nav-icon">📄</span>
+                        <span>{{ _('Dokümanlar') }}</span>
+                    </a>{% endif %}
+                    {% if modul_acik('nav-new-doc') %}<a href="{{ request.script_root }}/documents/new" class="nav-item" id="nav-new-doc">
+                        <span class="nav-icon">➕</span>
+                        <span>{{ _('Yeni Doküman') }}</span>
+                    </a>{% endif %}
+                </div>
+
+                <!-- İş Akışı -->
+                <div class="nav-section">
+                    <div class="nav-section-title">{{ _('İş Akışı') }}</div>
+                    {% if modul_acik('nav-approvals') %}<a href="{{ request.script_root }}/approvals" class="nav-item" id="nav-approvals">
+                        <span class="nav-icon">✅</span>
+                        <span>{{ _('Onay Yönetimi') }}</span>
+                        {% if pending_approvals is defined and pending_approvals > 0 %}
+                        <span class="nav-badge">{{ pending_approvals }}</span>
+                        {% endif %}
+                    </a>{% endif %}
+                    {% if modul_acik('nav-ppap') %}<a href="{{ request.script_root }}/ppap" class="nav-item" id="nav-ppap">
+                        <span class="nav-icon">📦</span>
+                        <span>{{ _('PPAP Yönetimi') }}</span>
+                    </a>{{ modul_alt('nav-ppap') }}{% endif %}
+                    {% if modul_acik('nav-distributions') %}<a href="{{ request.script_root }}/distributions" class="nav-item" id="nav-distributions">
+                        <span class="nav-icon">📨</span>
+                        <span>{{ _('Dağıtım') }}</span>
+                    </a>{% endif %}
+                </div>
+
+                <!-- Y01 Yönetim Sorumluluğu ve Sürekli İyileştirme (2026) -->
+                <div class="nav-section">
+                    <div class="nav-section-title">{{ _('Y01 Yönetim Sorumluluğu') }}</div>
+                    {% if modul_acik('nav-strateji') %}<a href="{{ request.script_root }}/strateji" class="nav-item" id="nav-strateji">
+                        <span class="nav-icon">🧭</span><span>{{ modul_basligi('nav-strateji', _('Stratejik Planlama')) }}</span>
+                    </a>{{ modul_alt('nav-strateji') }}{% endif %}
+                    {% if modul_acik('nav-audit-automation') %}<a href="{{ request.script_root }}/audits/automation" class="nav-item" id="nav-audit-automation">
+                        <span class="nav-icon">🔔</span>
+                        <span>{{ _('Denetim Yönetimi') }}</span>{% set _dh = denetim_hatirlatma_sayisi() %}{% if _dh %}<span style="margin-left:auto;background:#ef4444;color:#fff;border-radius:10px;padding:0 7px;font-size:11px;font-weight:700;">{{ _dh }}</span>{% endif %}
+                    </a>{{ modul_alt('nav-audit-automation') }}{% endif %}
+                    {% if modul_acik('nav-auditors') %}<a href="{{ request.script_root }}/audits/auditors" class="nav-item" id="nav-auditors">
+                        <span class="nav-icon">🎓</span>
+                        <span>{{ _('İç Denetçiler') }}</span>
+                    </a>{{ modul_alt('nav-auditors') }}{% endif %}
+                    {% if modul_acik('nav-capa') %}<a href="{{ request.script_root }}/capa" class="nav-item" id="nav-capa">
+                        <span class="nav-icon">🛠️</span>
+                        <span>{{ _('DÖF (Uygunsuzluk Yönetimi)') }}</span>
+                    </a>{{ modul_alt('nav-capa') }}{% endif %}
+                    {% if modul_acik('nav-performans') %}<a href="{{ request.script_root }}/performans" class="nav-item" id="nav-performans">
+                        <span class="nav-icon">📈</span><span>{{ modul_basligi('nav-performans', _('Performans Değerlendirme (KPI)')) }}</span>
+                    </a>{{ modul_alt('nav-performans') }}{% endif %}
+                    {% if modul_acik('nav-toplanti') %}<a href="{{ request.script_root }}/toplantilar" class="nav-item" id="nav-toplanti">
+                        <span class="nav-icon">🗓️</span><span>{{ modul_basligi('nav-toplanti', _('Toplantı Tutanakları')) }}</span>
+                    </a>{{ modul_alt('nav-toplanti') }}{% endif %}
+                </div>
+
+                <!-- Kalite (2026): tedarikçi uygunsuzlukları + müşteri şikayetleri -->
+                <div class="nav-section">
+                    <div class="nav-section-title">{{ _('Kalite') }}</div>
+                    {% if modul_acik('nav-kalite-tedarikci') %}<a href="{{ request.script_root }}/kalite/tedarikci" class="nav-item" id="nav-kalite-tedarikci">
+                        <span class="nav-icon">🏭</span><span>{{ modul_basligi('nav-kalite-tedarikci', _('Tedarikçi Uygunsuzlukları')) }}</span>
+                    </a>{{ modul_alt('nav-kalite-tedarikci') }}{% endif %}
+                    {% if modul_acik('nav-kalite-musteri') %}<a href="{{ request.script_root }}/kalite/musteri" class="nav-item" id="nav-kalite-musteri">
+                        <span class="nav-icon">📣</span><span>{{ modul_basligi('nav-kalite-musteri', _('Müşteri Şikayet Listesi')) }}</span>
+                    </a>{{ modul_alt('nav-kalite-musteri') }}{% endif %}
+{% if modul_acik('nav-teknik-resim') %}<a href="{{ request.script_root }}/teknik-resim" class="nav-item" id="nav-teknik-resim">
+<span class="nav-icon">📐</span><span>{{ modul_basligi('nav-teknik-resim', _('Teknik Resimler')) }}</span>
+</a>{{ modul_alt('nav-teknik-resim') }}{% endif %}
+                </div>
+                <!-- D03 Bakım -->
+<div class="nav-section">
+<div class="nav-section-title">{{ _('D03 Bakım') }}</div>
+{% if modul_acik('nav-bakim') %}<a href="{{ request.script_root }}/bakim" class="nav-item" id="nav-bakim">
+<span class="nav-icon">🔧</span><span>{{ modul_basligi('nav-bakim', _('Bakım Formu')) }}</span>
+</a>{{ modul_alt('nav-bakim') }}{% endif %}
+{% if modul_acik('nav-bakim-ekipman') %}<a href="{{ request.script_root }}/bakim/ekipman" class="nav-item" id="nav-bakim-ekipman">
+<span class="nav-icon">🏭</span><span>{{ modul_basligi('nav-bakim-ekipman', _('Makine & Kalıp Listesi')) }}</span>
+</a>{{ modul_alt('nav-bakim-ekipman') }}{% endif %}
+</div>
+
+<!-- Kalite Sistemi -->
+                <div class="nav-section">
+                    <div class="nav-section-title">{{ _('Kalite Sistemi') }}</div>
+                    {% if modul_acik('nav-qrqc') %}<a href="{{ request.script_root }}/qrqc" class="nav-item" id="nav-qrqc">
+                        <span class="nav-icon">⚡</span>
+                        <span>{{ _('QRQC (Hızlı Yanıt)') }}</span>
+                    </a>{{ modul_alt('nav-qrqc') }}{% endif %}
+                    {% if modul_acik('nav-audits') %}<a href="{{ request.script_root }}/audits" class="nav-item" id="nav-audits">
+                        <span class="nav-icon">🕵️</span>
+                        <span>{{ _('İç Tetkik') }}</span>
+                    </a>{{ modul_alt('nav-audits') }}{% endif %}
+                    {% if modul_acik('nav-audit-checklists') %}<a href="{{ request.script_root }}/audits/checklists" class="nav-item" id="nav-audit-checklists">
+                        <span class="nav-icon">📋</span>
+                        <span>{{ _('Soru Listeleri') }}</span>
+                    </a>{{ modul_alt('nav-audit-checklists') }}{% endif %}
+                    {% if modul_acik('nav-audit-program') %}<a href="{{ request.script_root }}/audits/program" class="nav-item" id="nav-audit-program">
+                        <span class="nav-icon">📅</span>
+                        <span>{{ _('Tetkik Programı') }}</span>
+                    </a>{% endif %}
+                    {% if modul_acik('nav-risks') %}<a href="{{ request.script_root }}/risks" class="nav-item" id="nav-risks">
+                        <span class="nav-icon">⚠️</span>
+                        <span>{{ _('Risk Kaydı') }}</span>
+                    </a>{{ modul_alt('nav-risks') }}{% endif %}
+                    {% if modul_acik('nav-training') %}<a href="{{ request.script_root }}/training" class="nav-item" id="nav-training">
+                        <span class="nav-icon">🎓</span>
+                        <span>{{ _('Eğitimler') }}</span>
+                    </a>{{ modul_alt('nav-training') }}{% endif %}
+                    {% if modul_acik('nav-competency') %}<a href="{{ request.script_root }}/competency" class="nav-item" id="nav-competency">
+                        <span class="nav-icon">🧩</span>
+                        <span>{{ _('Yetkinlik Matrisi') }}</span>
+                    </a>{{ modul_alt('nav-competency') }}{% endif %}
+                    {% if modul_acik('nav-forms') %}<a href="{{ request.script_root }}/forms" class="nav-item" id="nav-forms">
+                        <span class="nav-icon">📝</span>
+                        <span>{{ _('Formlar') }}</span>
+                    </a>{% endif %}
+                </div>
+
+                <!-- IATF 16949 Otomotiv -->
+                <div class="nav-section">
+                    <div class="nav-section-title">{{ _('IATF 16949 Otomotiv') }}</div>
+                    {% if modul_acik('nav-apqp') %}<a href="{{ request.script_root }}/iatf/apqp" class="nav-item" id="nav-apqp">
+                        <span class="nav-icon">📐</span><span>{{ _('APQP') }}</span>
+                    </a>{{ modul_alt('nav-apqp') }}{% endif %}
+                    {% if modul_acik('nav-fmea') %}<a href="{{ request.script_root }}/iatf/fmea" class="nav-item" id="nav-fmea">
+                        <span class="nav-icon">🧮</span><span>{{ _('FMEA') }}</span>
+                    </a>{{ modul_alt('nav-fmea') }}{% endif %}
+                    {% if modul_acik('nav-cp') %}<a href="{{ request.script_root }}/iatf/control-plans" class="nav-item" id="nav-cp">
+                        <span class="nav-icon">📋</span><span>{{ _('Kontrol Planı') }}</span>
+                    </a>{{ modul_alt('nav-cp') }}{% endif %}
+                    {% if modul_acik('nav-enj-param') %}<a href="{{ request.script_root }}/uretim/enjeksiyon-parametreleri" class="nav-item" id="nav-enj-param">
+                        <span class="nav-icon">🎛️</span><span>{{ _('Enjeksiyon Parametreleri') }}</span>
+                    </a>{{ modul_alt('nav-enj-param') }}{% endif %}
+                    {% if modul_acik('nav-cal') %}<a href="{{ request.script_root }}/iatf/calibration" class="nav-item" id="nav-cal">
+                        <span class="nav-icon">📏</span><span>{{ _('Kalibrasyon') }}</span>
+                    </a>{{ modul_alt('nav-cal') }}{% endif %}
+                    {% if modul_acik('nav-uou') %}<a href="{{ request.script_root }}/iatf/nonconforming" class="nav-item" id="nav-uou">
+                        <span class="nav-icon">🚧</span><span>{{ _('Uygun Olmayan Ürün') }}</span>
+                    </a>{{ modul_alt('nav-uou') }}{% endif %}
+                    {% if modul_acik('nav-sup') %}<a href="{{ request.script_root }}/iatf/suppliers" class="nav-item" id="nav-sup">
+                        <span class="nav-icon">🚚</span><span>{{ _('Tedarikçiler') }}</span>
+                    </a>{{ modul_alt('nav-sup') }}{% endif %}
+                    {% if modul_acik('nav-spc') %}<a href="{{ request.script_root }}/iatf/spc" class="nav-item" id="nav-spc">
+                        <span class="nav-icon">📉</span><span>{{ _('SPC') }}</span>
+                    </a>{{ modul_alt('nav-spc') }}{% endif %}
+                    {% if modul_acik('nav-csr') %}<a href="{{ request.script_root }}/iatf/csr" class="nav-item" id="nav-csr">
+                        <span class="nav-icon">📌</span><span>{{ _('CSR') }}</span>
+                    </a>{{ modul_alt('nav-csr') }}{% endif %}
+                </div>
+
+                <!-- Entegre Yönetim Sistemi (IMS) -->
+                <div class="nav-section">
+                    <div class="nav-section-title">{{ _('Entegre Yönetim (IMS)') }}</div>
+                    {% if modul_acik('nav-ims') %}<a href="{{ request.script_root }}/ims" class="nav-item" id="nav-ims">
+                        <span class="nav-icon">🧭</span>
+                        <span>{{ _('IMS Genel Bakış') }}</span>
+                    </a>{% endif %}
+                    {% if modul_acik('nav-ims-req') %}<a href="{{ request.script_root }}/ims/requirements" class="nav-item" id="nav-ims-req">
+                        <span class="nav-icon">✅</span>
+                        <span>{{ _('Uyum Matrisi') }}</span>
+                    </a>{% endif %}
+                    {% if modul_acik('nav-ims-context') %}<a href="{{ request.script_root }}/ims/context" class="nav-item" id="nav-ims-context">
+                        <span class="nav-icon">🌐</span>
+                        <span>{{ _('Bağlam & Taraflar') }}</span>
+                    </a>{{ modul_alt('nav-ims-context') }}{% endif %}
+                    {% if modul_acik('nav-ims-legal') %}<a href="{{ request.script_root }}/ims/legal" class="nav-item" id="nav-ims-legal">
+                        <span class="nav-icon">⚖️</span>
+                        <span>{{ _('Mevzuat & Uygunluk') }}</span>
+                    </a>{{ modul_alt('nav-ims-legal') }}{% endif %}
+                    {% if modul_acik('nav-ims-ygg') %}<a href="{{ request.script_root }}/ims/reviews" class="nav-item" id="nav-ims-ygg">
+                        <span class="nav-icon">📋</span>
+                        <span>{{ _('Yönetim Gözden Geçirme') }}</span>
+                    </a>{{ modul_alt('nav-ims-ygg') }}{% endif %}
+                </div>
+
+                <!-- ISO 14001 Çevre -->
+                <div class="nav-section">
+                    <div class="nav-section-title">{{ _('ISO 14001 Çevre') }}</div>
+                    {% if modul_acik('nav-env-aspects') %}<a href="{{ request.script_root }}/env/aspects" class="nav-item" id="nav-env-aspects">
+                        <span class="nav-icon">🌱</span><span>{{ modul_basligi('nav-env-aspects', _('Çevre Boyutları')) }}</span>
+                    </a>{{ modul_alt('nav-env-aspects') }}{% endif %}
+                    {% if modul_acik('nav-env-meas') %}<a href="{{ request.script_root }}/env/measurements" class="nav-item" id="nav-env-meas">
+                        <span class="nav-icon">📊</span><span>{{ modul_basligi('nav-env-meas', _('Çevresel Ölçüm')) }}</span>
+                    </a>{{ modul_alt('nav-env-meas') }}{% endif %}
+                    {% if modul_acik('nav-env-inc') %}<a href="{{ request.script_root }}/env/incidents" class="nav-item" id="nav-env-inc">
+                        <span class="nav-icon">🚨</span><span>{{ modul_basligi('nav-env-inc', _('Çevre Olayları')) }}</span>
+                    </a>{{ modul_alt('nav-env-inc') }}{% endif %}
+                </div>
+
+                <!-- ISO 45001 İSG -->
+                <div class="nav-section">
+                    <div class="nav-section-title">{{ _('ISO 45001 İSG') }}</div>
+                    {% if modul_acik('nav-ohs-haz') %}<a href="{{ request.script_root }}/ohs/hazards" class="nav-item" id="nav-ohs-haz">
+                        <span class="nav-icon">⚠️</span><span>{{ modul_basligi('nav-ohs-haz', _('Tehlike & Risk')) }}</span>
+                    </a>{{ modul_alt('nav-ohs-haz') }}{% endif %}
+                    {% if modul_acik('nav-ohs-inc') %}<a href="{{ request.script_root }}/ohs/incidents" class="nav-item" id="nav-ohs-inc">
+                        <span class="nav-icon">🩹</span><span>{{ modul_basligi('nav-ohs-inc', _('İSG Olayları')) }}</span>
+                    </a>{{ modul_alt('nav-ohs-inc') }}{% endif %}
+                    {% if modul_acik('nav-ohs-part') %}<a href="{{ request.script_root }}/ohs/participation" class="nav-item" id="nav-ohs-part">
+                        <span class="nav-icon">💬</span><span>{{ modul_basligi('nav-ohs-part', _('Çalışan Katılımı')) }}</span>
+                    </a>{{ modul_alt('nav-ohs-part') }}{% endif %}
+                    {% if modul_acik('nav-ohs-ppe') %}<a href="{{ request.script_root }}/ohs/ppe" class="nav-item" id="nav-ohs-ppe">
+                        <span class="nav-icon">🦺</span><span>{{ modul_basligi('nav-ohs-ppe', _('KKD')) }}</span>
+                    </a>{{ modul_alt('nav-ohs-ppe') }}{% endif %}
+                    {% if modul_acik('nav-ohs-drills') %}<a href="{{ request.script_root }}/ohs/drills" class="nav-item" id="nav-ohs-drills">
+                        <span class="nav-icon">🧯</span><span>{{ modul_basligi('nav-ohs-drills', _('Acil Durum Tatbikatı')) }}</span>
+                    </a>{{ modul_alt('nav-ohs-drills') }}{% endif %}
+                </div>
+
+                <!-- ISO 27001 Bilgi Güvenliği -->
+                <div class="nav-section">
+                    <div class="nav-section-title">{{ _('ISO 27001 ISMS') }}</div>
+                    {% if modul_acik('nav-isms') %}<a href="{{ request.script_root }}/isms" class="nav-item" id="nav-isms">
+                        <span class="nav-icon">🔐</span><span>{{ _('ISMS Genel Bakış') }}</span>
+                    </a>{% endif %}
+                    {% if modul_acik('nav-isms-assets') %}<a href="{{ request.script_root }}/isms/assets" class="nav-item" id="nav-isms-assets">
+                        <span class="nav-icon">💾</span><span>{{ _('Bilgi Varlıkları') }}</span>
+                    </a>{{ modul_alt('nav-isms-assets') }}{% endif %}
+                    {% if modul_acik('nav-isms-soa') %}<a href="{{ request.script_root }}/isms/soa" class="nav-item" id="nav-isms-soa">
+                        <span class="nav-icon">📑</span><span>{{ _('SoA') }}</span>
+                    </a>{{ modul_alt('nav-isms-soa') }}{% endif %}
+                    {% if modul_acik('nav-isms-risks') %}<a href="{{ request.script_root }}/isms/risks" class="nav-item" id="nav-isms-risks">
+                        <span class="nav-icon">🛡️</span><span>{{ _('ISMS Riskleri') }}</span>
+                    </a>{{ modul_alt('nav-isms-risks') }}{% endif %}
+                    {% if modul_acik('nav-isms-inc') %}<a href="{{ request.script_root }}/isms/incidents" class="nav-item" id="nav-isms-inc">
+                        <span class="nav-icon">🚨</span><span>{{ _('Güvenlik Olayları') }}</span>
+                    </a>{{ modul_alt('nav-isms-inc') }}{% endif %}
+                    {% if modul_acik('nav-isms-acc') %}<a href="{{ request.script_root }}/isms/access-reviews" class="nav-item" id="nav-isms-acc">
+                        <span class="nav-icon">🔑</span><span>{{ _('Erişim İncelemesi') }}</span>
+                    </a>{{ modul_alt('nav-isms-acc') }}{% endif %}
+                    {% if modul_acik('nav-isms-backups') %}<a href="{{ request.script_root }}/isms/backups" class="nav-item" id="nav-isms-backups">
+                        <span class="nav-icon">💾</span><span>{{ _('Yedekleme Kanıtı') }}</span>
+                    </a>{{ modul_alt('nav-isms-backups') }}{% endif %}
+                </div>
+
+                <!-- Raporlar -->
+                <div class="nav-section">
+                    <div class="nav-section-title">{{ _('Raporlar') }}</div>
+                    {% if modul_acik('nav-reports') %}<a href="{{ request.script_root }}/reports" class="nav-item" id="nav-reports">
+                        <span class="nav-icon">📈</span>
+                        <span>{{ _('Raporlar') }}</span>
+                    </a>{% endif %}
+                    {% if session.get('rol') == 'Admin' %}
+                    {% if modul_acik('nav-audit') %}<a href="{{ request.script_root }}/audit-log" class="nav-item" id="nav-audit">
+                        <span class="nav-icon">🔍</span>
+                        <span>{{ _('Erişim Kayıtları') }}</span>
+                    </a>{% endif %}
+                    {% endif %}
+                </div>
+
+                <!-- Yönetim -->
+                {% if session.get('rol') in ['Admin', 'Doküman Kontrol'] %}
+                <div class="nav-section">
+                    <div class="nav-section-title">{{ _('Yönetim') }}</div>
+                    {% if modul_acik('nav-users') %}<a href="{{ request.script_root }}/admin/users" class="nav-item" id="nav-users">
+                        <span class="nav-icon">👥</span>
+                        <span>{{ _('Kullanıcı Yönetimi') }}</span>
+                    </a>{% endif %}
+                    {% if session.get('rol') == 'Admin' %}<a href="{{ request.script_root }}/admin/modules" class="nav-item" id="nav-modules">
+                        <span class="nav-icon">🧩</span>
+                        <span>{{ _('Modül Yönetimi') }}</span>
+                    </a>{% endif %}
+                    {% if modul_acik('nav-dist-groups') %}<a href="{{ request.script_root }}/admin/distribution-groups" class="nav-item" id="nav-dist-groups">
+                        <span class="nav-icon">👪</span>
+                        <span>{{ _('Dağıtım Grupları') }}</span>
+                    </a>{% endif %}
+                    {% if session.get('rol') == 'Admin' %}
+                    {% if modul_acik('nav-disposals') %}<a href="{{ request.script_root }}/disposals" class="nav-item" id="nav-disposals">
+                        <span class="nav-icon">🗑️</span>
+                        <span>{{ _('İmha Talepleri') }}</span>
+                    </a>{% endif %}
+                    {% if modul_acik('nav-audit-integrity') %}<a href="{{ request.script_root }}/admin/audit-integrity" class="nav-item" id="nav-audit-integrity">
+                        <span class="nav-icon">🔗</span>
+                        <span>{{ _('Audit Bütünlük') }}</span>
+                    </a>{% endif %}
+                    {% endif %}
+                </div>
+                {% endif %}
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-card">
+                    <div class="user-avatar">
+                        {{ session.get('ad_soyad', 'K')[0] }}
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name">{{ session.get('ad_soyad', 'Kullanıcı') }}</div>
+                        <div class="user-role">{{ session.get('rol', '') }}</div>
+                    </div>
+                </div>
+                <a href="{{ request.script_root }}/logout" class="nav-item" style="margin-top:4px;">
+                    <span class="nav-icon">🚪</span>
+                    <span>{{ _('Çıkış Yap') }}</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- ═══ Main Content ═══ -->
+        <main class="main-content" id="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <button class="menu-toggle" id="menu-toggle" aria-label="{{ _('Menü') }}" aria-controls="main-sidebar" aria-expanded="false">☰</button>
+                    <div class="breadcrumb">
+                        <a href="{{ request.script_root }}/">{{ _('Ana Sayfa') }}</a>
+                        {% block breadcrumb %}{% endblock %}
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="lang-switch" role="group" aria-label="{{ _('Dil') }}">
+                        <a href="{{ request.script_root }}/set-locale/tr"
+                           class="lang-btn {{ 'active' if current_locale == 'tr' else '' }}">TR</a>
+                        <a href="{{ request.script_root }}/set-locale/en"
+                           class="lang-btn {{ 'active' if current_locale == 'en' else '' }}">EN</a>
+                    </div>
+                    <button class="header-btn" id="theme-toggle" title="{{ _('Tema Değiştir') }}" aria-label="{{ _('Tema Değiştir') }}">
+                        <span class="theme-icon">🌞</span>
+                    </button>
+                    <div class="header-search">
+                        <span class="search-icon" role="button" tabindex="0" aria-label="{{ _('Ara') }}">🔍</span>
+                        <input type="text" id="global-search" placeholder="{{ _('Ara...') }}" autocomplete="off" aria-label="{{ _('Ara...') }}">
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <div class="page-content">
+                {% include '_modul_dokumanlari.html' %}
+{% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <script>window.DYS_BASE = "{{ request.script_root }}";</script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %}{% endblock %}
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

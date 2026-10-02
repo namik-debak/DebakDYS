@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Risk Düzenle' if risk else 'Yeni Risk' }}{% endblock %}
+
+{% block breadcrumb %}
+<span class="separator">›</span>
+<a href="{{ request.script_root }}/risks">Risk Kaydı</a>
+<span class="separator">›</span>
+<span>{{ 'Düzenle' if risk else 'Yeni' }}</span>
+{% endblock %}
+
+{% block content %}
+<div class="mb-24"><h2 style="font-size: 20px; font-weight: 700;">{{ ('Risk Düzenle: ' + risk.risk_no) if risk else 'Yeni Risk Kaydı' }}</h2></div>
+
+<div class="section-card">
+    <div class="section-body" style="padding: 20px;">
+        <form method="POST" action="{{ (request.script_root + '/risks/' + risk.id|string + '/edit') if risk else (request.script_root + '/risks/new') }}">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label">Risk Tanımı *</label>
+                    <textarea name="tanim" class="form-control" rows="2" required>{{ risk.tanim if risk else '' }}</textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Kategori</label>
+                    <select name="kategori" class="form-control">
+                        {% for k in kategoriler %}<option value="{{ k }}" {{ 'selected' if risk and risk.kategori == k }}>{{ k|enum }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">İlgili Süreç</label>
+                    <select name="surec_id" class="form-control">
+                        <option value="">— Yok —</option>
+                        {% for p in processes %}<option value="{{ p.id }}" {{ 'selected' if risk and risk.surec_id == p.id }}>{{ p.kod }} - {{ p.ad }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Olasılık (1-5)</label>
+                    <select name="olasilik" class="form-control">
+                        {% for n in range(1,6) %}<option value="{{ n }}" {{ 'selected' if risk and risk.olasilik == n else ('selected' if not risk and n == 3) }}>{{ n }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Etki (1-5)</label>
+                    <select name="etki" class="form-control">
+                        {% for n in range(1,6) %}<option value="{{ n }}" {{ 'selected' if risk and risk.etki == n else ('selected' if not risk and n == 3) }}>{{ n }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label">Mevcut Kontroller</label>
+                    <textarea name="mevcut_kontroller" class="form-control" rows="2">{{ risk.mevcut_kontroller if risk else '' }}</textarea>
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label">Aksiyon Planı</label>
+                    <textarea name="aksiyon_plani" class="form-control" rows="2">{{ risk.aksiyon_plani if risk else '' }}</textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Sorumlu</label>
+                    <select name="sorumlu_id" class="form-control">
+                        <option value="">— Seçiniz —</option>
+                        {% for u in users %}<option value="{{ u.id }}" {{ 'selected' if risk and risk.sorumlu_id == u.id }}>{{ u.ad_soyad }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Durum</label>
+                    <select name="durum" class="form-control">
+                        {% for d in durumlar %}<option value="{{ d }}" {{ 'selected' if risk and risk.durum == d }}>{{ d|enum }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Hedef Tarih</label>
+                    <input type="date" name="hedef_tarih" class="form-control" value="{{ risk.hedef_tarih.isoformat() if risk and risk.hedef_tarih else '' }}">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Gözden Geçirme Tarihi</label>
+                    <input type="date" name="gozden_gecirme_tarihi" class="form-control" value="{{ risk.gozden_gecirme_tarihi.isoformat() if risk and risk.gozden_gecirme_tarihi else '' }}">
+                </div>
+            </div>
+            <div class="d-flex gap-8 mt-16">
+                <button type="submit" class="btn btn-primary">💾 Kaydet</button>
+                <a href="{{ request.script_root }}/risks" class="btn btn-outline">İptal</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

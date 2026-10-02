@@ -1,0 +1,299 @@
+﻿{% extends "base.html" %}
+{% block title %}{{ 'Düzenle' if doc else 'Yeni Doküman' }}{% endblock %}
+
+{% block breadcrumb %}
+<span class="separator">›</span>
+<a href="{{ request.script_root }}/documents">Dokümanlar</a>
+<span class="separator">›</span>
+<span>{{ 'Düzenle — ' + doc.dokuman_no if doc else 'Yeni Doküman' }}</span>
+{% endblock %}
+
+{% block content %}
+<div class="mb-24">
+    <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 4px;">
+        {{ 'Doküman Düzenle' if doc else 'Yeni Doküman Oluştur' }}
+    </h2>
+    <p class="text-muted" style="font-size: 13px;">
+        {{ 'Mevcut dokümanın bilgilerini güncelleyin.' if doc else 'ISO standartlarına uygun yeni bir doküman kaydı oluşturun.' }}
+    </p>
+</div>
+
+<form method="POST" enctype="multipart/form-data"
+      action="{{ (request.script_root + '/documents/' + doc.id|string + '/edit') if doc else (request.script_root + '/documents/new') }}">
+    <div class="grid-2">
+        <!-- Sol Kolon: Ana Bilgiler -->
+        <div>
+            <div class="section-card">
+                <div class="section-header">
+                    <span class="section-title">📋 {{ _('Temel Bilgiler') }}</span>
+                </div>
+                <div class="section-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="surec_id">{{ _('Süreç') }} <span class="required">*</span></label>
+                            <select name="surec_id" id="surec_id" class="form-control" required>
+                                <option value="">Süreç seçiniz...</option>
+                                {% for p in processes %}
+                                <option value="{{ p.id }}" data-code="{{ p.kod }}"
+                                    {{ 'selected' if (doc and doc.surec_id == p.id) or request.args.get('surec_id') == p.id|string }}>
+                                    {{ p.kod }} - {{ p.ad }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="dokuman_tipi">{{ _('Doküman Tipi') }} <span class="required">*</span></label>
+                            <select name="dokuman_tipi" id="dokuman_tipi" class="form-control" required>
+                                <option value="">Tip seçiniz...</option>
+                                {% for tip in ['Politika', 'El Kitabı', 'Prosedür', 'Talimat', 'Plan', 'Spesifikasyon', 'Form', 'Liste', 'Dış Kaynaklı Doküman'] %}
+                                <option value="{{ tip }}" {{ 'selected' if doc and doc.dokuman_tipi == tip }}>{{ tip }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="dokuman_no">{{ _('Doküman No') }} <span class="required">*</span></label>
+                            <input type="text" name="dokuman_no" id="dokuman_no" class="form-control"
+                                   value="{{ doc.dokuman_no if doc else '' }}"
+                                   placeholder="Otomatik oluşturulur (ör: D06-PR-001)" required
+                                   {% if doc %}data-locked="true"{% else %}data-auto-generated="true"{% endif %}>
+                                   data-auto-generated="{{ 'false' if doc else 'true' }}">
+                            <span class="form-hint">Format: Süreç Kodu-Tip Kısaltması-Sıra No</span>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="dokuman_seviyesi">{{ _('Doküman Seviyesi') }} <span class="required">*</span></label>
+                            <select name="dokuman_seviyesi" id="dokuman_seviyesi" class="form-control" required>
+                                {% for level, name in [(1, 'Seviye 1 — Politikalar & El Kitapları'), (2, 'Seviye 2 — Prosedürler'), (3, 'Seviye 3 — Talimatlar / Planlar / Spesifikasyonlar'), (4, 'Seviye 4 — Formlar / Kayıtlar / Listeler'), (5, 'Seviye 5 — Dış Kaynaklı Dokümanlar')] %}
+                                <option value="{{ level }}" {{ 'selected' if doc and doc.dokuman_seviyesi == level }}>{{ name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="baslik">{{ _('Doküman Başlığı') }} <span class="required">*</span></label>
+                        <input type="text" name="baslik" id="baslik" class="form-control"
+                               value="{{ doc.baslik if doc else '' }}"
+                               placeholder="Dokümanın tam adı" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Güvenlik & Standartlar -->
+            <div class="section-card">
+                <div class="section-header">
+                    <span class="section-title">🛡️ Güvenlik & Standartlar</span>
+                </div>
+                <div class="section-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Güvenlik Sınıfı <span class="required">*</span></label>
+                            <select name="guvenlik_sinifi" class="form-control" required>
+                                {% for g in ['Genel', 'Hizmete Özel', 'Gizli'] %}
+                                <option value="{{ g }}" {{ 'selected' if doc and doc.guvenlik_sinifi == g }}>{{ g }}</option>
+                                {% endfor %}
+                            </select>
+                            <span class="form-hint">ISO 27001 gereği bilgi güvenliği sınıflandırması</span>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Saklama Süresi (Ay)</label>
+                            <input type="number" name="saklama_suresi_ay" class="form-control"
+                                   value="{{ doc.saklama_suresi_ay if doc else 36 }}" min="1" max="240">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">İlgili Standartlar</label>
+                        <input type="text" name="ilgili_standartlar" class="form-control"
+                               value="{{ doc.ilgili_standartlar if doc else '' }}"
+                               placeholder="IATF 16949 - 7.5, ISO 14001 - 7.5, ISO 45001 - 7.5, ISO 27001 - 7.5">
+                        <span class="form-hint">Virgülle ayırarak birden fazla standart maddesi ekleyebilirsiniz</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sağ Kolon: Sorumlular & Dosya -->
+        <div>
+            <!-- Sorumlular -->
+            <div class="section-card">
+                <div class="section-header">
+                    <span class="section-title">👥 Sorumlular</span>
+                </div>
+                <div class="section-body">
+                    <div class="form-group">
+                        <label class="form-label">Hazırlayan</label>
+                        <select name="hazirlayan_id" class="form-control">
+                            <option value="">Seçiniz...</option>
+                            {% for u in users %}
+                            <option value="{{ u.id }}" {{ 'selected' if doc and doc.hazirlayan_id == u.id }}>{{ u.ad_soyad }} ({{ u.departman }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Kontrol Eden</label>
+                        <select name="kontrol_eden_id" class="form-control">
+                            <option value="">Seçiniz...</option>
+                            {% for u in users %}
+                            <option value="{{ u.id }}" {{ 'selected' if doc and doc.kontrol_eden_id == u.id }}>{{ u.ad_soyad }} ({{ u.departman }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Onaylayan</label>
+                        <select name="onaylayan_id" class="form-control">
+                            <option value="">Seçiniz...</option>
+                            {% for u in users %}
+                            <option value="{{ u.id }}" {{ 'selected' if doc and doc.onaylayan_id == u.id }}>{{ u.ad_soyad }} ({{ u.departman }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tarihler -->
+            <div class="section-card">
+                <div class="section-header">
+                    <span class="section-title">📅 Tarihler</span>
+                </div>
+                <div class="section-body">
+                    <div class="form-group">
+                        <label class="form-label">Yürürlük Tarihi</label>
+                        <input type="date" name="yururluk_tarihi" class="form-control"
+                               value="{{ doc.yururluk_tarihi.strftime('%Y-%m-%d') if doc and doc.yururluk_tarihi else '' }}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Sonraki Gözden Geçirme Tarihi</label>
+                        <input type="date" name="sonraki_gozden_gecirme" class="form-control"
+                               value="{{ doc.sonraki_gozden_gecirme.strftime('%Y-%m-%d') if doc and doc.sonraki_gozden_gecirme else '' }}">
+                        <span class="form-hint">ISO standartları gereği periyodik gözden geçirme planlanmalıdır</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dosya Yükleme -->
+            <div class="section-card">
+                <div class="section-header">
+                    <span class="section-title">📎 Dosya</span>
+                </div>
+                <div class="section-body">
+                    {% if doc and doc.dosya_adi %}
+                    <div style="padding: 10px 14px; background: var(--bg-glass); border-radius: var(--radius-sm); border: 1px solid var(--border-color); margin-bottom: 12px; font-size: 13px;">
+                        📎 Mevcut dosya: <strong>{{ doc.dosya_adi }}</strong>
+                    </div>
+                    {% endif %}
+                    <div class="file-upload-area">
+                        <input type="file" name="dosya" style="display: none;">
+                        <div class="upload-icon">📤</div>
+                        <div class="upload-text">Dosya seçmek için tıklayın veya sürükleyin</div>
+                        <div class="upload-hint">PDF, Word, Excel, vb. (Maks. 50MB)</div>
+                    </div>
+
+                    {% if not doc %}
+                    <div class="form-group mt-16">
+                        <label class="form-label">Değişiklik Açıklaması</label>
+                        <textarea name="degisiklik_aciklamasi" class="form-control" rows="2" placeholder="İlk yayın">İlk yayın</textarea>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Doküman İçerik Şablonu -->
+    {% set mevcut_icerik = (doc.icerik_json | fromjson) if doc and doc.icerik_json else {} %}
+    <div class="section-card mt-24" id="sablon-container">
+        <div class="section-header">
+            <span class="section-title">📝 {{ _('Doküman İçeriği (Şablon)') }}</span>
+        </div>
+        <div class="section-body">
+            <p class="form-hint" id="sablon-hint" style="margin-bottom: 16px;">
+                {{ _('Doküman tipini seçtiğinizde, o tipe uygun standart bölümler burada açılır.') }}
+            </p>
+
+            {# Prosedür antet önizlemesi (referans düzen) #}
+            <div data-sablon-tip="Prosedür" style="display: none;" class="mb-16">
+                <div class="procedure-sheet procedure-sheet--preview">
+                    <div class="procedure-antet" aria-hidden="true">
+                        <div class="procedure-antet-logo">
+                            <img src="{{ url_for('static', filename='branding/debak-logo.png') }}" alt="" width="96" height="40">
+                        </div>
+                        <div class="procedure-antet-process" id="proc-preview-surec">—</div>
+                        <div class="procedure-antet-meta-label procedure-antet-ml-1">{{ _('Doküman Kodu') }}</div>
+                        <div class="procedure-antet-meta-value procedure-antet-mv-1" id="proc-preview-kod">—</div>
+                        <div class="procedure-antet-meta-label procedure-antet-ml-2">{{ _('Rev. No') }}</div>
+                        <div class="procedure-antet-meta-value procedure-antet-mv-2">0</div>
+                        <div class="procedure-antet-meta-label procedure-antet-ml-3">{{ _('Rev. Tarihi') }}</div>
+                        <div class="procedure-antet-meta-value procedure-antet-mv-3">—</div>
+                        <div class="procedure-antet-meta-label procedure-antet-ml-4">{{ _('Sayfa') }}</div>
+                        <div class="procedure-antet-meta-value procedure-antet-mv-4">1 / 1</div>
+                        <div class="procedure-antet-title" id="proc-preview-baslik">{{ _('Prosedür Başlığı') }}</div>
+                    </div>
+                    <p class="form-hint" style="padding: 12px 16px 0;">
+                        {{ _('Prosedür kaydedildiğinde antet ve alt bilgili Word (.docx) dosyası otomatik oluşur.') }}
+                    </p>
+                </div>
+            </div>
+
+            {% for tip, bolumler in DOKUMAN_SABLONLARI.items() %}
+            <div data-sablon-tip="{{ tip }}" style="display: none;">
+                <div class="compliance-banner mb-16" style="background: var(--bg-glass);">
+                    <span class="banner-icon">📋</span>
+                    <span class="banner-text">{{ tip }} {{ _('şablonu — aşağıdaki bölümleri doldurun.') }}</span>
+                </div>
+                {% for key, baslik, placeholder in bolumler %}
+                <div class="form-group">
+                    <label class="form-label" for="icerik_{{ tip|replace(' ', '_') }}_{{ key }}">{{ baslik }}</label>
+                    {% if tip == 'Prosedür' and key in ('kayitlar', 'ilgili_dokumanlar') %}
+                    {% set refs_val = mevcut_icerik.get(key, []) %}
+                    <div class="doc-picker" data-doc-picker
+                         data-initial="{{ refs_val|tojson|forceescape }}">
+                        <input type="hidden" name="icerik_{{ key }}" id="icerik_{{ tip|replace(' ', '_') }}_{{ key }}" value="" class="doc-picker-input">
+                        <div class="doc-picker-search-wrap">
+                            <input type="search" class="form-control doc-picker-search" autocomplete="off"
+                                   placeholder="{{ _('Doküman no veya başlık ara…') }}"
+                                   aria-label="{{ _('Doküman ara') }}">
+                            <div class="doc-picker-results" role="listbox" hidden></div>
+                        </div>
+                        <ul class="doc-picker-selected" aria-label="{{ _('Seçilen dokümanlar') }}"></ul>
+                        <p class="form-hint">{{ _('Listeden arayıp seçin; birden fazla doküman eklenebilir.') }}</p>
+                    </div>
+                    {% else %}
+                    <textarea name="icerik_{{ key }}" id="icerik_{{ tip|replace(' ', '_') }}_{{ key }}" class="form-control" rows="3"
+                              placeholder="{{ placeholder }}">{{ mevcut_icerik.get(key, '') }}</textarea>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                {% if tip == 'Prosedür' %}
+                <div class="procedure-footer procedure-footer--preview mt-16" aria-hidden="true">
+                    <div>
+                        <div class="procedure-footer-label">{{ _('HAZIRLAYAN') }}</div>
+                        <div class="procedure-footer-value">{{ _('Formdaki hazırlayan') }}</div>
+                    </div>
+                    <div>
+                        <div class="procedure-footer-label">{{ _('KONTROL EDEN') }}</div>
+                        <div class="procedure-footer-value">{{ _('Formdaki kontrol eden') }}</div>
+                    </div>
+                    <div>
+                        <div class="procedure-footer-label">{{ _('ONAYLAYAN') }}</div>
+                        <div class="procedure-footer-value">{{ _('Formdaki onaylayan') }}</div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Form Actions -->
+    <div class="d-flex justify-between align-center mt-24" style="padding: 16px 0;">
+        <a href="{{ request.script_root }}/documents" class="btn btn-secondary">← Geri</a>
+        <div class="d-flex gap-8">
+            <button type="submit" name="durum" value="Taslak" class="btn btn-secondary">💾 Taslak Kaydet</button>
+            <button type="submit" name="durum" value="İncelemede" class="btn btn-primary">📤 Kaydet ve Onaya Gönder</button>
+        </div>
+    </div>
+</form>
+{% endblock %}

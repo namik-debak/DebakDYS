@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}Erişim Yetkileri Gözden Geçirme{% endblock %}
+{% block breadcrumb %}<span class="separator">›</span><span>Erişim İncelemesi</span>{% endblock %}
+
+{% block content %}
+<div class="d-flex align-center justify-between mb-24" style="flex-wrap:wrap;gap:12px;">
+  <div>
+    <h2 style="font-size:20px;font-weight:700;">Erişim Yetkileri Gözden Geçirme</h2>
+    <p class="text-muted" style="font-size:13px;">ISO/IEC 27001 § A.8.2 periyodik kullanıcı erişim yetkileri inceleme sicili. Toplam <strong>{{ kayitlar|length }}</strong> kayıt.</p>
+  </div>
+</div>
+
+<!-- İnceleme Listesi Tablosu -->
+<div class="section-card mb-24">
+{% if kayitlar %}
+<div class="data-table-wrapper">
+<table class="data-table">
+<thead>
+    <tr>
+        <th>İnceleme Tarihi</th>
+        <th>Gözden Geçirme Kapsamı</th>
+        <th>İnceleyen Yetkili</th>
+        <th>Bulgular / Uygunsuzluklar</th>
+        <th>Alınan Aksiyonlar</th>
+        <th style="text-align:center;">Tamamlandı mı?</th>
+    </tr>
+</thead>
+<tbody>
+{% for r in kayitlar %}
+<tr>
+    <td style="font-size:12px; font-family:monospace; font-weight:700;">{{ r.tarih.strftime('%Y-%m-%d') if r.tarih else '—' }}</td>
+    <td><strong>{{ r.kapsam }}</strong></td>
+    <td><span style="font-size:12px;">{{ r.inceleyen.ad_soyad if r.inceleyen else '—' }}</span></td>
+    <td style="font-size:12px;" class="text-muted">{{ r.bulgu or 'Temiz / Bulgu Yok' }}</td>
+    <td style="font-size:12px;">{{ r.aksiyon or '—' }}</td>
+    <td class="text-center">
+        <span class="badge" style="font-size:10px; font-weight:700; background:{{ '#d1fae5' if r.tamamlandi else '#fee2e2' }}; color:{{ '#065f46' if r.tamamlandi else '#991b1b' }};">
+            {{ 'Evet' if r.tamamlandi else 'Hayır' }}
+        </span>
+    </td>
+</tr>
+{% endfor %}
+</tbody></table>
+</div>
+{% else %}
+<div class="empty-state"><div class="empty-icon">🔑</div><h3>Kayıt yok</h3></div>
+{% endif %}
+</div>
+
+<!-- Yeni Erişim İnceleme Ekleme Formu -->
+{% if can_edit %}
+<div class="section-card">
+    <div class="section-header" style="border-bottom:1px solid var(--border); padding:12px 20px;">
+        <span class="section-title">➕ Yeni Erişim Gözden Geçirme Kaydı Ekle</span>
+    </div>
+    <div class="section-body" style="padding:20px;">
+        <form method="POST" action="{{ url_for('isms_access_reviews') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:16px; margin-bottom:16px;">
+                <div class="form-group">
+                    <label class="form-label">İnceleme Tarihi *</label>
+                    <input type="date" name="tarih" class="form-control" required value="{{ date_today }}">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Gözden Geçirme Kapsamı *</label>
+                    <input type="text" name="kapsam" class="form-control" required placeholder="Örn: Active Directory veya Muhasebe Yetkileri">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">İnceleyen Yetkili *</label>
+                    <select name="inceleyen_id" class="form-control" required>
+                        <option value="">— Yetkili Seçiniz —</option>
+                        {% for u in users %}
+                        <option value="{{ u.id }}">{{ u.ad_soyad }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group" style="grid-column: span 3;">
+                    <label class="form-label">Bulgular / Saptanan Uygunsuzluklar (Yetkisiz Erişim vb.)</label>
+                    <textarea name="bulgu" class="form-control" rows="2" placeholder="Varsa yetkisi alınması gereken kullanıcılar, pasif hesaplar vb."></textarea>
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label">Alınan Kararlar / Kapatma Aksiyonları</label>
+                    <textarea name="aksiyon" class="form-control" rows="2" placeholder="İptal edilen hesaplar, güncellenen yetki grupları vb."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Durum</label>
+                    <select name="tamamlandi" class="form-control">
+                        <option value="1">Tamamlandı (Onaylandı)</option>
+                        <option value="0">Devam Ediyor</option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" style="padding:10px 24px;">💾 İncelemeyi Kaydet</button>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

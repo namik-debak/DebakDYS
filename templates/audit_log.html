@@ -1,0 +1,100 @@
+﻿{% extends "base.html" %}
+{% block title %}Erişim Kayıtları{% endblock %}
+
+{% block breadcrumb %}
+<span class="separator">›</span>
+<span>Erişim Kayıtları</span>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex align-center justify-between mb-24">
+    <div>
+        <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 4px;">Erişim Kayıtları</h2>
+        <p class="text-muted" style="font-size: 13px;">ISO 27001 denetim izi — Tüm sistem işlemleri</p>
+    </div>
+</div>
+
+<div class="compliance-banner mb-24">
+    <span class="banner-icon">🔐</span>
+    <span class="banner-text">ISO 27001 Madde 7.5 gereği tüm doküman erişim ve değişiklik işlemleri kayıt altına alınmaktadır.</span>
+    <span class="std-badge iso27001">ISO 27001</span>
+</div>
+
+<!-- Filters -->
+<div class="section-card mb-16">
+    <div class="section-body" style="padding: 12px 16px;">
+        <form method="GET" action="{{ request.script_root }}/audit-log" class="filters-bar">
+            <div class="filter-group">
+                <label class="filter-label">İşlem:</label>
+                <select name="islem" class="filter-select" onchange="this.form.submit()">
+                    <option value="">Tümü</option>
+                    {% for t in ['Görüntüleme', 'İndirme', 'Çıktı', 'Oluşturma', 'Düzenleme', 'Onay', 'Red', 'Silme', 'Giriş', 'Çıkış'] %}
+                    <option value="{{ t }}" {{ 'selected' if request.args.get('islem') == t }}>{{ t }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Kullanıcı:</label>
+                <select name="kullanici" class="filter-select" onchange="this.form.submit()">
+                    <option value="">Tümü</option>
+                    {% for u in users %}
+                    <option value="{{ u.id }}" {{ 'selected' if request.args.get('kullanici') == u.id|string }}>{{ u.ad_soyad }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% if request.args.get('islem') or request.args.get('kullanici') %}
+            <a href="{{ request.script_root }}/audit-log" class="btn btn-sm btn-outline">✕ Temizle</a>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+<!-- Log Table -->
+<div class="section-card">
+    {% if logs %}
+    <div class="data-table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Tarih/Saat</th>
+                    <th>Kullanıcı</th>
+                    <th>İşlem</th>
+                    <th>Doküman</th>
+                    <th>Detay</th>
+                    <th>IP</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td class="text-muted" style="font-size: 12px; white-space: nowrap;">{{ log.tarih.strftime('%d.%m.%Y %H:%M:%S') if log.tarih else '-' }}</td>
+                    <td><strong>{{ log.kullanici.ad_soyad if log.kullanici else 'Sistem' }}</strong></td>
+                    <td>
+                        {% set tag_map = {
+                            'Görüntüleme': 'view', 'İndirme': 'download', 'Çıktı': 'download', 'Oluşturma': 'create',
+                            'Düzenleme': 'edit', 'Onay': 'approve', 'Red': 'reject',
+                            'Silme': 'delete', 'Giriş': 'login', 'Çıkış': 'login'
+                        } %}
+                        <span class="audit-tag {{ tag_map.get(log.islem_tipi, 'view') }}">{{ log.islem_tipi }}</span>
+                    </td>
+                    <td>
+                        {% if log.document %}
+                        <a href="{{ request.script_root }}/documents/{{ log.document.id }}"><code>{{ log.document.dokuman_no }}</code></a>
+                        {% else %}—{% endif %}
+                    </td>
+                    <td class="text-muted" style="font-size: 12px; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ log.detay or '-' }}</td>
+                    <td class="text-muted" style="font-size: 11px; font-family: monospace;">{{ log.ip_adresi or '-' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">🔍</div>
+        <h3>Kayıt bulunamadı</h3>
+        <p>Filtrelere uygun erişim kaydı yok.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

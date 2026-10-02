@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}DÖF Listesi{% endblock %}
+
+{% block breadcrumb %}
+<span class="separator">›</span>
+<a href="{{ request.script_root }}/capa">DÖF</a>
+<span class="separator">›</span>
+<span>Liste</span>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex align-center justify-between mb-24" style="flex-wrap:wrap; gap:12px;">
+    <div>
+        <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 4px;">DÖF / Düzeltici-Önleyici Faaliyet</h2>
+        <p class="text-muted" style="font-size: 13px;">
+            Açık: <strong style="color: var(--text-primary);">{{ acik }}</strong> ·
+            Geciken: <strong style="color: var(--color-danger);">{{ geciken }}</strong>
+        </p>
+    </div>
+    <div class="d-flex gap-8" style="flex-wrap:wrap;">
+        <a href="{{ request.script_root }}/capa" class="btn btn-outline">📊 Panel</a>
+        <a href="{{ request.script_root }}/capa/export.xlsx?{{ request.query_string.decode() }}" class="btn btn-outline">⬇ Excel</a>
+        <a href="{{ request.script_root }}/capa/export.pdf?{{ request.query_string.decode() }}" class="btn btn-outline">⬇ PDF</a>
+        {% if is_editor %}
+        <a href="{{ request.script_root }}/capa/new" class="btn btn-primary">➕ Yeni DÖF</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="section-card mb-16">
+    <div class="section-body" style="padding: 12px 16px;">
+        <form method="GET" action="{{ request.script_root }}/capa/list" class="filters-bar">
+            <div class="filter-group">
+                <label class="filter-label">Durum:</label>
+                <select name="durum" class="filter-select" onchange="this.form.submit()">
+                    <option value="">Tümü</option>
+                    {% for d in durumlar %}
+                    <option value="{{ d }}" {{ 'selected' if request.args.get('durum') == d }}>{{ d|enum }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Kaynak:</label>
+                <select name="kaynak" class="filter-select" onchange="this.form.submit()">
+                    <option value="">Tümü</option>
+                    {% for k in kaynaklar %}
+                    <option value="{{ k }}" {{ 'selected' if request.args.get('kaynak') == k }}>{{ k|enum }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% if request.args.get('durum') or request.args.get('kaynak') %}
+            <a href="{{ request.script_root }}/capa/list" class="btn btn-sm btn-outline">✕ Temizle</a>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+<div class="section-card">
+    {% if kayitlar %}
+    <div class="data-table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>DÖF No</th><th>Başlık</th><th>Kaynak</th><th>Sorumlu</th>
+                    <th>Planlanan</th><th>Durum</th><th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for k in kayitlar %}
+                <tr>
+                    <td><code style="color: var(--text-accent);">{{ k.dof_no }}</code></td>
+                    <td><a href="{{ request.script_root }}/capa/{{ k.id }}" class="doc-title">{{ k.baslik }}</a></td>
+                    <td style="font-size: 12px;">{{ k.kaynak_tipi|enum }}</td>
+                    <td style="font-size: 12px;">{{ k.sorumlu.ad_soyad if k.sorumlu else '-' }}</td>
+                    <td class="text-muted" style="font-size: 12px;">
+                        {{ k.planlanan_tarih.strftime('%d.%m.%Y') if k.planlanan_tarih else '-' }}
+                        {% if k.gecikti_mi %}<span class="risk-badge yuksek" style="margin-left:4px;">Gecikti</span>{% endif %}
+                    </td>
+                    <td><span class="status-badge {{ k.durum|slug }}">{{ k.durum|enum }}</span></td>
+                    <td class="d-flex gap-8">
+                        <a href="{{ request.script_root }}/capa/{{ k.id }}" class="btn btn-sm btn-outline">Detay</a>
+                        <a href="{{ request.script_root }}/capa/{{ k.id }}/export.pdf" class="btn btn-sm btn-outline">PDF</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">🛠️</div>
+        <h3>DÖF kaydı bulunamadı</h3>
+        <p>Filtreye uygun kayıt yok veya henüz DÖF açılmamış.</p>
+        <a href="{{ request.script_root }}/capa/new" class="btn btn-primary">Yeni DÖF Aç</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
